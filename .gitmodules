@@ -1,0 +1,9 @@
+[submodule "vendor/plugins/authlogic"]
+	path = vendor/plugins/authlogic
+	url = git://github.com/binarylogic/authlogic.git
+[submodule "vendor/plugins/authlogic_ldap"]
+	path = vendor/plugins/authlogic_ldap
+	url = git://github.com/binarylogic/authlogic_ldap.git
+[submodule "vendor/plugins/ruby-net-ldap"]
+	path = vendor/plugins/ruby-net-ldap
+	url = git://github.com/RoryO/ruby-net-ldap.git
