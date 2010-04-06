@@ -22,11 +22,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.get_from_ldap(login)
-    s = find_from_ldap(login, false)
-    return s
-  end
-
   def self.ous(ou)
     begin
       ldap = Net::LDAP.new(:host => LDAP_Config[:host],
@@ -35,103 +30,120 @@ class User < ActiveRecord::Base
     rescue
       return false
     end
-    
     unless ldap.bind
       return false
     end
-    #filter = Net::LDAP::Filter.eq( "ou", ou )
-    #attrs = ["mail", "uid", "cn", "ou", "fullname"]
-    #s      = ldap.search(:base => "OU=#{ou}, #{LDAP_Config[:base]}", :return_result => true)
-    #ldap.search( :base => "dc=mycompany, dc=com", :attributes => attrs, :filter =>
-    #filter, :return_result => true ) do |entry|
-    #puts entry.dn
-
     op_filter = Net::LDAP::Filter.eq( "objectClass", "group" )
-    dn        = Array.new
-    member    = Array.new
-    member_ou = Array.new
-    cn        = Array.new
     attrs     = ["cn", "member"]
-
-    ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base]}", :filter => op_filter, :attributes=> attrs) do |entry|
+    ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base]}", :attributes=> attrs) do |entry|
       entry.each do |attr, values|
-        if "#{attr}" == "member"
-          members_of    = Array.new
-          members_of_ou = Array.new
+        if "#{attr}" == "dn"
           values.each do |str|
-            members_of    << str.split(',')[0].split('=')[1]
-            members_of_ou << str.split(',')[1].split('=')[1]
             unless str.split(',')[1].split('=')[1].nil?
               unless LdapUsers.find_by_cn(str.split(',')[0].split('=')[1])
-                LdapUsers.create(:cn => str.split(',')[0].split('=')[1], :ou => str.split(',')[1].split('=')[1])
+                LdapUsers.create(:cn => str.split(',')[0].split('=')[1], :ou => str.split(',')[1].split('=')[1]) if str.split(',')[0].split('=')[1] != "Email Admins"
               end
             end
           end
-          #for element in members_of
-          #  member << element
-          #end
-          #for element in members_of_ou
-          #  member_ou << element
-          #end
         end
       end
     end
-    
-    return member
+    return LdapUsers.find_all_by_ou(ou)
+  end
+
+  def is_admin?
+
+    if !self.admin_expire.nil? && self.admin_expire > Time.now
+      return self.admin
+    else
+      begin
+        ldap = Net::LDAP.new(:host => LDAP_Config[:host],
+          :port => LDAP_Config[:port].to_i,
+          :auth => {:method => :simple, :username => LDAP_Config[:username], :password => LDAP_Config[:password]})
+      rescue
+        return false
+      end
+      unless ldap.bind
+        return false
+      end
+      filter = Net::LDAP::Filter.eq('samAccountName', self.login)
+      s      = ldap.search(:base => LDAP_Config[:base], :filter => filter)
+      isAdmin = false
+      debugger
+      1 == 1
+      if s.size > 0
+        if !s[0][:memberof].empty?
+          lines = s[0][:memberof].first.split(",")
+        else
+          lines = s[0][:dn].first.split(",")  
+        end
+        lines.each do |value|
+          if value.split("=")[1] == 'Email Admins'
+            isAdmin = true
+          end
+        end
+      else
+        isAdmin = false
+      end
+      self.admin = isAdmin
+      self.admin_expire = Time.now + 15.minutes
+      self.save
+      return isAdmin
+     end
   end
 
   protected
 
-    def valid_ldap_credentials?(password_plaintext)
-      begin
-        ldap = Net::LDAP.new(:host => LDAP_Config[:host],
-          :port => LDAP_Config[:port].to_i,
-          :auth => {:method => :simple, :username => dn, :password => password_plaintext})
-      rescue
-        return false
-      end
-      ldap.bind
+  def valid_ldap_credentials?(password_plaintext)
+    begin
+      ldap = Net::LDAP.new(:host => LDAP_Config[:host],
+        :port => LDAP_Config[:port].to_i,
+        :auth => {:method => :simple, :username => dn, :password => password_plaintext})
+    rescue
+      return false
     end
+    ldap.bind
+  end
 
-    def self.validate_dn(login)
-      begin
-        ldap = Net::LDAP.new(:host => LDAP_Config[:host],
-          :port => LDAP_Config[:port].to_i,
-          :auth => {:method => :simple, :username => LDAP_Config[:username], :password => LDAP_Config[:password]})
-      rescue
-        return false
-      end
-      unless ldap.bind
-        return false
-      end
-      filter = Net::LDAP::Filter.eq('samAccountName', login[:login])
-      s      = ldap.search(:base => LDAP_Config[:base], :filter => filter)
-      login  = User.update(login[:id], :dn => s[0][:dn].first) if s[0][:dn].first != login[:dn]
-      login
+  def self.validate_dn(login)
+    begin
+      ldap = Net::LDAP.new(:host => LDAP_Config[:host],
+        :port => LDAP_Config[:port].to_i,
+        :auth => {:method => :simple, :username => LDAP_Config[:username], :password => LDAP_Config[:password]})
+    rescue
+      return false
     end
+    unless ldap.bind
+      return false
+    end
+    filter = Net::LDAP::Filter.eq('samAccountName', login[:login])
+    s      = ldap.search(:base => LDAP_Config[:base], :filter => filter)
+    login  = User.update(login[:id], :dn => s[0][:dn].first) if s[0][:dn].first != login[:dn]
+    login
+  end
 
-    def self.find_from_ldap(login, return_string = true)
-      begin
-        ldap = Net::LDAP.new(:host => LDAP_Config[:host],
-          :port => LDAP_Config[:port].to_i,
-          :auth => {:method => :simple, :username => LDAP_Config[:username], :password => LDAP_Config[:password]})
-      rescue
-        return false
-      end
-      unless ldap.bind
-        return false
-      end
-      filter = Net::LDAP::Filter.eq('samAccountName', login)
-      s      = ldap.search(:base => LDAP_Config[:base], :filter => filter)
-      if s.size > 0
-         unless return_string
-           return s
-         end
-         return s[0][:dn].first
-      else
-        nil
-      end
+  def self.find_from_ldap(login, return_string = true)
+    begin
+      ldap = Net::LDAP.new(:host => LDAP_Config[:host],
+        :port => LDAP_Config[:port].to_i,
+        :auth => {:method => :simple, :username => LDAP_Config[:username], :password => LDAP_Config[:password]})
+    rescue
+      return false
     end
+    unless ldap.bind
+      return false
+    end
+    filter = Net::LDAP::Filter.eq('samAccountName', login)
+    s      = ldap.search(:base => LDAP_Config[:base], :filter => filter)
+    if s.size > 0
+       unless return_string
+         return s
+       end
+       return s[0][:dn].first
+    else
+      nil
+    end
+  end
 
 end
 

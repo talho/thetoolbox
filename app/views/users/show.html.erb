@@ -1,5 +1,9 @@
-<% @return_results[0].each do |index, value| %>
-  <%= index %> =
-  <%= value %>
-  <br/>
+<% if @return_results %>
+  You are authorized to administer the following accounts:<br/>
+  <% @return_results.each do |index| %>
+    <%= index.cn %>, <%= index.ou %>
+    <br/>
+  <% end %>
+<% else %>
+  You are not authorized to administer any accounts<br/>
 <% end %>

@@ -8,7 +8,10 @@
   <%= f.label :password %><br />
   <%= f.password_field :password %><br />
   <br />
+  <%= f.label "Authenticate Against:" %>
+  <%= select ("host", "host_ip", options_for_select([["Torch", LDAP_Config[:host]], ["TALHO", LDAP_Config[:host]]])) %>
+  <br/>
   <%= f.check_box :remember_me %><%= f.label :remember_me %><br />
   <br />
-  <%= f.submit "Login" %>
+  <%= f.submit "Sign In" %>
 <% end %>
