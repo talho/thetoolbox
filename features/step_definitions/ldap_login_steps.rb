@@ -14,19 +14,13 @@ Given /^I signed up with "(.*)\/(.*)"$/ do |login, password|
     :login                 => login
 end
 
-Given /^I am signed up and confirmed as "(.*)\/(.*)"$/ do |email, password|
-  user = Factory :user,
-    :email                 => email,
-    :password              => password,
-    :password_confirmation => password
-end
-
 Given /^I am signed up as "(.*)"$/ do |login|
   include Authlogic::TestCase
   activate_authlogic
   user = Factory :user,
     :login => login,
     :dn => "CN=#{login}",
+    :host_to_auth => '192.168.1.24',
     :admin => false,
     :admin_expire => Time.now + 15.minutes
 end
@@ -56,9 +50,6 @@ Then /^I should be signed out$/ do
 end
 
 When /^session is cleared$/ do
-  #debugger
-  #1 == 1
-  #request.reset_session
   controller.instance_variable_set(:@_current_user, nil)
 end
 

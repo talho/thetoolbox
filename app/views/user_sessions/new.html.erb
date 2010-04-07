@@ -8,8 +8,8 @@
   <%= f.label :password %><br />
   <%= f.password_field :password %><br />
   <br />
-  <%= f.label "Authenticate Against:" %>
-  <%= select ("host", "host_ip", options_for_select([["Torch", LDAP_Config[:host]], ["TALHO", LDAP_Config[:host]]])) %>
+  <%= label ("host", "authenticate", "Authenticate Against:") %>
+  <%= select ("host", "authenticate", options_for_select([["Test", "Test"], ["TORCH", "TORCH"]])) %>
   <br/>
   <%= f.check_box :remember_me %><%= f.label :remember_me %><br />
   <br />
