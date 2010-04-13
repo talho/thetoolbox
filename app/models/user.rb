@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
 
   def self.find_or_create_from_ldap(login_name)
    login = find_by_login(login_name)
-   if login && login[:host_to_auth] == LDAP_Config[:host_to_auth]
+   if login && login[:dc] == LDAP_Config[:base][LDAP_Config[:auth_to]].split(',')[LDAP_Config[:base][LDAP_Config[:auth_to]].split(',').size - 1]
      login = validate_dn(login)
      login
    else
@@ -16,31 +16,24 @@ class User < ActiveRecord::Base
   def self.create_from_ldap_if_valid(login)
     begin
       dn = find_from_ldap(login)
-      User.create(:login => login, :dn => dn, :host_to_auth => LDAP_Config[:host_to_auth]) if dn
+      User.create(:login => login, :dn => dn, :dc => LDAP_Config[:base][LDAP_Config[:auth_to]].split(',')[LDAP_Config[:base][LDAP_Config[:auth_to]].split(',').size - 1]) if dn
     rescue
-      nil # Don't do anything since we can't find an entry
+      nil
     end
   end
 
-  def self.ous(ou)
-    begin
-      ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host_to_auth],
-        :port => LDAP_Config[:port].to_i,
-        :auth => {:method => :simple, :username => LDAP_Config[:user_to_auth], :password => LDAP_Config[:password]})
-    rescue
+  def ous(ou)
+    ldap = ldap_connect
+    unless ldap
       return false
     end
-    unless ldap.bind
-      return false
-    end
-    op_filter = Net::LDAP::Filter.eq( "objectClass", "group" )
+    #op_filter = Net::LDAP::Filter.eq( "objectClass", "group" )
     attrs     = ["cn", "member"]
-    ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base_to_auth]}", :attributes=> attrs) do |entry|
+    ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base][LDAP_Config[:auth_to]]}", :attributes=> attrs) do |entry|
       entry.each do |attr, values|
         if "#{attr}" == "dn"
           values.each do |str|
-            unless str.split(',')[1].split('=')[1].nil?
+            if str.split(',')[0].split('=')[0] == 'CN'
               unless LdapUsers.find_by_cn(str.split(',')[0].split('=')[1])
                 LdapUsers.create(:cn => str.split(',')[0].split('=')[1], :ou => str.split(',')[1].split('=')[1]) if str.split(',')[0].split('=')[1] != "Email Admins"
               end
@@ -53,22 +46,15 @@ class User < ActiveRecord::Base
   end
 
   def is_admin?
-    if !self.admin_expire.nil? && self.admin_expire > Time.now
+    if self.admin && !self.admin_expire.nil? && self.admin_expire > Time.now
       return self.admin
     else
-      begin
-        ldap = Net::LDAP.new(
-          :host => LDAP_Config[:host_to_auth],
-          :port => LDAP_Config[:port].to_i,
-          :auth => {:method => :simple, :username => LDAP_Config[:user_to_auth], :password => LDAP_Config[:password]})
-      rescue
-        return false
-      end
-      unless ldap.bind
+      ldap = ldap_connect
+      unless ldap
         return false
       end
       filter  = Net::LDAP::Filter.eq('samAccountName', self.login)
-      s       = ldap.search(:base => LDAP_Config[:base_to_auth], :filter => filter)
+      s       = ldap.search(:base => LDAP_Config[:base][LDAP_Config[:auth_to]], :filter => filter)
       isAdmin = false
       if s.size > 0
         if !s[0][:memberof].empty?
@@ -96,7 +82,7 @@ class User < ActiveRecord::Base
   def valid_ldap_credentials?(password_plaintext)
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host_to_auth],
+        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
         :port => LDAP_Config[:port].to_i,
         :auth => {:method => :simple, :username => dn, :password => password_plaintext})
     rescue
@@ -106,37 +92,23 @@ class User < ActiveRecord::Base
   end
 
   def self.validate_dn(login)
-    begin
-      ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host_to_auth],
-        :port => LDAP_Config[:port].to_i,
-        :auth => {:method => :simple, :username => LDAP_Config[:user_to_auth], :password => LDAP_Config[:password]})
-    rescue
-      return false
-    end
-    unless ldap.bind
+    ldap = ldap_connect_self
+    unless ldap
       return false
     end
     filter = Net::LDAP::Filter.eq('samAccountName', login[:login])
-    s      = ldap.search(:base => LDAP_Config[:base_to_auth], :filter => filter)
+    s      = ldap.search(:base => LDAP_Config[:base][LDAP_Config[:auth_to]], :filter => filter)
     login  = User.update(login[:id], :dn => s[0][:dn].first) if s[0][:dn].first != login[:dn]
     login
   end
 
   def self.find_from_ldap(login, return_string = true)
-    begin
-      ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host_to_auth],
-        :port => LDAP_Config[:port].to_i,
-        :auth => {:method => :simple, :username => LDAP_Config[:user_to_auth], :password => LDAP_Config[:password]})
-    rescue
-      return false
-    end
-    unless ldap.bind
+    ldap = ldap_connect_self
+    unless ldap
       return false
     end
     filter = Net::LDAP::Filter.eq('samAccountName', login)
-    s      = ldap.search(:base => LDAP_Config[:base_to_auth], :filter => filter)
+    s      = ldap.search(:base => LDAP_Config[:base][LDAP_Config[:auth_to]], :filter => filter)
     if s.size > 0
        unless return_string
          return s
@@ -145,6 +117,36 @@ class User < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def ldap_connect
+    begin
+      ldap = Net::LDAP.new(
+        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port => LDAP_Config[:port].to_i,
+        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+    rescue
+      return false
+    end
+    unless ldap.bind
+      return false
+    end
+    return ldap
+  end
+
+  def self.ldap_connect_self
+    begin
+      ldap = Net::LDAP.new(
+        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port => LDAP_Config[:port].to_i,
+        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+    rescue
+      return false
+    end
+    unless ldap.bind
+      return false
+    end
+    return ldap 
   end
 
 end

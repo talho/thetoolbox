@@ -7,14 +7,12 @@ class UserSessionsController < ApplicationController
   end
 
   def create
-    LDAP_Config[:host_to_auth] = LDAP_Config[:host][params[:host][:authenticate]]
-    LDAP_Config[:user_to_auth] = LDAP_Config[:username][params[:host][:authenticate]]
-    LDAP_Config[:base_to_auth] = LDAP_Config[:base][params[:host][:authenticate]]
-
-    @user_session = UserSession.new(params[:user_session])
+    LDAP_Config[:auth_to] = params[:host][:authenticate]
+    @user_session         = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:notice] = "Login successful!"
-      redirect_back_or_default account_url
+      #redirect_back_or_default account_url
+      redirect_to "/dashboard"
     else
       render :action => :new
     end

@@ -1,0 +1,66 @@
+<div class="flash">
+  <%- [:notice, :instructions, :completed, :error].each do |type| -%>
+    <%- if flash[type] -%>
+      <p class="<%= type %>"><%= flash[type] %></p>
+    <%- end -%>
+  <%- end -%>
+</div>
+<% if @ldap_user_results %>
+  <h3>You are authorized to administer the following accounts:</h3>
+  <div>
+    <%= link_to "Create New User", "#", :id => "create_new_user" %>
+  </div>
+  <div class="create_new_user_container" id="create_new_user_container">
+    <%= render :partial => 'create_new_user_form' %>
+  </div>
+  <!--
+  <ul class="user_list">
+  <% @ldap_user_results.each do |index| %>
+    <li>
+      <strong>User</strong>: <%= index.cn %>
+      <span class="delete">
+        &nbsp;&nbsp;<%= link_to 'Delete', {:action => 'delete_user', :id => index.id}, :confirm => 'Are you sure?' %>
+      </span>
+      <span class="edit">
+        <%= link_to "Edit", "users/#{index.id}" %>
+      </span>
+      <ul>
+        <li>
+          <strong>Organizational Unit</strong>: <%= index.ou %>
+        </li>
+      </ul>
+    </li>
+  <% end %>
+  </ul>
+  -->
+  <table class="user_list">
+    <% @ldap_user_results.each do |index| %>
+    <tr>
+
+          <td>
+            <strong>User</strong>:
+          </td>
+          <td>
+             <%= index.cn %>
+          </td>
+          <td>
+            <%= link_to "Edit", "users/#{index.id}" %>&nbsp;&nbsp;<%= link_to 'Delete', {:action => 'delete_user', :id => index.id}, :confirm => 'Are you sure?' %>
+          </td>
+        </tr>
+          <td>
+            <strong>Organizational Unit</strong>:
+          </td>
+          <td>
+            <%= index.ou %>
+          </td>
+          <td>&nbsp;</td>
+
+    </tr>
+    <tr>
+      <td colspan="3">&nbsp;</td>
+    </tr>
+  <% end %>
+  </table>
+<% else %>
+  <h3>You are not authorized to administer any accounts</h3>
+<% end %>

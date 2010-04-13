@@ -1,9 +1,53 @@
-<% if @return_results %>
-  You are authorized to administer the following accounts:<br/>
-  <% @return_results.each do |index| %>
-    <%= index.cn %>, <%= index.ou %>
-    <br/>
+<% if !@reset_results.nil? %>
+  <% if @reset_results %>
+    Password change successful!
+  <% else %>
+    Could not change password.  
   <% end %>
 <% else %>
-  You are not authorized to administer any accounts<br/>
+  <ul>
+    <li><strong>User Name</strong>: <%= @user.cn %></li>
+    <li><strong>Organizational Unit</strong>: <%= @user.ou %></li>
+  </ul>
+  <br/>
+  <ul>
+    <li>
+      <%= link_to "Reset Password", "", :id => "reset_password" %>
+      <div id="reset_password_container">
+        <% form_for @user, :url => "reset_password/"+@user.id.to_s do %>
+          <div>
+            <%= label (:users, :new_password, "New Password:") %>
+            <%= password_field (:users, :new_password, :class => "reset_password") %>
+          </div>
+          <div>
+            <%= label (:users, :confirm_password, "Confirm Password:") %>
+            <%= password_field (:users, :confirm_password, :class => "reset_password") %>
+          </div>
+          <%= submit_tag "Submit" %>
+        <% end %>
+      </div>
+    </li>
+    <li>
+      <%= link_to "Set Forwarding Addresses", "", :id => "set_fwd_address" %>
+      <div id="set_fwd_add_container">
+        <% form_for @user, :url => "set_fwd_address/"+@user.id.to_s do %>
+          <div>
+            <%= label (:users, :fwd_address, "Forwarding Address:") %>
+            <%= text_field (:users, :fwd_address, :class => "fwd_address") %>
+          </div>
+        <% end %>
+      </div>
+    </li>
+    <li>
+      <%= link_to "Set Out Of Office Response", "", :id => "set_oor" %>
+      <div id="set_oor_container">
+        <% form_for @user, :url => "set_oor/"+@user.id.to_s do %>
+          <div>
+            <%= label (:users, :set_oor, "Out of Office Response:") %>
+            <%= text_field (:users, :oor, :class => "oor") %>
+          </div>
+        <% end %>
+      </div>
+    </li>
+  </ul>
 <% end %>

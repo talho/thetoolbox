@@ -20,6 +20,8 @@ module NavigationHelpers
       root_path
     when /the users page/
       users_path
+    when /the dashboard/
+      dashboard_path
     else
       raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
         "Now, go and add a mapping in #{__FILE__}"

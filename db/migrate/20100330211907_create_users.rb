@@ -3,7 +3,7 @@ class CreateUsers < ActiveRecord::Migration
     create_table :users do |t|
       t.string    :login,               :null => false                # optional, you can use email instead, or both
       t.string    :dn,                  :null => false
-      t.string    :host_to_auth,        :null => false
+      t.string    :dc,                  :null => false
       t.string    :persistence_token,   :null => false                # required
       t.string    :single_access_token, :null => false                # optional, see Authlogic::Session::Params
       t.string    :perishable_token,    :null => false                # optional, see Authlogic::Session::Perishability

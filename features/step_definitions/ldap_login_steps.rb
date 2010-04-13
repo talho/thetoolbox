@@ -20,7 +20,7 @@ Given /^I am signed up as "(.*)"$/ do |login|
   user = Factory :user,
     :login => login,
     :dn => "CN=#{login}",
-    :host_to_auth => '192.168.1.24',
+    :dc => 'DC=local',
     :admin => false,
     :admin_expire => Time.now + 15.minutes
 end

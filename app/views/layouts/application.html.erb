@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>TALHO Toolbox</title>
+    <%= stylesheet_link_tag 'master', :cache => true %>
+    <%= javascript_include_tag 'jquery', 'application', :cache => true %>
+</head>
+<body>
+<div id="application">
+  <div id="header">
+    <div id="portal_toolbar">
+      <span class="title"><a href="/" title="TALHO Tool Box Home">TALHO Toolbox</a></span>
+      <% if current_user %>
+      <span class="log_out"><a href="/user_sessions/destroy" title="Log out">Log out</a></span>
+      <% end %>
+    </div>
+  </div>
+  <div id="content">
+    <%= yield %>
+  </div>
+  <div id="footer"></div>
+</div>
+</body>
+</html>
