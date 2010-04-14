@@ -10,7 +10,7 @@ class LdapUsers < ActiveRecord::Base
       :unicodePwd,
       microsoft_encode_password(new_password)]
       ])
-    unless(res)
+    if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
       return false
     end
     return true
@@ -19,18 +19,19 @@ class LdapUsers < ActiveRecord::Base
   protected
 
   def microsoft_encode_password(pwd)
-    quotepwd   = '"' + pwd + '"'
-    unicodepwd = Iconv.iconv('UTF-16', 'UTF-8', quotepwd).first
-    return unicodepwd
+    newPass = ""
+    pwd = "\"" + pwd + "\""
+    pwd.length.times{|i| newPass+= "#{pwd[i..i]}\000"}
+    newPass
   end
 
   def ldap_connect
     begin
       ldap = Net::LDAP.new(
         :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port       => 636,
+        :port       => LDAP_Config[:port].to_i,
         :encryption => :simple_tls,
-        :auth       => {:username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end

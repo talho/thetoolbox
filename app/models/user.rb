@@ -84,6 +84,7 @@ class User < ActiveRecord::Base
       ldap = Net::LDAP.new(
         :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
         :port => LDAP_Config[:port].to_i,
+        :encryption => :simple_tls,
         :auth => {:method => :simple, :username => dn, :password => password_plaintext})
     rescue
       return false
@@ -124,6 +125,7 @@ class User < ActiveRecord::Base
       ldap = Net::LDAP.new(
         :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
         :port => LDAP_Config[:port].to_i,
+        :encryption => :simple_tls,
         :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
@@ -139,6 +141,7 @@ class User < ActiveRecord::Base
       ldap = Net::LDAP.new(
         :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
         :port => LDAP_Config[:port].to_i,
+        :encryption => :simple_tls,
         :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false

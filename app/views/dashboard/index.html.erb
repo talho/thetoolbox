@@ -13,26 +13,6 @@
   <div class="create_new_user_container" id="create_new_user_container">
     <%= render :partial => 'create_new_user_form' %>
   </div>
-  <!--
-  <ul class="user_list">
-  <% @ldap_user_results.each do |index| %>
-    <li>
-      <strong>User</strong>: <%= index.cn %>
-      <span class="delete">
-        &nbsp;&nbsp;<%= link_to 'Delete', {:action => 'delete_user', :id => index.id}, :confirm => 'Are you sure?' %>
-      </span>
-      <span class="edit">
-        <%= link_to "Edit", "users/#{index.id}" %>
-      </span>
-      <ul>
-        <li>
-          <strong>Organizational Unit</strong>: <%= index.ou %>
-        </li>
-      </ul>
-    </li>
-  <% end %>
-  </ul>
-  -->
   <table class="user_list">
     <% @ldap_user_results.each do |index| %>
     <tr>
@@ -54,13 +34,13 @@
             <%= index.ou %>
           </td>
           <td>&nbsp;</td>
-
     </tr>
     <tr>
       <td colspan="3">&nbsp;</td>
     </tr>
   <% end %>
   </table>
+  <%= will_paginate @ldap_user_results %>
 <% else %>
   <h3>You are not authorized to administer any accounts</h3>
 <% end %>

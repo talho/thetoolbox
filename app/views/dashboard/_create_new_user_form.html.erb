@@ -1,43 +1,87 @@
 <% form_for @ldap_user_results, :url => :create_new_user do %>
-  <div>
-    <%= label(:users, :first_name, "First Name:") %>
-    <%= text_field(:users, :first_name) %>
-  </div>
-  <div>
-    <%= label(:users, :last_name, "Last Name:") %>
-    <%= text_field(:users, :last_name) %>
-  </div>
-  <div>
-    <%= label(:users, :full_name, "Full Name:") %>
-    <%= text_field(:users, :full_name) %>
-  </div>
-  <div>
-    <%= label(:users, :logon_name, "Log On Name:") %>
-    <%= text_field(:users, :logon_name) %>
-  </div>
-  <div>
-    <%= label(:users, :password, "Password:") %>
-    <%= password_field(:users, :password) %>
-  </div>
-  <div>
-    <%= label(:users, :confirm_password, "Confirm Password:") %>
-    <%= password_field(:users, :confirm_password) %>
-  </div>
-  <div>
-    <%= label(:users, :ch_pwd, "User must change password:") %>
-    <%= check_box(:users, :ch_pwd) %>
-  </div>
-  <div>
-    <%= label(:users, :can_ch_pwd, "User cannot change password:") %>
-    <%= check_box(:users, :can_ch_pwd) %>
-  </div>
-  <div>
-    <%= label(:users, :pwd_exp, "Password never expires:") %>
-    <%= check_box(:users, :pwd_exp) %>
-  </div>
-  <div>
-    <%= label(:users, :acct_dsbl, "Account is disabled:") %>
-    <%= check_box(:users, :acct_dsbl) %>
-  </div>
-  <%= submit_tag "Submit" %>
+  <table>
+    <tr>
+      <td>
+        <%= label(:user, :first_name, "First Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user, :first_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :last_name, "Last Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user, :last_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :full_name, "Full Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user, :full_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :logon_name, "Log On Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user, :logon_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :password, "Password:") %>
+      </td>
+      <td>
+        <%= password_field(:user, :password) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :confirm_password, "Confirm Password:") %>
+      </td>
+      <td>
+        <%= password_field(:user, :confirm_password) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :ch_pwd, "User must change password:") %>
+      </td>
+      <td>
+        <%= check_box(:user, :ch_pwd) %>
+      </td>
+    </tr>
+    <!--
+    <tr>
+      <td>
+        <%= label(:user, :can_ch_pwd, "User cannot change password:") %>
+      </td>
+      <td>
+        <%= check_box(:user, :can_ch_pwd) %>
+      </td>
+    </tr>
+    -->
+    <tr>
+      <td>
+        <%= label(:user, :pwd_exp, "Password never expires:") %>
+      </td>
+      <td>
+        <%= check_box(:user, :pwd_exp) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user, :acct_dsbl, "Account is disabled:") %>
+      </td>
+      <td>
+        <%= check_box(:user, :acct_dsbl) %>
+      </td>
+    </tr>
+  </table>
+  <%= submit_tag "Submit", :id => "create_new_user_submit" %>
 <% end %>

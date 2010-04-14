@@ -25,22 +25,24 @@ body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-
 #reset_password_container,#set_fwd_add_container,#set_oor_container{display:none;width:400px;}
 #reset_password_container div{height:25px;}
 
-.create_new_user_container{display:none;height: 380px;width: 300px;}
-.create_new_user_container input{float:left;clear:left;}
-.create_new_user_container label{float:left;clear:left;}
+.create_new_user_container{display:none;height: 380px;width: 600px;}
+.create_new_user_container table tr td{padding:5px;}
 #portal_toolbar {background:url("../images/app_header.png");height:32px;line-height:32px;}
 #portal_toolbar .title{color:#fff;font-weight:bold;margin-left:25px;}
 #portal_toolbar .title a{color:#fff;text-decoration:none;}
 #portal_toolbar .log_out{float:right;;margin-right:25px;}
 #portal_toolbar .log_out a{color:#fff;}
 
-#content{margin:10px 0px 0px 25px;}
+#content{margin:10px 25px 0px 25px;}
 .completed    { background: #E6EFC2; color: #264409; border-color: #C6D880; }
 .error        { background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4; }
 .notice       { background: #FFF6BF; color: #514721; border-color: #FFD324; }
 .instructions { background: #CCFFFF; color: #264409; border-color: #33FFFF; }
 
-.completed, .error, .notice, .instructions {border:2px solid #DDDDDD;font-size:12px;margin-top:0;padding:0.8em;}
-.flash {margin:0.8em 0.8em 0.4em 0;}
+.completed, .error, .notice, .instructions, #errorExplanation {border:2px solid #DDDDDD;font-size:12px;margin-top:0;padding:0.8em;}
+.flash {margin:0.8em 0 0.4em;}
 
 form.new_user_session{margin-top:10px;}
+#errorExplanation {background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4;margin:0.8em 0;}
+#errorExplanation p{margin:5px 0px;}
+#errorExplanation ul{margin-left:10px;list-style:circle;list-style-position:inside;}

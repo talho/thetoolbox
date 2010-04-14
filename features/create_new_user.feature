@@ -7,7 +7,7 @@ Feature: Create new user
     Given I am signed up as "thetoolbox"
     When I go to the sign in page
     And I select "Test" from "Authenticate"
-    And I sign in as "thetoolbox/Talh0Talh0"
+    And I sign in as "test_admin/Password1"
     And I should be signed in
     And I go to the dashboard
     And I fill in "First Name" with "Tester"

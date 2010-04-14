@@ -6,36 +6,62 @@ class DashboardController < ApplicationController
     lines.each{|i| user_ou[i.split("=")[0]] = i.split("=")[1]}
     if user.is_admin?
       @ldap_user_results = user.ous(user_ou['OU']).paginate(:page => params[:page], :per_page => 10)
-      #@ldap_user_results, @ldap_user = paginate :ldapusers, :per_page => 10
     else
-      @ldap_user_results = false
+      redirect_to "/users/#{current_user.id}"
     end
   end
 
-  verify :method => :get, :only => [ :delete_user, :create_new_user ], :redirect_to => { :action => :index }
+  verify :method => :put, :only => [ :create_new_user ], :redirect_to => { :action => :index }
+  verify :method => :get, :only => [ :delete_user ], :redirect_to => { :action => :index }
 
   def create_new_user
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
-        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => LDAP_Config[:port].to_i,
+        :encryption => :simple_tls,
+        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end
     unless ldap.bind
       return false
     end
-    dn   = "CN=" + params[:users][:first_name] + " " + params[:users][:last_name] + ",OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
+    dn   = "CN=" + params[:user][:first_name] + " " + params[:user][:last_name] + ",OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
     attr = {
-      :cn          => params[:users][:first_name] + " " + params[:users][:last_name],
-      :name        => params[:users][:first_name] + " " + params[:users][:last_name],
-      :objectclass => ["top", "User"],
-      :sn          => params[:users][:last_name]
+      :cn                 => params[:user][:first_name] + " " + params[:user][:last_name],
+      :name               => params[:user][:first_name] + " " + params[:user][:last_name],
+      :displayName        => params[:user][:first_name] + " " + params[:user][:last_name],
+      :distinguishedName  => dn,
+      :givenName          => params[:user][:first_name],
+      :samAccountName     => params[:user][:logon_name],
+      :userPrincipalName  => params[:user][:logon_name] + "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1],
+      :unicodePwd         => microsoft_encode_password(params[:user][:password]),
+      :objectclass        => ["top", "User"],
+      :sn                 => params[:user][:last_name]
     }
+    if params[:user][:ch_pwd]
+      attr[:pwdLastSet] = "0"
+    end
+  
+    if params[:user][:acct_dsbl].to_i == 1
+      if params[:user][:pwd_exp].to_i == 1
+        attr[:userAccountControl] = "66082"
+      else
+        attr[:userAccountControl] = "546"
+      end
+    else
+      if params[:user][:pwd_exp].to_i == 1
+        attr[:userAccountControl] = "66080"
+      else
+        attr[:userAccountControl] = "544"
+      end
+    end
+    
     ldap.add(:dn => dn, :attributes => attr)
+
     if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
-      flash[:error] = ldap.get_operation_result.error_message
+      flash[:error] = ldap.get_operation_result.error_message || ldap.get_operation_result.message
     else
       flash[:notice] = "User added"
     end
@@ -45,9 +71,10 @@ class DashboardController < ApplicationController
   def delete_user
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
-        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => LDAP_Config[:port].to_i,
+        :encryption => :simple_tls,
+        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end
@@ -55,7 +82,7 @@ class DashboardController < ApplicationController
       return false
     end
     ldap_user = LdapUsers.find_by_id(params[:id])
-    dn   = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
+    dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
     ldap.delete :dn => dn
 
     if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
@@ -66,4 +93,14 @@ class DashboardController < ApplicationController
     end
     redirect_to "/dashboard"
   end
+
+  protected
+
+  def microsoft_encode_password(pwd)
+    newPass = ""
+    pwd     = "\"" + pwd + "\""
+    pwd.length.times{|i| newPass += "#{pwd[i..i]}\000"}
+    newPass
+  end
+
 end
