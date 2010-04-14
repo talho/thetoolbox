@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   end
 
   def reset_password
-    ldap_user    = LdapUsers.find_by_id(params[:id])
+    ldap_user     = LdapUsers.find_by_id(params[:id])
     @reset_result = ldap_user.reset_password(params[:users][:new_password])
     render :action => 'show'
   end

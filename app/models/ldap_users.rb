@@ -27,16 +27,17 @@ class LdapUsers < ActiveRecord::Base
   def ldap_connect
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => 636,
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => 636,
         :encryption => :simple_tls,
-        :auth => {:username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :auth       => {:username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end
     unless ldap.bind
       return false
     end
+    return ldap
   end
 
 end
