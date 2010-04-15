@@ -1,31 +1,23 @@
 <% if !@reset_result.nil? %>
   <% if @reset_result %>
-    Password change successful!
+    <div class="flash">
+      <p class="completed">
+        Password change successful!
+      </p>
+    </div>   
   <% else %>
-    Could not change password.  
+    <div class="flash">
+      <%- [:notice, :instructions, :completed, :error].each do |type| -%>
+        <%- if flash[type] -%>
+          <p class="<%= type %>"><%= flash[type] %></p>
+        <%- end -%>
+      <%- end -%>
+    </div>
   <% end %>
-<% else %>
-  <ul>
-    <li><strong>User Name</strong>: <%= @user.cn %></li>
-    <li><strong>Organizational Unit</strong>: <%= @user.ou %></li>
-  </ul>
-  <br/>
-  <ul>
-    <li>
-      <%= link_to "Reset Password", "", :id => "reset_password" %>
-      <div id="reset_password_container">
-        <% form_for @user, :url => "reset_password/"+@user.id.to_s do %>
-          <div>
-            <%= label (:users, :new_password, "New Password:") %>
-            <%= password_field (:users, :new_password, :class => "reset_password", :id => "reset_pwd") %>
-          </div>
-          <div>
-            <%= label (:users, :confirm_password, "Confirm Password:") %>
-            <%= password_field (:users, :confirm_password, :class => "reset_password", :id => "reset_pwd_confirm") %>
-          </div>
-          <%= submit_tag "Submit", :id => "reset_password_submit"%>
-        <% end %>
-      </div>
-    </li>
-  </ul>
 <% end %>
+<ul>
+  <li><strong>User Name</strong>: <%= @user.cn %></li>
+  <li><strong>Organizational Unit</strong>: <%= @user.ou %></li>
+</ul>
+<br/>
+<%= render :partial => 'reset_password_form' %>

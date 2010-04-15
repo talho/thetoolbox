@@ -42,7 +42,9 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resource :admin, :controller => "users", :action => "index"
   map.create_new_user "/create_new_user", :controller => "dashboard", :action => "create_new_user"
-
+  map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
+  map.reset_password "/reset_password/:id", :controller => "users", :action => "reset_password"
+  
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
 
 
