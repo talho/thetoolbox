@@ -27,7 +27,6 @@ class User < ActiveRecord::Base
     unless ldap
       return false
     end
-    #op_filter = Net::LDAP::Filter.eq( "objectClass", "group" )
     attrs     = ["cn", "member"]
     ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base][LDAP_Config[:auth_to]]}", :attributes=> attrs) do |entry|
       entry.each do |attr, values|
@@ -82,10 +81,10 @@ class User < ActiveRecord::Base
   def valid_ldap_credentials?(password_plaintext)
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => LDAP_Config[:port].to_i,
         :encryption => :simple_tls,
-        :auth => {:method => :simple, :username => dn, :password => password_plaintext})
+        :auth       => {:method => :simple, :username => dn, :password => password_plaintext})
     rescue
       return false
     end
@@ -123,10 +122,10 @@ class User < ActiveRecord::Base
   def ldap_connect
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => LDAP_Config[:port].to_i,
         :encryption => :simple_tls,
-        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end
@@ -139,10 +138,10 @@ class User < ActiveRecord::Base
   def self.ldap_connect_self
     begin
       ldap = Net::LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
+        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
+        :port       => LDAP_Config[:port].to_i,
         :encryption => :simple_tls,
-        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
+        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
     rescue
       return false
     end

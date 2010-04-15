@@ -20,7 +20,7 @@ class LdapUsers < ActiveRecord::Base
 
   def microsoft_encode_password(pwd)
     newPass = ""
-    pwd = "\"" + pwd + "\""
+    pwd     = "\"" + pwd + "\""
     pwd.length.times{|i| newPass+= "#{pwd[i..i]}\000"}
     newPass
   end

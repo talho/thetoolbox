@@ -33,12 +33,11 @@ class UsersController < ApplicationController
   end
 
   def get_user
-
     if current_user.nil? || current_user.admin?
       user = LdapUsers.find_by_id(params[:id])
     else
-      cn = current_user.dn.split(",")[0].split('=')[1]
-      ou = current_user.dn.split(",")[1].split('=')[1]
+      cn   = current_user.dn.split(",")[0].split('=')[1]
+      ou   = current_user.dn.split(",")[1].split('=')[1]
       user = LdapUsers.all :conditions => ['cn = "'+cn+'"  AND ou = "'+ou+'"']
       if user.first.nil?
         user = LdapUsers.create(:cn => cn, :ou => ou)

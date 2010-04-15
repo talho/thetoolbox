@@ -11,7 +11,6 @@ class UserSessionsController < ApplicationController
     @user_session         = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:completed] = "Login successful!"
-      #redirect_back_or_default account_url
       redirect_to "/dashboard"
     else
       render :action => :new

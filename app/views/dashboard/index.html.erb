@@ -16,24 +16,23 @@
   <table class="user_list">
     <% @ldap_user_results.each do |index| %>
     <tr>
-
-          <td>
-            <strong>User</strong>:
-          </td>
-          <td>
-             <%= index.cn %>
-          </td>
-          <td>
-            <%= link_to "Edit", "users/#{index.id}" %>&nbsp;&nbsp;<%= link_to 'Delete', {:action => 'delete_user', :id => index.id}, :confirm => 'Are you sure?' %>
-          </td>
-        </tr>
-          <td>
-            <strong>Organizational Unit</strong>:
-          </td>
-          <td>
-            <%= index.ou %>
-          </td>
-          <td>&nbsp;</td>
+      <td>
+        <strong>User</strong>:
+      </td>
+      <td>
+         <%= index.cn %>
+      </td>
+      <td>
+        <%= link_to "Edit", "users/#{index.id}" %>&nbsp;&nbsp;<%= link_to 'Delete', {:action => 'delete_user', :id => index.id}, :confirm => 'Are you sure?' %>
+      </td>
+    </tr>
+      <td>
+        <strong>Organizational Unit</strong>:
+      </td>
+      <td>
+        <%= index.ou %>
+      </td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
       <td colspan="3">&nbsp;</td>
