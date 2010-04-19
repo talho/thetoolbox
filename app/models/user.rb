@@ -27,16 +27,32 @@ class User < ActiveRecord::Base
     unless ldap
       return false
     end
-    attrs     = ["cn", "member"]
+    attrs = ["cn", "member", "useraccountcontrol"]
     ldap.search( :base => "OU=#{ou}, #{LDAP_Config[:base][LDAP_Config[:auth_to]]}", :attributes=> attrs) do |entry|
+      l_cn      = ''
+      l_ou      = ''
+      l_enabled = ''
       entry.each do |attr, values|
         if "#{attr}" == "dn"
           values.each do |str|
             if str.split(',')[0].split('=')[0] == 'CN'
-              unless LdapUsers.find_by_cn(str.split(',')[0].split('=')[1])
-                LdapUsers.create(:cn => str.split(',')[0].split('=')[1], :ou => str.split(',')[1].split('=')[1]) if str.split(',')[0].split('=')[1] != "Email Admins"
-              end
+              l_cn = str.split(',')[0].split('=')[1]
+              l_ou = str.split(',')[1].split('=')[1]
             end
+          end
+        end
+        if "#{attr}" == "useraccountcontrol"
+          values.each do |str|
+            if str == "512" || str == "66048"
+              l_enabled = true
+            else
+              l_enabled = false
+            end
+          end
+        end
+        unless l_enabled == ''
+          unless LdapUsers.find_by_cn(l_cn)
+            LdapUsers.create(:cn => l_cn, :ou => l_ou, :enabled => l_enabled) if l_cn != "Email Admins"
           end
         end
       end
@@ -80,7 +96,7 @@ class User < ActiveRecord::Base
 
   def valid_ldap_credentials?(password_plaintext)
     begin
-      ldap = Net::LDAP.new(
+      ldap = Net::LDAP.new(                                                                                                 
         :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
         :port       => LDAP_Config[:port].to_i,
         :encryption => :simple_tls,
@@ -88,7 +104,10 @@ class User < ActiveRecord::Base
     rescue
       return false
     end
-    ldap.bind
+    unless ldap.bind
+      return false
+    end
+    return true
   end
 
   def self.validate_dn(login)

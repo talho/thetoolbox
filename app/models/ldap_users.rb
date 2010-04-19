@@ -5,7 +5,7 @@ class LdapUsers < ActiveRecord::Base
     unless ldap
       return false
     end
-    res = ldap.modify(:dn => "CN=#{self.cn},OU=#{self.ou},#{LDAP_Config[:base][LDAP_Config[:auth_to]]}", :operations => [
+    ldap.modify(:dn => "CN=#{self.cn},OU=#{self.ou},#{LDAP_Config[:base][LDAP_Config[:auth_to]]}", :operations => [
       [:replace,
       :unicodePwd,
       microsoft_encode_password(new_password)]
@@ -15,13 +15,13 @@ class LdapUsers < ActiveRecord::Base
     end
     return true
   end
-  
+
   protected
 
   def microsoft_encode_password(pwd)
     newPass = ""
     pwd     = "\"" + pwd + "\""
-    pwd.length.times{|i| newPass+= "#{pwd[i..i]}\000"}
+    pwd.length.times{|i| newPass += "#{pwd[i..i]}\000"}
     newPass
   end
 
