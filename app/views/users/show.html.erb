@@ -19,5 +19,23 @@
   <li><strong>User Name</strong>: <%= @user.cn %></li>
   <li><strong>Organizational Unit</strong>: <%= @user.ou %></li>
 </ul>
-<br/>
-<%= render :partial => 'reset_password_form' %>
+
+<div class="settings_panel" id="settings_panel">
+  <ul>
+    <li class="first">
+      <%= link_to "Reset Password", "#", :id => "reset_password" %>
+    </li>
+    <li>
+      <%= link_to "Add White List Entry", "#", :id => "add_white_list_entry" %>
+    </li>
+    <li>
+      <%= link_to "White List Settings", white_lists_path, :id => "white_list" %>
+    </li>
+  </ul>
+</div>
+<div class="reset_password_container" id="reset_password_container">
+  <%= render :partial => 'reset_password_form' %>
+</div>
+<div class="white_list_panel" id="white_list_panel">
+    <%= render :partial => 'white_lists/white_list_panel' %>
+</div>

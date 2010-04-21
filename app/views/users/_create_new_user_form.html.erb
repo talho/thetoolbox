@@ -1,4 +1,4 @@
-<% form_for @ldap_user_results, :url => :create_new_user do %>
+<% form_for @ldap_user_results, :url => {:action => :create, :controller => :users} do %>
   <table>
     <tr>
       <td>

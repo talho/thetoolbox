@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>TALHO Toolbox</title>
+    <link href="/Users/eddieeduardo/thetoolbox/public/stylesheets/master.css?1271774620" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/Users/eddieeduardo/thetoolbox/public/javascripts/jquery.js?1270847550" type="text/javascript"></script>
+<script src="/Users/eddieeduardo/thetoolbox/public/javascripts/application.js?1271351931" type="text/javascript"></script>
+</head>
+<body>
+<div id="application">
+  <div id="header">
+    <div id="portal_toolbar">
+      <span class="title"><a href="/Users/eddieeduardo/thetoolbox/public/" title="TALHO Tool Box Home">TALHO Toolbox</a></span>
+      
+        <span class="log_out"><a href="/Users/eddieeduardo/thetoolbox/public/user_sessions/destroy" title="Log out">Log out</a></span>
+      
+    </div>
+  </div>
+  <div id="content">
+    <div class="flash">
+</div>
+
+<div class="white_list_panel" id="white_list_panel">
+    <div>
+  <form action="/Users/eddieeduardo/thetoolbox/public/white_lists" method="post">
+    <label for="dummy_scope">Scope</label>
+    <select id="dummy_scope" name="dummy[scope]"><option value="Domain">Domain</option>
+<option value="Email">Email</option></select>
+  </form>
+  <form action="/Users/eddieeduardo/thetoolbox/public/white_lists" method="post">
+    <label for="wl_domain_domain">Domain</label>
+    <input id="wl_domain_domain" name="wl_domain[domain]" size="30" type="text" />
+    <input id="wl_domain_submit" name="commit" type="submit" value="Add Domain" />
+  </form>
+  <form action="/Users/eddieeduardo/thetoolbox/public/white_lists" method="post">
+    <label for="wl_email_email">Email</label>
+    <input id="wl_email_email" name="wl_email[email]" size="30" type="text" />
+    <input id="wl_email_submit" name="commit" type="submit" value="Add Email" />
+  </form>
+</div>
+  </div>
+
+
+
+  <table class="user_list">
+    
+  </table>
+  
+
+  </div>
+  <div id="footer"></div>
+</div>
+</body>
+</html>

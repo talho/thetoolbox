@@ -14,13 +14,35 @@
         return false;
       });
       $('#create_new_user').click(function(e){
-        $('#create_new_user_container').toggle();
+        $('#white_list_panel').hide();
+        $('#create_new_user_container').dialog({height: 400,width: 500,modal: true});
         return false;
+      });
+      $('#add_white_list_entry').click(function(e){
+        $('#create_new_user_container').hide();
+        $('#white_list_panel').dialog({modal: true});
       });
       $("#reset_password_submit").click(validate_pass_form);
       $("#create_new_user_submit").click(validate_create_user_form);
       $("#user_first_name").keyup(write_to_full_name);
       $("#user_last_name").keyup(write_to_full_name);
+      
+      $('#wl_email_submit').click(function(e){
+        var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;;
+        if (!filter.test($('#wl_email_email').val())) {
+          alert('Please provide a valid email address');
+          return false;
+        }
+      });
+      $('#dummy_scope').change(function(e){
+        $("#dummy_scope option").each(function(){
+          var id = '#wl_';
+          id += $(this).text().toLowerCase();
+          id += '_container';
+          $(id).toggle();
+        });
+        
+      });
     });
   });
 })(jQuery);

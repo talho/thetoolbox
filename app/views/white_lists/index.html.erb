@@ -1,0 +1,50 @@
+<div class="flash">
+  <%- [:notice, :instructions, :completed, :error].each do |type| -%>
+    <%- if flash[type] -%>
+      <p class="<%= type %>"><%= flash[type] %></p>
+    <%- end -%>
+  <%- end -%>
+</div>
+
+<div class="white_list_panel_view" id="white_list_panel">
+    <%= render :partial => 'white_list_panel' %>
+  </div>
+
+<% if @domain_white_lists %>
+  <table class="user_list">
+    <% @domain_white_lists.each do |index| %>
+    <tr>
+      <td>
+        <strong>Domain White List Entry</strong>:
+      </td>
+      <td>
+        <%= index.value %>
+      </td>
+      <td>
+        <%= link_to 'Delete', index, :confirm => 'Are you sure?', :method => :delete %>
+      </td>
+    </tr>
+  <% end %>
+  </table>
+  <%= will_paginate @domain_white_lists, :param_name => 'domain_page' %>
+<% end %>
+
+
+<% if @personal_white_lists %>
+  <table class="user_list">
+    <% @personal_white_lists.each do |index| %>
+    <tr>
+      <td>
+        <strong>Personal White List Entry</strong>:
+      </td>
+      <td>
+        <%= index.value %>
+      </td>
+      <td>
+        <%= link_to 'Delete', index, :confirm => 'Are you sure?', :method => :delete %>
+      </td>
+    </tr>
+  <% end %>
+  </table>
+  <%= will_paginate @personal_white_lists, :param_name => 'user_page' %>
+<% end %>

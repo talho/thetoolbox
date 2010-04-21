@@ -5,11 +5,8 @@ Feature: Create new user
 
   Scenario: User creates user successfully
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
-    And I go to the dashboard
+    And I am logged in as "admin_tester/Password1"
+    When I go to the dashboard
     And I fill in "First Name" with "Tester_b"
     And I fill in "Last Name" with "Test"
     And I fill in "Full Name" with "Tester Test"
@@ -22,11 +19,8 @@ Feature: Create new user
 
   Scenario: User fails to enter proper information
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
-    And I go to the dashboard
+    And I am logged in as "admin_tester/Password1"
+    When I go to the dashboard
     And I fill in "First Name" with "Tester"
     And I fill in "Last Name" with "Test"
     And I fill in "Password" with "Password1"
@@ -36,11 +30,8 @@ Feature: Create new user
 
   Scenario: User attempts to create existing member
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
-    And I go to the dashboard
+    And I am logged in as "admin_tester/Password1"
+    When I go to the dashboard
     And I fill in "First Name" with "Tester"
     And I fill in "Last Name" with "Test"
     And I fill in "Full Name" with "Tester Test"

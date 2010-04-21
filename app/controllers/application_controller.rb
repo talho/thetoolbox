@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   def require_no_user
     if current_user
       store_location
-      redirect_to "/dashboard"
+      redirect_to dashboard_path
       return false
     end
   end

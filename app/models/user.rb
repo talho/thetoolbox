@@ -15,8 +15,11 @@ class User < ActiveRecord::Base
 
   def self.create_from_ldap_if_valid(login)
     begin
-      dn = find_from_ldap(login)
-      User.create(:login => login, :dn => dn, :dc => LDAP_Config[:base][LDAP_Config[:auth_to]].split(',')[LDAP_Config[:base][LDAP_Config[:auth_to]].split(',').size - 1]) if dn
+      ldap_entry = find_from_ldap(login)
+      dn = ldap_entry[:dn]
+      email = ldap_entry[:email] || ""
+      dc = dn[dn.index("DC")..-1]
+      User.create(:login => login, :dn => dn, :dc => dc, :email => email) if dn
     rescue
       nil
     end
@@ -132,7 +135,7 @@ class User < ActiveRecord::Base
        unless return_string
          return s
        end
-       return s[0][:dn].first
+       return {:dn => s[0][:dn].first, :email => s[0][:mail].first}
     else
       nil
     end

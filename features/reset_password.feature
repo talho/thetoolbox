@@ -5,10 +5,7 @@ Feature: Reset user password
 
   Scenario: User resets user password successfully
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
+    Given I am logged in as "admin_tester/Password1"
     And I go to the dashboard
     And I follow "Edit"
     And I fill in "New Password" with "Password1"
@@ -18,10 +15,7 @@ Feature: Reset user password
 
   Scenario: User fails to enter proper information
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
+    Given I am logged in as "admin_tester/Password1"
     And I go to the dashboard
     And I follow "Edit"
     And I press "Submit"
@@ -29,10 +23,7 @@ Feature: Reset user password
 
   Scenario: User fails to properly confirm password
     Given I am signed up as "admin_tester"
-    When I go to the sign in page
-    And I select "Test" from "Authenticate"
-    And I sign in as "admin_tester/Password1"
-    And I should be signed in
+    Given I am logged in as "admin_tester/Password1"
     And I go to the dashboard
     And I follow "Edit"
     And I fill in "New Password" with "Password1"

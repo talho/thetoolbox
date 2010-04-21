@@ -39,16 +39,17 @@ ActionController::Routing::Routes.draw do |map|
   # Note: These default routes make all actions in every controller accessible via GET requests. You should
   # consider removing or commenting them out if you're using named routes and resources.
   map.resource :account, :controller => "users", :action => "index"
-
   map.resource :admin, :controller => "users", :action => "index"
-  map.create_new_user "/create_new_user", :controller => "dashboard", :action => "create_new_user"
+  map.resources :white_lists
+
   map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
   map.reset_password "/reset_password/:id", :controller => "users", :action => "reset_password"
+
   
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
 
 
-  map.resources :users
+  map.resources :users, :member => {:create_white_list_entry => [:put]}
   map.resource :user_session
   map.root :controller => "user_sessions", :action => "new" # optional, this just sets the root route
   

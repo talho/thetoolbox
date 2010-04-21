@@ -12,7 +12,7 @@ table {border-collapse: collapse;border-spacing: 0;}
 a{color:#039AC5;text-decoration:none;}
 a:hover{text-decoration:underline;}
 body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
-.user_list{margin-top:10px;}
+.user_list{margin-top:10px;clear:left;}
 /*
 .user_list li{width: 200px;}
 .user_list li ul{margin-left: 10px;margin-bottom:10px;}
@@ -46,3 +46,9 @@ form.new_user_session{margin-top:10px;}
 #errorExplanation {background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4;margin:0.8em 0;}
 #errorExplanation p{margin:5px 0px;}
 #errorExplanation ul{margin-left:10px;list-style:circle;list-style-position:inside;}
+
+#settings_panel {margin-top:5px;margin-bottom:20px;height: 20px;}
+#settings_panel ul li{float:left;border-left:1px solid #666;padding:5px;}
+#settings_panel ul li.first{border-left:none !important;}
+.white_list_panel {display:none;}
+#wl_domain_container {display:none;}

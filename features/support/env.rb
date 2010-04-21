@@ -64,4 +64,10 @@ Spork.each_run do
     rescue LoadError => ignore_if_database_cleaner_not_present
     end
   end
+  if defined?(ActiveResource::Base)
+    begin
+      WhiteList.put(:clear_all)
+    rescue LoadError => ignore_if_database_cleaner_not_present
+    end
+  end
 end

@@ -11,7 +11,7 @@ class UserSessionsController < ApplicationController
     @user_session         = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:completed] = "Login successful!"
-      redirect_to "/dashboard"
+      redirect_to dashboard_path
     else
       render :action => :new
     end

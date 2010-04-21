@@ -38,6 +38,14 @@ Given /^(.*) is not an admin$/ do |login|
   user.save!
 end
 
+Given /^I am logged in as "([^\"]*)"$/ do |credentials|
+  When %{I go to the sign in page}
+  And %{I select "Test" from "Authenticate"}
+  And %{I sign in as "#{credentials}"}
+  And %{I should be signed in}
+end
+
+
 # Session
 
 Then /^I should be signed in$/ do

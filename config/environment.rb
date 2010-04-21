@@ -50,7 +50,8 @@ Rails::Initializer.run do |config|
   config.gem "sinatra", :source => "http://gemcutter.org"
   config.gem "will_paginate", :version => "~> 2.3.11", :source => "http://gemcutter.org"
   config.gem "prawn", :version => "=0.8.4", :source => "http://gemcutter.org"
-
+  config.gem "pox_paginate", :version => '= 0.1.0', :lib => "pox_paginate"
+  
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
   # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
