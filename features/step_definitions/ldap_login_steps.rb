@@ -14,13 +14,15 @@ Given /^I signed up with "(.*)\/(.*)"$/ do |login, password|
     :login                 => login
 end
 
-Given /^I am signed up as "(.*)"$/ do |login|
+Given /^I am signed up as "(.*)\/(.*)\/(.*)"$/ do |login, cn, email|
   include Authlogic::TestCase
   activate_authlogic
   user = Factory :user,
     :login => login,
-    :dn => "CN=#{login}",
-    :dc => 'DC=local',
+    :email => email,
+    :dn => "CN=#{cn},OU=TALHO,DC=thetoolbox,DC=com",
+    :dc => 'DC=thetoolbox,DC=com',
+    :cn => cn,
     :admin => false,
     :admin_expire => Time.now + 15.minutes
 end
@@ -53,7 +55,6 @@ Then /^I should be signed in$/ do
 end
 
 Then /^I should be signed out$/ do
-  #assert ! controller.signed_in?
   assert ! UserSession.find
 end
 

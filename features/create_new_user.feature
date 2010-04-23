@@ -4,8 +4,8 @@ Feature: Create new user
   Create a new user
 
   Scenario: User creates user successfully
-    Given I am signed up as "admin_tester"
-    And I am logged in as "admin_tester/Password1"
+    #Given I am signed up as "admin_tester/Admin Tester/admin_tester@example.com"
+    Given I am logged in as "admin_tester/Password1"
     When I go to the dashboard
     And I fill in "First Name" with "Tester_b"
     And I fill in "Last Name" with "Test"
@@ -18,8 +18,8 @@ Feature: Create new user
     Then I should see "User added"
 
   Scenario: User fails to enter proper information
-    Given I am signed up as "admin_tester"
-    And I am logged in as "admin_tester/Password1"
+    #Given I am signed up as "admin_tester"
+    Given I am logged in as "admin_tester/Password1"
     When I go to the dashboard
     And I fill in "First Name" with "Tester"
     And I fill in "Last Name" with "Test"
@@ -29,9 +29,10 @@ Feature: Create new user
 
 
   Scenario: User attempts to create existing member
-    Given I am signed up as "admin_tester"
-    And I am logged in as "admin_tester/Password1"
+    #Given I am signed up as "admin_tester"
+    Given I am logged in as "admin_tester/Password1"
     When I go to the dashboard
+    And I follow "Create New User"
     And I fill in "First Name" with "Tester"
     And I fill in "Last Name" with "Test"
     And I fill in "Full Name" with "Tester Test"

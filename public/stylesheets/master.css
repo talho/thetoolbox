@@ -21,9 +21,7 @@ body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-
 */
 .user_list td{padding:0px 5px 0px 0px;}
 
-.reset_password{float:right;clear:right;}
-#reset_password_container,#set_fwd_add_container,#set_oor_container{display:none;width:400px;}
-#reset_password_container div{height:25px;}
+#reset_password_container{display:none;}
 
 .create_new_user_container{display:none;height: 380px;width: 600px;}
 .create_new_user_container table tr td{padding:5px;}

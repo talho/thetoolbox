@@ -1,5 +1,4 @@
-class LdapUsers < ActiveRecord::Base
-
+class LdapUser < ActiveRecord::Base
   def reset_password(new_password)
     ldap = ldap_connect
     unless ldap

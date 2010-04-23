@@ -2,7 +2,7 @@
   $(function() {
     $(document).ready(function() {
       $('#reset_password').click(function(e){
-        $('#reset_password_container').toggle();
+        $('#reset_password_container').dialog({modal: true});
         return false;
       });
       $('#set_fwd_address').click(function(e){

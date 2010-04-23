@@ -4,7 +4,7 @@ Feature: Reset user password
   Reset a user password
 
   Scenario: User resets user password successfully
-    Given I am signed up as "admin_tester"
+    #Given I am signed up as "admin_tester/Admin Tester/admin_tester@example.com"
     Given I am logged in as "admin_tester/Password1"
     And I go to the dashboard
     And I follow "Edit"

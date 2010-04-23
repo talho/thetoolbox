@@ -48,3 +48,4 @@ config/rack-bug.yml
 public/tutorials
 config/initializers/smtp.rb
 db/white_list.yml
+capybara*.html

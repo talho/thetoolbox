@@ -1,11 +1,13 @@
 class User < ActiveRecord::Base
+  belongs_to :as_ldap_user, :primary_key => :cn, :foreign_key => :cn, :class_name => 'LdapUser'
+
   acts_as_authentic do |c|
     c.validate_password_field = false
   end
 
   def self.find_or_create_from_ldap(login_name)
    login = find_by_login(login_name)
-   if login && login[:dc] == LDAP_Config[:base][LDAP_Config[:auth_to]].split(',')[LDAP_Config[:base][LDAP_Config[:auth_to]].split(',').size - 1]
+   if login && login[:dc] == LDAP_Config[:base][LDAP_Config[:auth_to]]
      login = validate_dn(login)
      login
    else
@@ -19,7 +21,15 @@ class User < ActiveRecord::Base
       dn = ldap_entry[:dn]
       email = ldap_entry[:email] || ""
       dc = dn[dn.index("DC")..-1]
-      User.create(:login => login, :dn => dn, :dc => dc, :email => email) if dn
+      cn = ldap_entry[:cn]
+      if dn
+        user = User.find(:all, :conditions => {:login => login, :dc => dc})
+        if user.blank?
+          User.create(:login => login, :dn => dn, :dc => dc, :cn => cn, :email => email)
+        else
+          return user
+        end
+      end     
     rescue
       nil
     end
@@ -54,13 +64,13 @@ class User < ActiveRecord::Base
           end
         end
         unless l_enabled == ''
-          unless LdapUsers.find_by_cn(l_cn)
-            LdapUsers.create(:cn => l_cn, :ou => l_ou, :enabled => l_enabled) if l_cn != "Email Admins"
+          unless LdapUser.find_by_cn(l_cn)
+            LdapUser.create(:cn => l_cn, :ou => l_ou, :enabled => l_enabled) if l_cn != "Email Admins"
           end
         end
       end
     end
-    return LdapUsers.find_all_by_ou(ou)
+    return LdapUser.find_all_by_ou(ou)
   end
 
   def is_admin?
@@ -135,7 +145,7 @@ class User < ActiveRecord::Base
        unless return_string
          return s
        end
-       return {:dn => s[0][:dn].first, :email => s[0][:mail].first}
+       return {:dn => s[0][:dn].first, :cn => s[0][:cn].first, :email => s[0][:mail].first}
     else
       nil
     end

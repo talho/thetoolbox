@@ -1,6 +1,4 @@
 class UsersController < ApplicationController
-
-  verify :method => :put, :only => [ :create ], :redirect_to => { :action => :index }
   verify :method => :get, :only => [ :delete, :enable_user, :forgot_password ], :redirect_to => { :action => :index }
 
   def index
@@ -13,6 +11,7 @@ class UsersController < ApplicationController
     else
       redirect_to user_path(current_user)
     end
+    @new_user = User.new
   end
 
 
@@ -73,14 +72,14 @@ class UsersController < ApplicationController
     unless ldap
       return false
     end
-    ldap_user = LdapUsers.find_by_id(params[:id])
+    ldap_user = LdapUser.find_by_id(params[:id])
     dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
     ldap.delete :dn => dn
 
     if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
       flash[:error] = ldap.get_operation_result.message
     else
-      LdapUsers.find(params[:id]).destroy
+      LdapUser.find(params[:id]).destroy
       flash[:completed] = "User Deleted"
     end
     redirect_to users_path
@@ -115,7 +114,7 @@ class UsersController < ApplicationController
     unless ldap
       return false
     end
-    ldap_user = LdapUsers.find_by_id(params[:id])
+    ldap_user = LdapUser.find_by_id(params[:id])
     dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
     filter    = Net::LDAP::Filter.eq('distinguishedName', dn)
     s         = ldap.search(:base => LDAP_Config[:base][LDAP_Config[:auth_to]], :filter => filter)
@@ -162,7 +161,7 @@ class UsersController < ApplicationController
     else
       @reset_result = false;
     end
-    render :action => 'show'
+    redirect_to user_path(current_user)
   end
 
 
@@ -184,19 +183,11 @@ class UsersController < ApplicationController
   end
 
   def get_user
-    if current_user.nil? || current_user.admin?
-      user = LdapUsers.find_by_id(params[:id])
+    if params[:cn].blank?
+      current_user.as_ldap_user
     else
-      cn   = current_user.dn.split(",")[0].split('=')[1]
-      ou   = current_user.dn.split(",")[1].split('=')[1]
-      user = LdapUsers.all :conditions => ['cn = "'+cn+'"  AND ou = "'+ou+'"']
-      if user.first.nil?
-        user = LdapUsers.create(:cn => cn, :ou => ou)
-      else
-        user = user.first
-      end
+      LdapUser.find_by_cn(params[:cn])
     end
-    user
   end
 
   def microsoft_encode_password(pwd)
