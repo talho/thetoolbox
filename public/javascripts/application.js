@@ -26,11 +26,17 @@
       $("#create_new_user_submit").click(validate_create_user_form);
       $("#user_first_name").keyup(write_to_full_name);
       $("#user_last_name").keyup(write_to_full_name);
-      
       $('#wl_email_submit').click(function(e){
-        var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;;
+        var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (!filter.test($('#wl_email_email').val())) {
           alert('Please provide a valid email address');
+          return false;
+        }
+      });
+      $('#wl_domain_submit').click(function(e){
+        var filter = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if(!filter.test($('#wl_domain_domain').val())){
+          alert('Please provide a valid domain name in the following format:\t\n   example.com');
           return false;
         }
       });

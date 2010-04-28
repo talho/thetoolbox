@@ -11,10 +11,10 @@ Feature: Sign in
     And I should be signed out
 
   Scenario: User enters wrong password
-    Given I am signed up as "tester_test/Tester Test/tester_test@example.com"
+    Given I am signed up as "tester_test/Tester Test/tester_test@example.com/TALHO"
     When I go to the sign in page
     And I select "Test" from "Authenticate"
-    And I sign in as "tester_test/WrongPassword1"
+    And I sign in as "tester_test/WrongPasswordOne"
     Then I should see "Password is not valid"
     And I should be signed out
 
@@ -26,7 +26,7 @@ Feature: Sign in
     And I should be signed in
 
   Scenario: User signs in and checks "remember me"
-    Given I am signed up as "tester_test/Tester Test/tester_test@example.com"
+    Given I am signed up as "tester_test/Tester Test/tester_test@example.com/TALHO"
     When I go to the sign in page
     And I select "Test" from "Authenticate"
     And I sign in with "remember me" as "tester_test/Password1"

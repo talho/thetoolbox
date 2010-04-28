@@ -1,20 +1,10 @@
-<% if !@reset_result.nil? %>
-  <% if @reset_result %>
-    <div class="flash">
-      <p class="completed">
-        Password change successful!
-      </p>
-    </div>   
-  <% else %>
-    <div class="flash">
-      <%- [:notice, :instructions, :completed, :error].each do |type| -%>
-        <%- if flash[type] -%>
-          <p class="<%= type %>"><%= flash[type] %></p>
-        <%- end -%>
-      <%- end -%>
-    </div>
-  <% end %>
-<% end %>
+<div class="flash">
+  <%- [:notice, :instructions, :completed, :error].each do |type| -%>
+    <%- if flash[type] -%>
+      <p class="<%= type %>"><%= flash[type] %></p>
+    <%- end -%>
+  <%- end -%>
+</div>
 <ul>
   <li><strong>User Name</strong>: <%= @user.cn %></li>
   <li><strong>Organizational Unit</strong>: <%= @user.ou %></li>
@@ -29,7 +19,7 @@
       <%= link_to "Add White List Entry", "#", :id => "add_white_list_entry" %>
     </li>
     <li>
-      <%= link_to "White List Settings", white_lists_path, :id => "white_list" %>
+      <%= link_to "White List Settings", "#{white_lists_path}/#{@user.id}", :id => "white_list" %>
     </li>
   </ul>
 </div>

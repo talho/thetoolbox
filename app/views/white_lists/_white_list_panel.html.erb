@@ -3,7 +3,7 @@
   <%= f.select(:scope, options_for_select([["Email", "Email"],["Domain", "Domain"]])) %>
 <% end %>
 <div id="wl_email_container">
-<% form_for "wl_email", :url => { :controller => "white_lists", :action => "create" } do |f| %>
+<% form_for "wl_email", :url => white_list_create_path(@user || current_user) do |f| %>
   <%= f.label :email %>
   <%= f.text_field :email %>
   <% if current_user.is_admin? %>
@@ -14,7 +14,7 @@
 <% end %>
 </div>
 <div id="wl_domain_container">
-<% form_for "wl_domain", :url => { :controller => "white_lists", :action => "create" } do |f| %>
+<% form_for "wl_domain", :url => white_list_create_path(@user || current_user)  do |f| %>
   <%= f.label :domain %>
   <%= f.text_field :domain %>
   <% if current_user.is_admin? %>

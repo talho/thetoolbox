@@ -2,12 +2,10 @@ class UsersController < ApplicationController
   verify :method => :get, :only => [ :delete, :enable_user, :forgot_password ], :redirect_to => { :action => :index }
 
   def index
-    lines   = current_user[:dn].split(",")
-    user_ou = Hash.new
-    user    = User.find_by_login(current_user[:login])
-    lines.each{|i| user_ou[i.split("=")[0]] = i.split("=")[1]}
+    user = User.find_by_login(current_user[:login])
     if user.is_admin?
-      @ldap_user_results = user.ous(user_ou['OU']).paginate(:page => params[:page], :per_page => 10)
+      current_user.refresh_ou_members
+      @ldap_user_results = User.paginate(:page => params[:page], :per_page => 10, :conditions => ["ou = ?", user.ou])
     else
       redirect_to user_path(current_user)
     end
@@ -16,7 +14,7 @@ class UsersController < ApplicationController
 
 
   def show
-    @user = get_user
+    @user = User.find(params[:id])
   end
 
   def create
@@ -41,7 +39,6 @@ class UsersController < ApplicationController
       if params[:user][:ch_pwd]
         attr[:pwdLastSet] = "0"
       end
-
       if params[:user][:acct_dsbl].to_i == 1
         if params[:user][:pwd_exp].to_i == 1
           attr[:userAccountControl] = "66050"
@@ -72,14 +69,14 @@ class UsersController < ApplicationController
     unless ldap
       return false
     end
-    ldap_user = LdapUser.find_by_id(params[:id])
+    ldap_user = User.find_by_id(params[:id])
     dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
     ldap.delete :dn => dn
-
+    
     if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
       flash[:error] = ldap.get_operation_result.message
     else
-      LdapUser.find(params[:id]).destroy
+      User.find(params[:id]).destroy
       flash[:completed] = "User Deleted"
     end
     redirect_to users_path
@@ -103,48 +100,23 @@ class UsersController < ApplicationController
           flash[:error] = "Unable to add white list entry."  
         end
       else
-        flash[:error] = "You do not have access to this record or there was an eror processing your request."
+        flash[:error] = "You do not have access to this record or there was an error processing your request."
       end
     end
     redirect_to users_path
   end
   
-  def enable_user
-    ldap = ldap_connect
-    unless ldap
-      return false
-    end
-    ldap_user = LdapUser.find_by_id(params[:id])
-    dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
-    filter    = Net::LDAP::Filter.eq('distinguishedName', dn)
-    s         = ldap.search(:base => LDAP_Config[:base][LDAP_Config[:auth_to]], :filter => filter)
-    if s.first[:useraccountcontrol].first == "66048"
-      uac = "66050"
-    elsif s.first[:useraccountcontrol].first == "512"
-      uac = "514"
-    elsif s.first[:useraccountcontrol].first == "66050"
-      uac = "66048"
-    elsif s.first[:useraccountcontrol].first == "514"
-      uac = "512"
-    else
-      uac = "512"
-    end
-    ldap.modify(:dn => dn, :operations => [
-      [:replace,
-      :userAccountControl,
-      uac]
-      ])
-    if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
-      flash[:error] = ldap.get_operation_result.message
-    else
-      if uac == "514" || uac == "66050"
-        ldap_user.enabled = false
-        flash[:completed] = "User Disabled"
-      elsif uac == "512" || uac == "66048"
-        ldap_user.enabled = true
-        flash[:completed] = "User Enabled"
+  def toggle
+    user = User.find(params[:id])
+    if user
+      user.toggle
+      if !user.enabled
+        flash[:notice] = "User Enabled"
+      else
+        flash[:notice] = "User Disabled"
       end
-      ldap_user.save
+    else
+      flash[:error] = "You do not have access to this record or there was an error processing your request."
     end
     redirect_to users_path
   end
@@ -152,16 +124,17 @@ class UsersController < ApplicationController
   def forgot_password
     @forgot_password
   end
-
+                                                                                                    
   def reset_password
-    @user = get_user
+    @user = User.find(params[:id])
     if valid_password_params?
-      @user.reset_password(params[:ldap_user][:new_password])
-      @reset_result = true;
-    else
-      @reset_result = false;
+      if @user.reset_password(params[:ldap_user][:new_password])
+        flash[:notice] = "Password changed successfully";
+      else
+        flash[:error]  = "You do not have access to this record or there was an error processing your request."
+      end
     end
-    redirect_to user_path(current_user)
+    redirect_to user_path(@user)
   end
 
 
@@ -180,14 +153,6 @@ class UsersController < ApplicationController
       return false
     end
     return true
-  end
-
-  def get_user
-    if params[:cn].blank?
-      current_user.as_ldap_user
-    else
-      LdapUser.find_by_cn(params[:cn])
-    end
   end
 
   def microsoft_encode_password(pwd)
@@ -235,17 +200,5 @@ class UsersController < ApplicationController
       return false
     end
     ldap
-  end
-
-  def some_connect
-    begin
-      ldap = Net:LDAP.new(
-        :host => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port => LDAP_Config[:port].to_i,
-        :encyrption => :simple_tls,
-        :auth => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
-    rescue
-      return false
-    end
   end
 end

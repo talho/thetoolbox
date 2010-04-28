@@ -42,11 +42,11 @@
          <%= index.cn %>
       </td>
       <td>
-        <%= link_to "Edit", "users/#{index.id}" %>&nbsp;&nbsp;
+        <%= link_to "Edit", user_path(index) %>&nbsp;&nbsp;
         <% if index.enabled %>
-          <%= link_to 'Disable', {:action => 'enable_user', :id => index.id}, :confirm => 'Are you sure?' %>&nbsp;&nbsp;
+          <%= link_to 'Disable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
         <% else %>
-          <%= link_to 'Enable&nbsp;', {:action => 'enable_user', :id => index.id}, :confirm => 'Are you sure?' %>&nbsp;&nbsp;
+          <%= link_to 'Enable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
         <% end %>
         <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?' %>
       </td>

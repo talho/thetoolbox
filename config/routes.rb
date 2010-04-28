@@ -41,9 +41,11 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :account, :controller => "users", :action => "index"
   map.resource :admin, :controller => "users", :action => "index"
   map.resources :white_lists
+  map.white_list_create "white_lists/:id/create", :controller => "white_lists", :action => "create"
 
   map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
   map.reset_password "/reset_password/:id", :controller => "users", :action => "reset_password"
+  map.toggle_user "/users/:id/toggle", :controller => "users", :action => "toggle"
 
   
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
@@ -55,5 +57,6 @@ ActionController::Routing::Routes.draw do |map|
   
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
+
 
 end

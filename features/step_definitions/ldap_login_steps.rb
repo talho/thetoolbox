@@ -14,7 +14,7 @@ Given /^I signed up with "(.*)\/(.*)"$/ do |login, password|
     :login                 => login
 end
 
-Given /^I am signed up as "(.*)\/(.*)\/(.*)"$/ do |login, cn, email|
+Given /^I am signed up as "(.*)\/(.*)\/(.*)\/(.*)"$/ do |login, cn, email, ou|
   include Authlogic::TestCase
   activate_authlogic
   user = Factory :user,
@@ -23,6 +23,7 @@ Given /^I am signed up as "(.*)\/(.*)\/(.*)"$/ do |login, cn, email|
     :dn => "CN=#{cn},OU=TALHO,DC=thetoolbox,DC=com",
     :dc => 'DC=thetoolbox,DC=com',
     :cn => cn,
+    :ou => ou,
     :admin => false,
     :admin_expire => Time.now + 15.minutes
 end
