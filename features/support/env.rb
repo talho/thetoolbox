@@ -26,6 +26,7 @@ Spork.prefork do
   # prefer to use XPath just remove this line and adjust any selectors in your
   # steps to use the XPath syntax.
   Capybara.default_selector = :css
+  Capybara.default_driver   = :selenium
 
 end
  

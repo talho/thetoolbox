@@ -10,4 +10,5 @@ class WhiteList < ActiveResource::Base
   def id
     prefid if self.attributes.keys.include?("prefid")
   end
+  
 end

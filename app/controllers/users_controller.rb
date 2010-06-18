@@ -39,6 +39,9 @@ class UsersController < ApplicationController
       if params[:user][:ch_pwd]
         attr[:pwdLastSet] = "0"
       end
+      if params[:user][:vpn_usr] != "0"
+        attr[:samAccountName] += "-vpn"
+      end
       if params[:user][:acct_dsbl].to_i == 1
         if params[:user][:pwd_exp].to_i == 1
           attr[:userAccountControl] = "66050"
@@ -58,26 +61,27 @@ class UsersController < ApplicationController
       if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
         flash[:error] = ldap.get_operation_result.message
       else
-        flash[:completed] = "User added"
+        e = ExchangeUser.create(:domain => attr[:userPrincipalName].split('@')[1], :alias => attr[:userPrincipalName].split('@')[0])
+        #todo: Place delayed jobs, after creating mailbox notify admin
+        if e.attributes["mailboxEnabled"] != "true"
+          flash[:completed] = "User added, but was not able to set up mailbox.  You can try to enable the mailbox again by enabling the user, or contact your administrator."
+        else
+          flash[:completed] = "User added"
+        end
       end
     end
     redirect_to users_path
   end
 
   def delete
-    ldap = ldap_connect
-    unless ldap
-      return false
-    end
     ldap_user = User.find_by_id(params[:id])
-    dn        = "CN=" + ldap_user.cn + ",OU=" + ldap_user.ou + "," + LDAP_Config[:base][LDAP_Config[:auth_to]]
-    ldap.delete :dn => dn
-    
-    if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
-      flash[:error] = ldap.get_operation_result.message
+    e = ExchangeUser.find(ldap_user.email)
+    unless e.attributes["upn"].blank?
+      e.destroy
+      ldap_user.destroy
+      flash[:completed] = "User deleted."
     else
-      User.find(params[:id]).destroy
-      flash[:completed] = "User Deleted"
+      flash[:error] = "Unable to delete user, please contact your administrator."
     end
     redirect_to users_path
   end

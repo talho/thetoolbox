@@ -51,7 +51,8 @@ ActionController::Routing::Routes.draw do |map|
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
 
 
-  map.resources :users, :member => {:create_white_list_entry => [:put], :create => [:put]}
+  map.resources :users, :controller => "users", :member => {:create_white_list_entry => [:put], :create => [:put]}
+
   map.resource :user_session
   map.root :controller => "user_sessions", :action => "new" # optional, this just sets the root route
   

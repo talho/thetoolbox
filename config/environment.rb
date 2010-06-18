@@ -22,32 +22,11 @@ Rails::Initializer.run do |config|
 
   config.gem "net-ldap", :version => "0.1.1"
   config.gem "database_cleaner", :version => ">=0.5.0"
-  config.gem 'thoughtbot-clearance',
-    :lib     => 'clearance',
-    :source  => 'http://gems.github.com',
-    :version => '0.6.9'
-  config.gem 'thoughtbot-paperclip',
-    :lib     => 'paperclip',
-    :source  => 'http://gems.github.com',
-    :version => '2.3.0'
 
   config.gem "hpricot", :version => "=0.6"
 
 
   config.gem 'fastercsv', :version => '1.5.0'
-  config.gem 'httparty',
-    :lib => 'httparty',
-    :version => '0.4.4'
-  config.gem 'chronic',
-    :source => 'http://gems.github.com',
-    :version => '0.2.3'
-  config.gem 'packet',
-    :source => 'http://gems.github.com',
-    :version => '0.1.15'
-  config.gem 'validatable', :version => '1.6.7'
-  config.gem 'bullet', :source => 'http://gemcutter.org'
-  config.gem 'ruby-growl', :source => 'http://gemcutter.org'
-  config.gem "sinatra", :source => "http://gemcutter.org"
   config.gem "will_paginate", :version => "~> 2.3.11", :source => "http://gemcutter.org"
   config.gem "prawn", :version => "=0.8.4", :source => "http://gemcutter.org"
   config.gem "pox_paginate", :version => '= 0.1.0', :lib => "pox_paginate"

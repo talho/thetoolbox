@@ -5,7 +5,6 @@ class LdapUser
       filter     = Net::LDAP::Filter.eq('samAccountName', login)
       ldap_entry = ldap.search(:base => dc, :filter => filter).first
       user       = User.find_by_login_and_dc(login, dc)
-
       user       = if user
         attributes = Hash.new
         {"email" => "mail", "cn" => "cn", "dn" => "dn"}.each do |key, value|
