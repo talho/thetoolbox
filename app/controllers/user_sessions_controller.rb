@@ -13,6 +13,7 @@ class UserSessionsController < ApplicationController
       flash[:completed] = "Login successful!"
       redirect_to dashboard_path
     else
+      current_user_session.destroy unless current_user_session.blank?
       render :action => :new
     end
   end

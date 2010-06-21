@@ -1,4 +1,5 @@
 class WhiteListsController < ApplicationController
+  before_filter :require_user
 
   def index
     unless current_user.email.blank?

@@ -10,7 +10,7 @@ Feature: White List Settings
     And I should not see "example.com"
     And I select "Domain" from "Scope"
     And I fill in "Domain" with "example.com"
-    And I check "White List for entire domain"
+    And I check "White List for entire domain" within "#wl_domain_container"
     And I press "Add Domain"
     Then I should see "Domain added to White List"
     And I should see "example.com"
@@ -28,7 +28,7 @@ Feature: White List Settings
     And I should see "Domain White List Entry: email@example.com"
 
   Scenario: User can add a domain to his personal White List
-    Given I am logged in as "test/Password1"
+    Given I am logged in as "tester_test/Password1"
     When I go to the dashboard
     And I follow "White List Settings"
     And I should not see "example.com"
@@ -40,7 +40,7 @@ Feature: White List Settings
     
 
   Scenario: User can add an email to his personal White List
-    Given I am logged in as "test/Password1"
+    Given I am logged in as "tester_test/Password1"
     When I go to the dashboard
     And I follow "White List Settings"
     And I should not see "user@example.com"
@@ -83,6 +83,7 @@ Feature: White List Settings
     And I press "Add Email"
     Then I should see "Email added to White List"
     And I should see "Domain White List Entry: email@example.com"
+    And I will confirm on next step
     And I follow "Delete"
     Then I should see "Entry Deleted"
     And I should not see "email@example.com"

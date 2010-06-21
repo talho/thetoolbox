@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+
+  before_filter :activate_authlogic
+
   helper :all
   helper_method :current_user_session, :current_user
 

@@ -45,7 +45,8 @@ Given /^I am logged in as "([^\"]*)"$/ do |credentials|
   When %{I go to the sign in page}
   And %{I select "Test" from "Authenticate"}
   And %{I sign in as "#{credentials}"}
-  And %{I should be signed in}
+  And %{I should see "Login successful"}
+  #And %{I should be signed in}
 end
 
 
@@ -56,7 +57,10 @@ Then /^I should be signed in$/ do
 end
 
 Then /^I should be signed out$/ do
-  assert ! UserSession.find
+  #assert ! UserSession.find
+  When %{I go to the dashboard page}
+  Then %{show me the page}
+  Then %{I should see "TALHO Toolbox: Login" within "body"}
 end
 
 When /^session is cleared$/ do

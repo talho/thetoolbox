@@ -6,7 +6,8 @@
 <% form_for "wl_email", :url => white_list_create_path(@user || current_user) do |f| %>
   <%= f.label :email %>
   <%= f.text_field :email %>
-  <% if current_user.is_admin? %>
+  <% if current_user && current_user.is_admin? %>
+    <br/>
     <%= f.check_box :chck_global %>
     <%= f.label :chck_global, "White List for entire domain" %>
   <% end %>
@@ -17,11 +18,11 @@
 <% form_for "wl_domain", :url => white_list_create_path(@user || current_user)  do |f| %>
   <%= f.label :domain %>
   <%= f.text_field :domain %>
-  <% if current_user.is_admin? %>
+  <% if current_user && current_user.is_admin? %>
+    <br/>
     <%= f.check_box :chck_global %>
     <%= f.label :chck_global, "White List for entire domain" %>
   <% end %>
   <%= f.submit "Add Domain" %>
 <% end %>
 </div>
-

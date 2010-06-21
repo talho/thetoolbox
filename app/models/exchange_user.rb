@@ -17,7 +17,7 @@ class ExchangeUser < ActiveResource::Base
 
   self.primary_key :upn
   self.site = "http://adtest2003/"
-  self.element_name = "Service1"
+  self.element_name = "ExchSvc"
 
   def id
     upn if self.attributes.keys.include?("upn")

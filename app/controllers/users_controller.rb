@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_filter :require_user, :except => [:create, :forgot_password]
   verify :method => :get, :only => [ :delete, :enable_user, :forgot_password ], :redirect_to => { :action => :index }
 
   def index

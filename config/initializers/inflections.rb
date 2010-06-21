@@ -9,5 +9,5 @@
 #   inflect.uncountable %w( fish sheep )
 # end
 ActiveSupport::Inflector.inflections do |inflect|
-  inflect.plural 'Service1', 'Service1'
+  inflect.plural 'ExchSvc', 'ExchSvc'
 end

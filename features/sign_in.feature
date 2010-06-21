@@ -7,19 +7,23 @@ Feature: Sign in
     Given no user exists with a login of "example_user"
     When I go to the sign in page
     And I sign in as "example_user/Password1"
-    Then I should see "Login is not valid"
+    Then I should see "Login is not valid" within "body"
     And I should be signed out
 
   Scenario: User enters wrong password
     Given I am signed up as "tester_test/Tester Test/tester_test@example.com/TALHO"
     When I go to the sign in page
+    And I fill in "Login" with "tester_test"
+    And I fill in "Password" with "WrongPasswordOne"
     And I select "Test" from "Authenticate"
-    And I sign in as "tester_test/WrongPasswordOne"
+    And I press "Sign In"
+    #And I sign in as "tester_test/WrongPasswordOne"
     Then I should see "Password is not valid"
+    And this is not finished
     And I should be signed out
 
   Scenario: User signs in successfully
-    #Given I am signed up as "tester_test/Tester Test/tester_test@example.com"
+    Given I am signed up as "tester_test/Tester Test/tester_test@example.com/TALHO"
     When I go to the sign in page
     And I select "Test" from "Authenticate"
     And I sign in as "tester_test/Password1"

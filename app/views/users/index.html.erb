@@ -41,7 +41,7 @@
       <td>
          <%= index.cn %>
       </td>
-      <td>
+      <td id="<%= index.login %>">
         <%= link_to "Edit", user_path(index) %>&nbsp;&nbsp;
         <% if index.enabled %>
           <%= link_to 'Disable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
