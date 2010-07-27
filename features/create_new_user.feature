@@ -15,7 +15,6 @@ Feature: Create new user
     And I fill in "Password" with "Password1"
     And I fill in "Confirm Password" with "Password1"
     And I check "User must change password"
-    And show me the page
     And I press "Submit" within ".create_new_user_container"
     Then I should see "User added"
 

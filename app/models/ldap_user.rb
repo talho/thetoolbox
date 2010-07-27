@@ -16,7 +16,6 @@ class LdapUser
           attributes["admin"]        = is_admin_from_memberof?(ldap_entry[:memberof])
           attributes["admin_expire"] = Time.now + 15.minutes
         end
-        #update_ou(user, ldap_entry, attributes)
         user.update_attributes attributes unless attributes.empty?
         user
       else
@@ -30,7 +29,6 @@ class LdapUser
         enabled = is_enabled?(ldap_entry[:useraccountcontrol].first)
         User.new(:login => login, :dn => dn, :dc => dc, :cn => cn, :email => email, :ou => ou, :enabled => enabled)
       end
-
     end
   end
 
@@ -58,7 +56,6 @@ class LdapUser
             attributes["admin"]        = is_admin_from_memberof?(entry[:memberof])
             attributes["admin_expire"] = Time.now + 15.minutes
           end
-          #update_ou(user, entry, attributes)
           user.update_attributes attributes unless attributes.empty?
           user
         else
@@ -72,7 +69,6 @@ class LdapUser
           User.new(:login => login, :dn => dn, :dc => dc, :cn => cn, :email => email, :ou => ou, :enabled => enabled)
         end
       end
-
     end
   end
 

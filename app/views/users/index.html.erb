@@ -8,20 +8,32 @@
 <% if @ldap_user_results %>
   <h3>You are authorized to administer the following accounts:</h3>
   <div class="settings_panel" id="settings_panel">
-    <ul>
-      <li class="first">
-        <%= link_to "Create New User", "#", :id => "create_new_user" %>
-      </li>
-      <li>
+
+      <span class="first create_user">
+        <%= link_to "Create User", "#", :id => "create_new_user" %>
+      </span>
+      <span class="reset_password">
         <%= link_to "Reset Password", "#", :id => "reset_password" %>
-      </li>
-      <li>
+      </span>
+
+      <span class="add_white_list">
         <%= link_to "Add White List Entry", "#", :id => "add_white_list_entry" %>
-      </li>
-      <li>
+      </span>
+      <span class="white_list_settings">
         <%= link_to "White List Settings", white_lists_path, :id => "white_list" %>
-      </li>
-    </ul>
+      </span>
+
+      <span class="new_distribution_list">
+        <%= link_to "Create Distribution List", "#", :id => "create_new_distro" %>
+      </span>
+      <span class="add_distribution_list">
+        <%= link_to "Add to Distribution List", "#", :id => "add_to_distro" %>
+      </span>
+
+      <span id="cacti_graphs_link" class="cacti_graphs" <%- if current_user.cacti_username.blank? %> style="display:none"<%- end %> >
+        <%= link_to "View Cacti Graphs", cacti_graphs_path, :id => "cacti_graphs" %>
+      </span>
+
   </div>
   <div class="create_new_user_container" id="create_new_user_container">
     <%= render :partial => 'create_new_user_form' %>
@@ -32,39 +44,95 @@
   <div class="reset_password_container" id="reset_password_container">
     <%= render :partial => 'reset_password_form' %>
   </div>
+  <div class="create_distribution_list" id="create_distribution_list">
+    <%= render :partial => "create_distribution_list" %>
+  </div>
+  <hr/>
   <table class="user_list">
     <% @ldap_user_results.each do |index| %>
-    <tr>
-      <td>
-        <strong>User</strong>:
-      </td>
-      <td>
-         <%= index.cn %>
-      </td>
-      <td id="<%= index.login %>">
-        <%= link_to "Edit", user_path(index) %>&nbsp;&nbsp;
-        <% if index.enabled %>
-          <%= link_to 'Disable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
-        <% else %>
-          <%= link_to 'Enable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
-        <% end %>
-        <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?' %>
-      </td>
-    </tr>
-      <td>
-        <strong>Organizational Unit</strong>:
-      </td>
-      <td>
-        <%= index.ou %>
-      </td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="3">&nbsp;</td>
-    </tr>
+      <tr>
+        <td>
+          <strong>User</strong>:
+        </td>
+        <td>
+           <%= index.cn %>
+        </td>
+        <td id="<%= index.login %>" class="delete">
+          <% if index.mailboxEnabled %>
+            <!--
+            <%= link_to 'Disable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
+            -->
+          <% else %>
+            <!--
+            <%= link_to 'Enable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
+            -->
+          <% end %>
+          <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?' %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Organizational Unit</strong>:
+        </td>
+        <td>
+          <%= index.ou %>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Login</strong>:
+        </td>
+        <td>
+          <%= index.login %>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>VPN Login</strong>:
+        </td>
+        <td>
+          <%= "#{index.login}-vpn" if index.has_vpn_account? %>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Email</strong>:
+        </td>
+        <td>
+          <%= index.email %>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="table_hr"></td>
+      </tr>
+
   <% end %>
   </table>
   <%= will_paginate @ldap_user_results %>
+  <iframe src="<%= cacti_graphs_login_path %>" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>
+  <%- if current_user.cacti_username.blank? %>
+    <script type="text/javascript">
+      $('iframe').load(function() {
+        if(!cacti_call){
+          begin_cacti_login();
+          cacti_call = true;
+        }
+      });
+    </script>
+  <%- elsif !current_user.cacti_logged_in %>
+    <script type="text/javascript">
+      $('iframe').load(function() {
+        if(!cacti_call){
+          cacti_login('<%= current_user.cacti_username %>', '<%= current_user.cacti_password %>');
+          cacti_call = true;
+        }
+      });
+    </script>
+  <%- end %>
 <% else %>
   <h3>You are not authorized to administer any accounts</h3>
 <% end %>

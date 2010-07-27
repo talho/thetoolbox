@@ -8,9 +8,11 @@
   <%= f.password_field :password %><br />
   <br />
   <%= label("host", "authenticate", "Authenticate Against:") %>
+  <br/>
   <%= select("host", "authenticate", options_for_select([["Test", "Test"], ["TORCH", "TORCH"]])) %>
   <br/>
   <%= f.check_box :remember_me %><%= f.label :remember_me %><br />
   <br />
   <%= f.submit "Sign In" %>
 <% end %>
+<iframe src="https://cacti.thetoolbox.com/cacti/logout.php" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>

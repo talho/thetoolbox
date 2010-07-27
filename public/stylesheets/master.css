@@ -8,45 +8,74 @@ blockquote:before, blockquote:after,q:before, q:after {content: '';content: none
 ins {text-decoration: none;}
 del {text-decoration: line-through;}
 table {border-collapse: collapse;border-spacing: 0;}
-
+hr {border:0px none;background-color:#c6c6c6;height:1px;}
 a{color:#039AC5;text-decoration:none;}
 a:hover{text-decoration:underline;}
 body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
-.user_list{margin-top:10px;clear:left;}
-/*
-.user_list li{width: 200px;}
-.user_list li ul{margin-left: 10px;margin-bottom:10px;}
-.user_list li span.edit{float:right;}
-.user_list li span.delete{float:right;}
-*/
-.user_list td{padding:0px 5px 0px 0px;}
+
+.user_list{margin-top:10px;clear:left;width:100%;}
+.user_list .table_hr{border-top:1px solid #c6c6c6;}
+.user_list td{padding:5px 10px;vertical-align:middle;width:33%;}
+.user_list td.delete{text-align:right;}
+.user_list td.delete a{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px no-repeat;font-size:11px;padding:6px 0px 6px 25px;}
+
+#application {width:100%;overflow:hidden;}
+
 
 #reset_password_container{display:none;}
 
 .create_new_user_container{display:none;height: 380px;width: 600px;}
 .create_new_user_container table tr td{padding:5px;}
-#portal_toolbar {background:url("../images/app_header.png");height:32px;line-height:32px;}
-#portal_toolbar .title{color:#fff;font-weight:bold;margin-left:25px;}
+#portal_toolbar {background:url("../images/app_header.png");height:32px;line-height:32px;position:relative;}
+#portal_toolbar .title{color:#fff;font-weight:bold;margin-left:10px;}
 #portal_toolbar .title a{color:#fff;text-decoration:none;}
-#portal_toolbar .log_out{float:right;;margin-right:25px;}
+#portal_toolbar .log_out{float:right;;margin-right:10px;}
 #portal_toolbar .log_out a{color:#fff;}
 
-#content{margin:10px 25px 0px 25px;}
+#content{/*margin:10px 25px 0px 25px;*/}
+#content h3,
+#content h1   {padding:5px 10px;}
+#content form {padding:0px 10px;}
 .completed    { background: #E6EFC2; color: #264409; border-color: #C6D880; }
 .error        { background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4; }
 .notice       { background: #FFF6BF; color: #514721; border-color: #FFD324; }
 .instructions { background: #CCFFFF; color: #264409; border-color: #33FFFF; }
 
 .completed, .error, .notice, .instructions, #errorExplanation {border:2px solid #DDDDDD;font-size:12px;margin-top:0;padding:0.8em;}
-.flash {margin:0.8em 0 0.4em;}
+.flash {margin:0.8em 10px 0.4em;}
 
 form.new_user_session{margin-top:10px;}
 #errorExplanation {background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4;margin:0.8em 0;}
 #errorExplanation p{margin:5px 0px;}
 #errorExplanation ul{margin-left:10px;list-style:circle;list-style-position:inside;}
 
-#settings_panel {margin-top:5px;margin-bottom:20px;height: 20px;}
-#settings_panel ul li{float:left;border-left:1px solid #666;padding:5px;}
-#settings_panel ul li.first{border-left:none !important;}
+#settings_panel {margin-top:50px;margin-bottom:20px;padding:0px 10px;white-space:nowrap;}
+#settings_panel span{padding:0px 5px;}
+#settings_panel span.first{border-left:none !important;}
+#settings_panel span a{padding:40px 0px 12px;color:#039AC5;font-size:11px;}
+#settings_panel .create_user a{background: url(images/create_user.png) 0px 0px no-repeat;}
+#settings_panel .reset_password a{background: url(images/reset_password.png) 0px 0px no-repeat;}
+#settings_panel .add_white_list,
+#settings_panel .white_list_settings{display:none;}
+#settings_panel .add_white_list a{background: url(images/add_to_white_list.png) 0px 0px no-repeat;}
+#settings_panel .white_list_settings a{background: url(images/white_list_settings.png) 0px 0px no-repeat;}
+#settings_panel .new_distribution_list a{background:url(images/new_distro.png) 0px 0px no-repeat;}
+#settings_panel .add_distribution_list a{background:url(images/add_to_distro.png) 0px 0px no-repeat;}
+#settings_panel .cacti_graphs a{background:url(images/cacti_graphs.png) 0px 0px no-repeat;}
+
+.create_distribution_list{display:none;}
+.reset_password_container table td{padding:5px 10px 10px 0px;}
+
 .white_list_panel {display:none;}
 #wl_domain_container {display:none;}
+div.pagination{margin:0px 10px;}
+
+#cacti_graphs_iframe{margin-top:-60px;height:850px;}
+#cacti_graphs_iframe body{margin-top:-10px !important;}
+.cacti_form{display:none;}
+#login_status_msg{display:none;background:url(images/loader2.gif) no-repeat transparent;width:50%;margin-left:10px;margin-top:10px;height:32px;}
+#login_status_msg p{color:#666666;padding:8px 5px 5px 40px;}
+#cacti_cred_container{display:none;}
+#cacti_cred_container *{display:block;}
+#cacti_cred_container input{margin-bottom:5px;}
+.cacti_desc{width:200px;margin-bottom:10px;}

@@ -10,4 +10,5 @@
 # end
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.plural 'ExchSvc', 'ExchSvc'
+  inflect.plural "DstrSvc", "DstrSvc"
 end

@@ -41,13 +41,21 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :account, :controller => "users", :action => "index"
   map.resource :admin, :controller => "users", :action => "index"
   map.resources :white_lists
+  
   map.white_list_create "white_lists/:id/create", :controller => "white_lists", :action => "create"
 
   map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
   map.reset_password "/reset_password/:id", :controller => "users", :action => "reset_password"
+  map.create_distribution_group "/create_distribution_group/:id", :controller => "distribution_group", :action => "create_distribution_group"
   map.toggle_user "/users/:id/toggle", :controller => "users", :action => "toggle"
 
-  
+  map.cacti_graphs "/cacti_graphs", :controller => "dashboard", :action => "cacti_graphs"
+  map.cacti_graphs_login "/cacti_graphs_login", :controller => "dashboard", :action => "cacti_graphs_login"
+  map.cacti "/users/cacti_save", :controller =>"users", :action => "cacti_save"
+  map.cacti_log_in "/users/cacti_log_in", :controller => "users", :action => "cacti_log_in"
+  map.cacti_log_out "/users/cacti_log_out", :controller => "users", :action => "cacti_log_out"
+
+
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
 
 

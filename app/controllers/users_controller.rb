@@ -5,14 +5,15 @@ class UsersController < ApplicationController
   def index
     user = User.find_by_login(current_user[:login])
     if user.is_admin?
-      current_user.refresh_ou_members
-      @ldap_user_results = User.paginate(:page => params[:page], :per_page => 10, :conditions => ["ou = ?", user.ou])
+      options            = {}
+      options[:page]     = params[:page] || 1
+      options[:per_page] = params[:per_page] || 5
+      @ldap_user_results = ExchangeUser.find(:all, :params => options)
     else
       redirect_to user_path(current_user)
     end
     @new_user = User.new
   end
-
 
   def show
     @user = User.find(params[:id])
@@ -20,66 +21,55 @@ class UsersController < ApplicationController
 
   def create
     unless !valid_params?
-      ldap = ldap_connect
+      ldap  = ldap_connect
+      e     = nil
+      e_vpn = nil
       unless ldap
         return false
       end
-      dn   = "CN=" + params[:user][:first_name] + " " + params[:user][:last_name] + ",OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
-      attr = {
+      dn           = "OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
+      email_domain = "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1]
+      attr_ldap = {
         :cn                 => params[:user][:first_name] + " " + params[:user][:last_name],
         :name               => params[:user][:first_name] + " " + params[:user][:last_name],
         :displayName        => params[:user][:first_name] + " " + params[:user][:last_name],
         :distinguishedName  => dn,
         :givenName          => params[:user][:first_name],
         :samAccountName     => params[:user][:logon_name],
-        :userPrincipalName  => params[:user][:logon_name] + "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1],
-        :unicodePwd         => microsoft_encode_password(params[:user][:password]),
-        :objectclass        => ["top", "User"],
-        :sn                 => params[:user][:last_name]
+        :userPrincipalName  => params[:user][:logon_name] + email_domain,
+        :password           => params[:user][:password],
+        :sn                 => params[:user][:last_name],
+        :domain             => email_domain.split('@')[1],
+        :alias              => params[:user][:logon_name],
+        :ou                 => "TALHO",
+        :changePwd          => params[:user][:ch_pwd],
+        :isVPN              => params[:user][:vpn_usr],
+        :acctDisabled       => params[:user][:acct_dsbl],
+        :pwdExpires         => params[:user][:pwd_exp]
       }
-      if params[:user][:ch_pwd]
-        attr[:pwdLastSet] = "0"
-      end
-      if params[:user][:vpn_usr] != "0"
-        attr[:samAccountName] += "-vpn"
-      end
-      if params[:user][:acct_dsbl].to_i == 1
-        if params[:user][:pwd_exp].to_i == 1
-          attr[:userAccountControl] = "66050"
-        else
-          attr[:userAccountControl] = "514"
-        end
+
+      e = ExchangeUser.create(attr_ldap)
+
+      if e.attributes["mailboxEnabled"] != "true"
+        flash[:completed] = "Unable to create user.  You can try to enable the mailbox again by enabling the user, or contact your administrator."
       else
-        if params[:user][:pwd_exp].to_i == 1
-          attr[:userAccountControl] = "66048"
-        else
-          attr[:userAccountControl] = "512"
-        end
+        flash[:completed] = "User added"
       end
 
-      ldap.add(:dn => dn, :attributes => attr)
-
-      if !ldap.get_operation_result.code.nil? && ldap.get_operation_result.code != 0
-        flash[:error] = ldap.get_operation_result.message
-      else
-        e = ExchangeUser.create(:domain => attr[:userPrincipalName].split('@')[1], :alias => attr[:userPrincipalName].split('@')[0])
-        #todo: Place delayed jobs, after creating mailbox notify admin
-        if e.attributes["mailboxEnabled"] != "true"
-          flash[:completed] = "User added, but was not able to set up mailbox.  You can try to enable the mailbox again by enabling the user, or contact your administrator."
-        else
-          flash[:completed] = "User added"
-        end
-      end
     end
     redirect_to users_path
   end
 
   def delete
-    ldap_user = User.find_by_id(params[:id])
-    e = ExchangeUser.find(ldap_user.email)
-    unless e.attributes["upn"].blank?
+    begin
+      e = ExchangeUser.find(params[:id])
+    rescue
+      flash[:error] = "Unable to delete user, please contact your administrator."
+      redirect_to users_path
+      return
+    end
+    unless e.attributes["login"].blank?
       e.destroy
-      ldap_user.destroy
       flash[:completed] = "User deleted."
     else
       flash[:error] = "Unable to delete user, please contact your administrator."
@@ -131,17 +121,75 @@ class UsersController < ApplicationController
   end
                                                                                                     
   def reset_password
-    @user = User.find(params[:id])
-    if valid_password_params?
-      if @user.reset_password(params[:ldap_user][:new_password])
-        flash[:notice] = "Password changed successfully";
-      else
-        flash[:error]  = "You do not have access to this record or there was an error processing your request."
-      end
+    begin
+      e = ExchangeUser.find(current_user.login)
+    rescue
+      flash[:error] = "Unable to change password, please contact your administrator."
+      redirect_to users_path
+      return
     end
-    redirect_to user_path(@user)
+    unless e.attributes["login"].blank?
+      e.attributes.delete("xmlns:i")
+      e.attributes.delete("error")
+      e.attributes.delete("xmlns")
+      e.password = params[:ldap_user][:new_password]
+      e.identity = current_user.login.gsub("-vpn","")
+      e.update()
+      if e.has_vpn_account?
+        e.identity += "-vpn@thetoolbox.com"
+        e.update()
+      end
+      flash[:completed] = "User password changed successfully."
+    else
+      flash[:error] = "Unable change password, please contact your administrator."
+    end
+    redirect_to users_path
   end
 
+  def cacti_save
+    begin
+      @user = User.find(current_user.id)
+      if(params[:cacti_username].blank? || params[:cacti_password].blank?)
+        render :text => "Error", :status => 400
+      else
+        uri = URI.parse("https://cacti.thetoolbox.com/cacti/graph_view.php")
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        request = Net::HTTP::Post.new(uri.request_uri)
+        request.set_form_data({"action" => "login", "login_username" => params[:cacti_username], "login_password" => params[:cacti_password]})
+        response = http.request(request)
+        if(response.code == "302" && response.body.blank?)
+          @user.update_attributes({:cacti_username => params[:cacti_username], :cacti_password => params[:cacti_password]})
+          render :text => "OK", :status => 200
+        else
+          render :text => "Error", :status => 400
+        end
+      end
+    rescue
+      render :text => "Error", :status => 400
+    end
+  end
+
+  def cacti_log_in
+    begin
+      @user = User.find(current_user.id)
+      @user.update_attributes({:cacti_logged_in => true})
+      render :text => "OK", :status => 200
+    rescue
+      render :text => "Error", :status => 400
+    end
+  end
+
+  def cacti_log_out
+    begin
+      @user = User.find(current_user.id)
+      @user.update_attributes(:cacti_logged_in => false)
+      render :text => "OK", :status => 200
+    rescue
+      render :text => "Error", :status => 400  
+    end
+  end
 
   protected
 
@@ -206,4 +254,5 @@ class UsersController < ApplicationController
     end
     ldap
   end
+  
 end

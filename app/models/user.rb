@@ -1,6 +1,9 @@
 class User < ActiveRecord::Base
   #before_create :sync_with_ldap
   #before_save :sync_with_ldap
+
+  before_destroy :destroy_vpn_user
+  after_save :create_vpn_user
   
   acts_as_authentic do |c|
     c.validate_password_field = false
@@ -51,7 +54,17 @@ class User < ActiveRecord::Base
   def valid_credentials?(password_plaintext)
     LdapUser.valid_credentials?(dn, password_plaintext)
   end
-  
+
+  def has_vpn_account?
+    begin
+      temp_email = String.new(self.email)
+      e = ExchangeUser.find(temp_email.insert(temp_email.index('@'), "-vpn"))
+    rescue
+      return false
+    end
+    true
+  end
+
   protected
 
   def ldap_connect
@@ -72,6 +85,18 @@ class User < ActiveRecord::Base
 
   private
 
+  def create_vpn_user
+    if vpn
+
+    end
+  end
+
+  def destroy_vpn_user
+    if vpn
+      
+    end
+  end
+
   def sync_with_ldap
     if new_record?
       if login && dc
@@ -86,8 +111,7 @@ class User < ActiveRecord::Base
         false
       end
     else
-      #raise "We need to fix this!"
-      #LdapUser.update(self)
+
     end
   end
 end

@@ -1,0 +1,13 @@
+<% form_for "ldap_user", :url => create_distribution_group_path(@user || current_user) do |f| %>
+  <table>
+    <tr>
+      <td>
+          <%= f.label :distribution_list_name%>:
+        </td>
+        <td>
+          <%= f.text_field :distribution_list_name %>
+        </td>
+    </tr>
+  </table>
+  <%= f.submit :submit, :id => "create_distribution_submit" %>
+<% end %>

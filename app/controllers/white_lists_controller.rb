@@ -2,26 +2,31 @@ class WhiteListsController < ApplicationController
   before_filter :require_user
 
   def index
-    unless current_user.email.blank?
-      options               = {:page => params[:user_page] || 1, :per_page => 10, :scope => "Domain"}
-      options[:user]        = current_user.email
-     
-      @personal_white_lists = WhiteList.find(:all, :params => options)
-      options.delete(:user)
+    begin
+      unless current_user.email.blank?
+        options               = {:page => params[:user_page] || 1, :per_page => 10, :scope => "Domain"}
+        options[:user]        = current_user.email
 
-      if current_user.is_admin?
-        options[:domain]    = domainize(current_user.email)
-        options[:page]      = params[:domain_page] || 1
-        @domain_white_lists = WhiteList.find(:all, :params => options)
-      end
-      
-      respond_to do |format|      
-        format.html # index.html.erb
-        format.xml  { render :xml => @white_lists }
-      end
+        @personal_white_lists = WhiteList.find(:all, :params => options)
+        options.delete(:user)
 
-    else
-      flash[:error] = "You do not have access to this record or there was an error processing your request."
+        if current_user.is_admin?
+          options[:domain]    = domainize(current_user.email)
+          options[:page]      = params[:domain_page] || 1
+          @domain_white_lists = WhiteList.find(:all, :params => options)
+        end
+
+        respond_to do |format|
+          format.html # index.html.erb
+          format.xml  { render :xml => @white_lists }
+        end
+
+      else
+        flash[:error] = "You do not have access to this record or there was an error processing your request."
+      end
+    rescue
+        flash[:error] = "The White List Service is currently down, please contact your administrator."
+        redirect_to users_path
     end
   end
 
