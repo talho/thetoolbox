@@ -122,7 +122,11 @@ class UsersController < ApplicationController
                                                                                                     
   def reset_password
     begin
-      e = ExchangeUser.find(current_user.login)
+      unless User.exists?(params[:id])
+        e = ExchangeUser.find(params[:id])  
+      else
+        e = ExchangeUser.find(current_user.login)
+      end
     rescue
       flash[:error] = "Unable to change password, please contact your administrator."
       redirect_to users_path
@@ -133,8 +137,8 @@ class UsersController < ApplicationController
       e.attributes.delete("error")
       e.attributes.delete("xmlns")
       e.password = params[:ldap_user][:new_password]
-      e.identity = current_user.login.gsub("-vpn","")
-      e.update()
+      e.identity = e.attributes["login"].gsub("-vpn","")
+      e.update
       if e.has_vpn_account?
         e.identity += "-vpn@thetoolbox.com"
         e.update()
@@ -189,6 +193,11 @@ class UsersController < ApplicationController
     rescue
       render :text => "Error", :status => 400  
     end
+  end
+
+  def reset_password_form
+    @ExchangeUser = ExchangeUser.find(params[:id])
+    render :partial => "users/reset_password_form"
   end
 
   protected

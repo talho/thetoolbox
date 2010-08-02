@@ -1,11 +1,11 @@
 class DistributionGroup < ActiveResource::Base
 
-  headers['Content-Type'] = 'application/soap+xml'
+  headers['Content-Type'] = 'application/xml'
 
   class << self
     def element_path(id, prefix_options = {}, query_options = nil)
       prefix_options, query_options = split_options(prefix_options) if query_options.nil?
-      "#{prefix(prefix_options)}#{collection_name}/#{CGI.escape(id)}#{query_string(query_options)}"
+      "#{prefix(prefix_options)}#{collection_name}/#{ERB::Util.url_encode(id)}#{query_string(query_options)}"
     end
 
     def collection_path(prefix_options = {}, query_options = nil)
@@ -15,16 +15,20 @@ class DistributionGroup < ActiveResource::Base
   end
 
 
-  self.primary_key :name
+  #self.primary_key :id
   self.site = "http://adtest2008/"
   self.element_name = "DstrSvc"
 
-  def id
-    name if self.attributes.keys.include?("name")
-  end
+  #def id
+  #  id if self.attributes.keys.include?("id")
+  #end
 
   def self.all
     self.find(:all)
+  end
+
+  def update
+    self.post(:update, nil, self.to_xml) #send the update to /#id/update with the xml representation as the body
   end
 
 end

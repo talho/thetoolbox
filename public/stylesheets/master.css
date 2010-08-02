@@ -70,6 +70,7 @@ form.new_user_session{margin-top:10px;}
 #wl_domain_container {display:none;}
 div.pagination{margin:0px 10px;}
 
+/* CACTI STYLE BEGIN */
 #cacti_graphs_iframe{margin-top:-60px;height:850px;}
 #cacti_graphs_iframe body{margin-top:-10px !important;}
 .cacti_form{display:none;}
@@ -79,3 +80,69 @@ div.pagination{margin:0px 10px;}
 #cacti_cred_container *{display:block;}
 #cacti_cred_container input{margin-bottom:5px;}
 .cacti_desc{width:200px;margin-bottom:10px;}
+/* CACTI STYLE END */
+
+/*DISTRIBUTION GROUP STYLE BEGIN*/
+#distribution_list{
+  width: 250px;  
+}
+
+#distribution_list .distribution_list_display{
+  border: 1px solid #666666;
+  width: 125px;
+  height: 150px;
+  overflow-y:auto;
+}
+
+#distribution_list .distribution_list_display li.selected{
+  background-color:khaki;
+}
+
+#distribution_list .distribution_list_display li{
+  border-bottom: 1px solid black;
+  padding:2px;
+}
+
+#distribution_list .distribution_list_user_display{
+  border: 1px solid #666666;
+  width: 100px;
+  height: 150px;
+  float:right;
+}
+
+#distribution_list .distribution_list_user_display ul li{
+  display :none;
+}
+
+#distribution_list .distribution_list_user_display ul li ul li{
+  border-bottom: 1px solid black;
+  padding:2px;
+  display :block;
+}
+
+.add_to_distro_container{display:none;}
+.distro_loader{
+  background:url("images/loader2.gif") no-repeat transparent;
+  width: auto;
+  height: 32px;
+  padding-top: 40px;
+}
+
+distribution-group{
+  display:block;
+}
+
+.add_to_group_form_container{
+  display:none;
+}
+
+/*DISTRIBUTION GROUP STYLE END*/
+span.reset_user_password a{
+  background: url("images/reset_password.png") no-repeat scroll 0 0 transparent !important;
+  padding: 12px 0px 12px 30px !important;
+}
+
+span.add_user_to_distro a{
+  background:url(images/add_to_distro.png) 0px 0px no-repeat !important;
+  padding: 12px 0px 12px 40px !important;
+}

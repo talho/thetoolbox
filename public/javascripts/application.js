@@ -5,6 +5,27 @@ $(document).ready(function() {
     $('#reset_password_container').dialog({width: 300,modal: true});
     return false;
   });
+  $('span.reset_user_password a').click(function(e){
+    //$('#reset_password_container').dialog({width: 300,modal: true});
+    $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"));
+    $('#reset_password_container').dialog({width: 300,modal: true});
+    return false;
+  });
+  $("span.add_user_to_distro a").click(function(obj){
+    $('#add_to_distro_container').dialog({modal: true});
+    $(".distro_loader").show();
+    $("#add_to_distro_internal_container").html('');
+    $("#add_to_distro_internal_container").load("/distribution_group", function(){
+      $(".distro_loader").hide();
+      $("#add_to_group_button").click(function(e){
+        $("#contact_name").val($(obj.target).attr("alias"))
+        $("#contact_smtp_address").val($(obj.target).attr("email"))
+        $("#add_to_group_hidden").val($(".distribution_list_display ul li.selected span").html())
+        $("#contact_type").val("UserMailbox")
+        $("#add_to_group_form_container form").submit();
+      }); 
+    });
+  });
   $('#set_fwd_address').click(function(e){
     $('#set_fwd_add_container').toggle();
     return false;
@@ -24,6 +45,18 @@ $(document).ready(function() {
   });
   $('#create_new_distro').click(function(e){
     $('#create_distribution_list').dialog({modal: true});
+  });
+  $('#add_to_distro').click(function(e){
+    $('#add_to_distro_container').dialog({modal: true});
+    $(".distro_loader").show();
+    $("#add_to_distro_internal_container").html('');
+    $("#add_to_distro_internal_container").load("/distribution_group", function(){
+      $(".distro_loader").hide();
+      $("#add_to_group_button").click(function(e){
+        $("#add_to_group_form_container").dialog({modal: true});
+      });
+    });
+
   });
   $("#reset_password_submit").click(validate_pass_form);
   $("#create_new_user_submit").click(validate_create_user_form);
@@ -73,6 +106,16 @@ $(document).ready(function() {
 
 });
 
+function toggle_distro_users(el, class_string){
+  el = $(el);
+  $('#distribution_list .distribution_list_display li').removeClass('selected');
+  el.addClass('selected');
+  
+  $('#distribution_list .distribution_list_user_display .user_display_list').hide(); // hide all of the user list items so they don't show when they aren't really there
+  $("."+class_string).toggle();
+
+  $("#add_to_group_hidden").val(el.children("span").html())
+}
 function begin_cacti_login()
 {
   build_cacti_cred_form();

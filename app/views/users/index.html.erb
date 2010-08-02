@@ -47,6 +47,10 @@
   <div class="create_distribution_list" id="create_distribution_list">
     <%= render :partial => "create_distribution_list" %>
   </div>
+  <div class="add_to_distro_container" id="add_to_distro_container">
+    <div class="distro_loader">Please wait while we retrieve Distribution Group information.</div>
+    <div class="add_to_distro_internal_container" id="add_to_distro_internal_container"></div>
+  </div>
   <hr/>
   <table class="user_list">
     <% @ldap_user_results.each do |index| %>
@@ -58,15 +62,12 @@
            <%= index.cn %>
         </td>
         <td id="<%= index.login %>" class="delete">
-          <% if index.mailboxEnabled %>
-            <!--
-            <%= link_to 'Disable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
-            -->
-          <% else %>
-            <!--
-            <%= link_to 'Enable', toggle_user_path(index), :confirm => 'Are you sure?' %>&nbsp;&nbsp;
-            -->
-          <% end %>
+          <span class="add_user_to_distro" >
+            <a href="#" alias="<%= index.login %>" email="<%= index.email %>" user="<%= index.id %>" >Add to Distribution List</a>
+          </span>
+          <span class="reset_user_password">
+            <a href="#" user="<%= index.id %>" >Reset Password</a>
+          </span>
           <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?' %>
         </td>
       </tr>

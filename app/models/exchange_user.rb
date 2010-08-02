@@ -27,8 +27,8 @@ class ExchangeUser < ActiveResource::Base
     self.post(:delete)  
   end
 
-  def update(attr)
-    self.post(:update, attr)
+  def update
+    self.post(:update, nil, self.to_xml)
   end
 
   def self.all
