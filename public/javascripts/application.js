@@ -23,9 +23,9 @@ $(document).ready(function() {
         $.ajax({
           type: "POST",
           url: "/add_to_distribution_group",
-          data: {contact_name: $(obj.target).attr("alias"), contact_smtp_address: $(obj.target).attr("email"), add_to_group_hidden: $(".distribution_list_display ul li.selected span").html(), contact_type: "UserMailbox"},
+          data: {contact_name: $(obj.target).attr("alias"), contact_smtp_address: $(obj.target).attr("email"), add_to_group_hidden: $(".distribution_list_display ul li.selected span.displayName").html(), contact_type: "UserMailbox"},
           success: function() {
-            class_string = $(".distribution_list_display ul li.selected span").html();
+            class_string = $(".distribution_list_display ul li.selected span.displayName").html();
             class_string = class_string.replace(/ /g, "_");
             $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
               $(".distro_overlay").toggle();
