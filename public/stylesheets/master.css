@@ -176,7 +176,7 @@ div.distro_overlay div.distro_overlay_ajax{
   margin-top: -3px;
 }
 
-span.displayName{display:block;}
+span.displayName{display:block;margin-left:12px;margin-top:-13px;}
 span.asterisk_note{color:red;}
 
 /*DISTRIBUTION GROUP STYLE END*/
