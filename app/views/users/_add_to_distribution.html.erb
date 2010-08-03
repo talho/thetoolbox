@@ -2,17 +2,7 @@
   <div class="distribution_list_user_display">
     <ul>
       <%- @distribution_results.each do |d| %>
-          <li class="user_display_list <%= d.displayName.gsub(" ", "_") %>">
-            <ul>
-              <%- unless d.ExchangeUsers == nil %>
-
-                  <%- d.ExchangeUsers.each do |u| %>
-                    <li><%= u.cn %></li>
-                  <%- end %>
-
-              <%- end %>
-           </ul>
-          </li>
+          <li class="user_display_list <%= d.displayName.gsub(" ", "_") %>"></li>
       <%- end %>
     </ul>  
   </div>
@@ -20,14 +10,17 @@
     <ul>
       <%- @distribution_results.each do |d| %>
           <li onclick="toggle_distro_users(this, '<%= d.displayName.gsub(" ", "_") %>')">
+            <span class="asterisk_note">
+              <%- unless d.has_children == nil or d.has_children == "false" %>*<%-else%>&nbsp;<%end%>
+            </span>
             <span class="displayName"><%= d.displayName %></span>
-            <%- unless d.ExchangeUsers == nil or d.ExchangeUsers.count == 0 %>*<%end%>
           </li>
       <%- end %>
     </ul>
   </div>
-  * - has member users
+  <p class="has_member_notice">* - has member users</p>
   <button name="add_to_group_button" class="add_to_group_button" id="add_to_group_button">Add To Group</button>
+  <button name="remove_from_group_button" class="remove_from_group_button" id="remove_from_group_button">Remove User</button>
   <div class="add_to_group_form_container" id="add_to_group_form_container">
     <% form_tag(add_to_distribution_path, :method => "post") do %>
       <%= hidden_field_tag :add_to_group_hidden %>
@@ -36,7 +29,11 @@
       <%= text_field_tag(:contact_name) %><br/>
       <%= label_tag(:contact_smtp_address, "Contact Address:") %><br/>
       <%= text_field_tag(:contact_smtp_address) %><br/>
-      <%= submit_tag("Submit") %>
+      <%= submit_tag("Submit", :id => "add_to_group_submit") %>
     <% end %>
+  </div>
+  <div class="distro_overlay">
+    <div class="distro_overlay_ajax"></div>
+    <p class="distro_overlay_msg"></p>
   </div>
 </div>

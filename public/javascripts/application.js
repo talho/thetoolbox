@@ -18,11 +18,20 @@ $(document).ready(function() {
     $("#add_to_distro_internal_container").load("/distribution_group", function(){
       $(".distro_loader").hide();
       $("#add_to_group_button").click(function(e){
-        $("#contact_name").val($(obj.target).attr("alias"))
-        $("#contact_smtp_address").val($(obj.target).attr("email"))
-        $("#add_to_group_hidden").val($(".distribution_list_display ul li.selected span").html())
-        $("#contact_type").val("UserMailbox")
-        $("#add_to_group_form_container form").submit();
+        $(".distro_overlay_msg").html("Please wait while we add user to distribution group.")
+        $(".distro_overlay").toggle();
+        $.ajax({
+          type: "POST",
+          url: "/add_to_distribution_group",
+          data: {contact_name: $(obj.target).attr("alias"), contact_smtp_address: $(obj.target).attr("email"), add_to_group_hidden: $(".distribution_list_display ul li.selected span").html(), contact_type: "UserMailbox"},
+          success: function() {
+            class_string = $(".distribution_list_display ul li.selected span").html();
+            class_string = class_string.replace(/ /g, "_");
+            $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+              $(".distro_overlay").toggle();
+            });
+          }
+        });
       }); 
     });
   });
@@ -54,6 +63,29 @@ $(document).ready(function() {
       $(".distro_loader").hide();
       $("#add_to_group_button").click(function(e){
         $("#add_to_group_form_container").dialog({modal: true});
+
+        $("#add_to_group_form_container form #add_to_group_submit").click(function(e){
+          $(".distro_overlay_msg").html("Please wait while we add contact to distribution group.")
+          $(".distro_overlay").toggle();
+          $.ajax({
+            type: "POST",
+            url: "/add_to_distribution_group",
+            data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
+            success: function() {
+              class_string = $(".distribution_list_display ul li.selected span").html();
+              class_string = class_string.replace(/ /g, "_");
+              $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+                $(".distro_overlay").toggle();
+                $("#add_to_group_form_container form").each(function(){
+                  this.reset();
+                 });
+              });
+            }
+          });
+          $("#add_to_group_form_container").dialog("close");
+          return false;
+        });
+        
       });
     });
 
@@ -95,18 +127,11 @@ $(document).ready(function() {
   $("#log_out").click(function(e){
     cacti_log_out();
   });
-  /*
-  if(window.location.href.indexOf('user_session/new') != -1){
-    document.getElementById("cacti_form_login_container").setAttribute('src', "https://cacti.thetoolbox.com/cacti/logout.php")
-    document.getElementById("cacti_form_login_container").src = document.getElementById("cacti_form_login_container").src
-    if(document.all)
-      parent.frames["cacti_form_login"].window.location.reload();
-    setTimeout("window.location='/'", 3000)
-  }*/
 
 });
 
-function toggle_distro_users(el, class_string){
+function toggle_distro_users(el, class_string)
+{
   el = $(el);
   $('#distribution_list .distribution_list_display li').removeClass('selected');
   el.addClass('selected');
@@ -114,8 +139,27 @@ function toggle_distro_users(el, class_string){
   $('#distribution_list .distribution_list_user_display .user_display_list').hide(); // hide all of the user list items so they don't show when they aren't really there
   $("."+class_string).toggle();
 
+  $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+
+  });
+
   $("#add_to_group_hidden").val(el.children("span").html())
+  $(".remove_from_group_button").hide();
 }
+
+function toggle_distro_user(el, member_alias, groupId, class_string)
+{
+  el = $(el)
+  $('#distribution_list .distribution_list_user_display ul li ul li').removeClass('selected');
+  el.toggleClass('selected')
+  $(".remove_from_group_button").show();
+  $(".remove_from_group_button").click(function(e){
+    $("."+class_string).load("/distribution_group_users_remove", {group_name: groupId, member_alias: member_alias}, function(){
+
+    });  
+  })
+}
+
 function begin_cacti_login()
 {
   build_cacti_cred_form();

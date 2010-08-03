@@ -42,7 +42,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :admin, :controller => "users", :action => "index"
   map.resources :white_lists
   map.resources :distribution_group, :controller => "distribution_group", :action => "index"
-  
+
   map.white_list_create "white_lists/:id/create", :controller => "white_lists", :action => "create"
 
   map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
@@ -56,6 +56,8 @@ ActionController::Routing::Routes.draw do |map|
   map.cacti_log_in "/users/cacti_log_in", :controller => "users", :action => "cacti_log_in"
   map.cacti_log_out "/users/cacti_log_out", :controller => "users", :action => "cacti_log_out"
   map.add_to_distribution "/add_to_distribution_group/", :controller => "distribution_group", :action => "add"
+  map.distribution_group_users "/distribution_group_users/", :controller => "distribution_group", :action => "users"
+  map.distribution_group_users_remove "/distribution_group_users_remove/", :controller => "distribution_group", :action => "remove_user"
   map.reset_password_form "/reset_password_form/:id", :controller => "users", :action => "reset_password_form"
 
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"

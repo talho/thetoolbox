@@ -52,12 +52,23 @@ class DistributionGroupController < ApplicationController
     redirect_to users_path
   end
 
-  def get_distribution_group
-    begin
-        
-    rescue
-
+  def users
+    if !params[:group_name].blank?
+      @distribution_results = DistributionGroup.find(params[:group_name])
+      render :partial => "users/distribution_group_users"
+    else
+      flash[:error] = "Invalid group name."
     end
   end
 
+  def remove_user
+    if !params[:group_name].blank?
+      @distribution_results = DistributionGroup.find(params[:group_name])
+      @distribution_results.ExchangeUsers.delete_if{|e| e.alias == params[:member_alias]}
+      @distribution_results.update
+      render :partial => "users/distribution_group_users"
+    else
+      flash[:error] = "Invalid group name."
+    end
+  end
 end

@@ -1,0 +1,9 @@
+<%- unless @distribution_results.ExchangeUsers.blank? %>
+  <ul>
+    <%- @distribution_results.ExchangeUsers.each do |u| %>
+      <li onclick="toggle_distro_user(this, '<%= u.alias %>', '<%= @distribution_results.displayName %>', '<%= @distribution_results.displayName.gsub(" ", "_") %>')"><%= u.cn %></li>
+    <%- end %>
+  </ul>
+<%- else %>
+  <p class="no_group_member_notice">There are no group members.</p>
+<%- end %>

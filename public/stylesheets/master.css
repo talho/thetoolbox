@@ -13,6 +13,7 @@ a{color:#039AC5;text-decoration:none;}
 a:hover{text-decoration:underline;}
 body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
 
+.ui-widget-content{color:#666666 !important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
 .user_list{margin-top:10px;clear:left;width:100%;}
 .user_list .table_hr{border-top:1px solid #c6c6c6;}
 .user_list td{padding:5px 10px;vertical-align:middle;width:33%;}
@@ -63,7 +64,7 @@ form.new_user_session{margin-top:10px;}
 #settings_panel .add_distribution_list a{background:url(images/add_to_distro.png) 0px 0px no-repeat;}
 #settings_panel .cacti_graphs a{background:url(images/cacti_graphs.png) 0px 0px no-repeat;}
 
-.create_distribution_list{display:none;}
+.create_distribution_list{display:none;min-height:0px !important;}
 .reset_password_container table td{padding:5px 10px 10px 0px;}
 
 .white_list_panel {display:none;}
@@ -84,28 +85,29 @@ div.pagination{margin:0px 10px;}
 
 /*DISTRIBUTION GROUP STYLE BEGIN*/
 #distribution_list{
-  width: 250px;  
+  width: 310px;  
 }
 
 #distribution_list .distribution_list_display{
   border: 1px solid #666666;
-  width: 125px;
+  width: 135px;
   height: 150px;
   overflow-y:auto;
 }
 
 #distribution_list .distribution_list_display li.selected{
-  background-color:khaki;
+  background-color:#E6EFC2;
 }
 
 #distribution_list .distribution_list_display li{
   border-bottom: 1px solid black;
   padding:2px;
+  cursor: pointer;
 }
 
 #distribution_list .distribution_list_user_display{
   border: 1px solid #666666;
-  width: 100px;
+  width: 135px;
   height: 150px;
   float:right;
 }
@@ -118,6 +120,11 @@ div.pagination{margin:0px 10px;}
   border-bottom: 1px solid black;
   padding:2px;
   display :block;
+  cursor: pointer;
+}
+
+#distribution_list .distribution_list_user_display ul li ul li.selected{
+  background-color:#E6EFC2;
 }
 
 .add_to_distro_container{display:none;}
@@ -135,6 +142,42 @@ distribution-group{
 .add_to_group_form_container{
   display:none;
 }
+
+p.has_member_notice{
+  padding: 5px 0px;  
+}
+
+.remove_from_group_button{
+  float:right;
+  display:none;
+}
+
+p.no_group_member_notice{
+  padding:5px;
+}
+
+div.distro_overlay{
+  display:none;
+  background: #fff;
+  width: 250px;
+  position: absolute;
+  top: 80px;
+  left: 35px;
+  padding: 10px;
+  border:1px solid #666666;
+}
+
+div.distro_overlay div.distro_overlay_ajax{
+  background:url("images/loader2.gif") no-repeat transparent;
+  width: 32px;
+  height: 32px;
+  float:left;
+  margin-right: 5px;
+  margin-top: -3px;
+}
+
+span.displayName{display:block;}
+span.asterisk_note{color:red;}
 
 /*DISTRIBUTION GROUP STYLE END*/
 span.reset_user_password a{
