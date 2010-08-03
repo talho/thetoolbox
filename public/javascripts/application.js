@@ -72,7 +72,7 @@ $(document).ready(function() {
             url: "/add_to_distribution_group",
             data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
             success: function() {
-              class_string = $(".distribution_list_display ul li.selected span").html();
+              class_string = $(".distribution_list_display ul li.selected span.displayName").html();
               class_string = class_string.replace(/ /g, "_");
               $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
                 $(".distro_overlay").toggle();
@@ -143,7 +143,7 @@ function toggle_distro_users(el, class_string)
 
   });
 
-  $("#add_to_group_hidden").val(el.children("span").html())
+  $("#add_to_group_hidden").val(el.children("span.displayName").html())
   $(".remove_from_group_button").hide();
 }
 
