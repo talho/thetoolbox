@@ -9,13 +9,14 @@ Feature: Manage Distribution List
     And I close ".cacti_cred_container" modal box
 
   Scenario: User Creates A New Distribution List
+    Given "Test List" does not exist
     When I follow "Create Distribution List"
     And I fill in "Distribution list name" with "Test List"
     And I press "Submit" within "#create_distribution_list"
     Then I should see "Distribution Group created successfully."
     And I clean up
-    | name      | type  |
-    | Test List | group |
+    | name      | exchangetype  |
+    | Test List | group         |
 
   Scenario: Admin adds users to distribution list
     Given I have a distribution list named "Test List"
@@ -27,9 +28,9 @@ Feature: Manage Distribution List
     Then I should see "Test User" within ".distribution_list_user_display"
     And "Test User" should be a member of "Test List"
     And I clean up
-    | name      | type  |
-    | Test List | group |
-    | testuser  | user  |
+    | name      | exchangetype  |
+    | Test List | group         |
+    | testuser  | user          |
 
   Scenario: Admin adds new contact to distribution list
     Given I have a distribution list named "Test List"
@@ -43,9 +44,9 @@ Feature: Manage Distribution List
     Then I should see "Contact Tester" within ".distribution_list_user_display"
     And "Contact Tester" should be a member of "Test List"
     And I clean up
-    | name           | type     |
-    | Test List      | group    |
-    | ContactTester  | contact  |
+    | name           | exchangetype |
+    | Test List      | group        |
+    | ContactTester  | contact      |
 
   Scenario: Admin removes user or contact from distribution list
     Given I have a distribution list named "Test List"
@@ -56,3 +57,7 @@ Feature: Manage Distribution List
     And I press "Remove User"
     Then I should not see "Test Contact" within ".distribution_list_user_display"
     And "Test Contact" should not be a member of "Test List"
+    And I clean up
+    | name        | exchangetype |
+    | Test List   | group        |
+    | TestContact | contact      |

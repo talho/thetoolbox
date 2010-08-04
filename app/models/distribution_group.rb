@@ -31,4 +31,7 @@ class DistributionGroup < ActiveResource::Base
     self.post(:update, nil, self.to_xml) #send the update to /#id/update with the xml representation as the body
   end
 
+  def delete
+    self.post(:delete, nil, self.to_xml) #send the delete as a post to /#id/delete
+  end
 end

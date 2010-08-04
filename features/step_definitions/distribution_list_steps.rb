@@ -1,4 +1,12 @@
 
+Given /^"([^\"]*)" does not exist$/ do |listName|
+  begin
+    group = DistributionGroup.find(listName)
+    group.delete
+  rescue
+  end
+end
+
 Given /^I have a distribution list named "([^\"]*)"$/ do |listName|
   group = DistributionGroup.find(listName)
   if group.nil?
