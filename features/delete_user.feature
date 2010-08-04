@@ -5,7 +5,6 @@ Feature: Delete user
 
   Background:
     Given I am logged in as "admin_tester/Password1"
-   # And I close ".cacti_cred_container" modal box
 
   Scenario: Admin deletes user successfully
     When I follow "Create User"
@@ -17,9 +16,8 @@ Feature: Delete user
     And I fill in "Confirm Password" with "Password1"
     And I check "User must change password"
     And I press "Submit" within ".create_new_user_container"
-    And I close ".cacti_cred_container" modal box
     Then I should see "User added"
+    And I have found the user with alias "test_delete"
     And I will confirm on next step
     And I follow "Delete" within "[@id='test_delete']"
-    And I close ".cacti_cred_container" modal box
     Then I should see "User deleted"

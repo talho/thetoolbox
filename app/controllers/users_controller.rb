@@ -21,12 +21,6 @@ class UsersController < ApplicationController
 
   def create
     unless !valid_params?
-      ldap  = ldap_connect
-      e     = nil
-      e_vpn = nil
-      unless ldap
-        return false
-      end
       dn           = "OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
       email_domain = "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1]
       attr_ldap = {
@@ -48,13 +42,17 @@ class UsersController < ApplicationController
         :pwdExpires         => params[:user][:pwd_exp]
       }
 
-      e = ExchangeUser.create(attr_ldap)
-
-      if e.attributes["mailboxEnabled"] != "true"
-        flash[:completed] = "Unable to create user.  You can try to enable the mailbox again by enabling the user, or contact your administrator."
-      else
-        flash[:completed] = "User added"
+      begin
+        e = ExchangeUser.create(attr_ldap)
+        if e.attributes["mailboxEnabled"] != "true"
+          flash[:completed] = "Unable to create user.  You can try to enable the mailbox again by enabling the user, or contact your administrator."
+        else
+          flash[:completed] = "User added"
+        end  
+      rescue
+         flash[:error] = "Entry #{attr_ldap[:alias]} Already Exists"
       end
+
 
     end
     redirect_to users_path

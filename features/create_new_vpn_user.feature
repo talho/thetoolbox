@@ -19,4 +19,7 @@ Feature: Create new vpn user
     And I check "VPN User"
     And I press "Submit" within ".create_new_user_container"
     Then I should see "User added"
-    And I should see "tester_b_test-vpn" within ".user_list"
+    And I have found the user with alias "tester_b_test"
+    And I clean up
+        | name              | exchangetype |
+        | tester_b_test     | user         |

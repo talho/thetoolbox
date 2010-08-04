@@ -18,10 +18,10 @@ Feature: Create new user
     And I check "User must change password"
     And I press "Submit" within ".create_new_user_container"
     Then I should see "User added"
+    And I have found the user with alias "tester_b_test"
     And I clean up
         | name          | exchangetype |
         | tester_b_test | user         |
-
 
 
   Scenario: User fails to enter proper information
@@ -43,4 +43,4 @@ Feature: Create new user
     And I fill in "Confirm Password" with "Password1"
     And I check "User must change password"
     And I press "Submit" within ".create_new_user_container"
-    Then I should see "Entry Already Exists" 
+    Then I should see "Entry admin_tester Already Exists" 
