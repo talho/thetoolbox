@@ -22,7 +22,8 @@ Feature: Manage Distribution List
     Given I have a distribution list named "Test List"
     And "Test List" has no members
     And "Test User" is a user with alias "testuser"
-    When I follow "Add to Distribution List" within "#testuser.delete"
+    When I have found the user with alias "testuser"
+    And I follow "Add to Distribution List" within "#testuser.delete"
     And I select "Test List" within ".distribution_list_display"
     And I press "Add To Group"
     Then I should see "Test User" within ".distribution_list_user_display"

@@ -49,6 +49,17 @@ Given /^I am logged in as "([^\"]*)"$/ do |credentials|
   #And %{I should be signed in}
 end
 
+When /^I have found the user with alias "([^\"]*)"$/ do |userName|
+  elem = find("#" + userName + ".delete") # look for the delete container with the user name
+  if elem.nil?
+    unless  find_link("Next").nil?
+      When %{I follow "Next"}
+      And  %{I close ".cacti_cred_container" modal box}
+      And  %{I have found the user with alias "#{userName}"}
+    end      
+  end
+  elem
+end
 
 # Session
 

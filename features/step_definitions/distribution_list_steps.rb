@@ -8,7 +8,11 @@ Given /^"([^\"]*)" does not exist$/ do |listName|
 end
 
 Given /^I have a distribution list named "([^\"]*)"$/ do |listName|
-  group = DistributionGroup.find(listName)
+  begin
+    group = DistributionGroup.find(listName)
+  rescue
+  end
+  
   if group.nil?
     user = User.all.first
     group = DistributionGroup.new(:group_name => listName, :ou => user.ou)
@@ -62,19 +66,18 @@ Given /^"([^\"]*)" is a user with alias "([^\"]*)"$/ do |userName, userAlias|
 end
 
 When /^I select "([^\"]*)" within "([^\"]*)"$/ do |listItem, selector|
-  with_scope(selector) do
-    item = page.find('li .displayName', :text => listItem)
-    item.click
+  within (selector) do
+    Capybara.default_wait_time = 5
+    find('li .displayName', :text => listItem).click
   end
 end
 
 Then /^"([^\"]*)" should be a member of "([^\"]*)"$/ do |userOrContactName, groupName|
-  group = DistributionGroups.find(groupName)
+  group = DistributionGroup.find(groupName)
   group.ExchangeUsers.find(:cn => userOrContactName).should != nil
 end
 
-Then /^"([^\"]*)" should not be a member of "([^\"]*)"$/ do |userOrContactName, groupName|
-  
-  group = DistributionGroups.find(groupName)
+Then /^"([^\"]*)" should not be a member of "([^\"]*)"$/ do |userOrContactName, groupName|    
+  group = DistributionGroup.find(groupName)
   group.ExchangeUsers.find(:cn => userOrContactName).should == nil
 end
