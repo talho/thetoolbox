@@ -19,10 +19,10 @@ class DistributionGroupController < ApplicationController
   end
   
   def create_distribution_group
-    unless params[:ldap_user][:distribution_list_name].blank?
+    unless params[:distribution_group][:distribution_list_name].blank?
       begin
         g = DistributionGroup.new
-        g.group_name = params[:ldap_user][:distribution_list_name]
+        g.group_name = params[:distribution_group][:distribution_list_name]
         g.ou = current_user.ou
         g.save
         flash[:completed] = "Distribution Group created successfully."

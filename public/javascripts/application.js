@@ -65,6 +65,9 @@ $(document).ready(function() {
         $("#add_to_group_form_container").dialog({modal: true});
 
         $("#add_to_group_form_container form #add_to_group_submit").click(function(e){
+          if(!validate_add_to_group_form()){
+            return false;
+          }
           $(".distro_overlay_msg").html("Please wait while we add contact to distribution group.")
           $(".distro_overlay").toggle();
           $.ajax({
@@ -103,7 +106,7 @@ $(document).ready(function() {
   });
   $('#create_distribution_submit').click(function(e){
     var filter = /^[a-zA-Z0-9.-]/;
-    if(!filter.test($("#distribution_list_name_title").val())){
+    if(!filter.test($("#distribution_list_name").val())){
       alert("Please enter a valid name for your distribution group.");
       return false;
     }
@@ -313,6 +316,23 @@ function validate_create_user_form(){
   }
   if($("#user_confirm_password").val() == '' || ($("#user_password").val() != $("#user_confirm_password").val())){
     error_list += "- Please confirm password.\t\n";
+  }
+  if(error_list != ''){
+    alert("Please correct the following items and try again.\t\n"+error_list);
+    return false;
+  }
+  return true;
+}
+
+function validate_add_to_group_form(){
+  var error_list = '';
+  var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  if($("#contact_name").val() == '' || $("#contact_name").val().length <= 2){
+    error_list += "- Please enter a valid contact name.\t\n";
+  }
+  if ($("#contact_smtp_address").val() == '' || !filter.test($("#contact_smtp_address").val())) {
+    error_list += "- Please provide a valid email address.\t\n";
   }
   if(error_list != ''){
     alert("Please correct the following items and try again.\t\n"+error_list);
