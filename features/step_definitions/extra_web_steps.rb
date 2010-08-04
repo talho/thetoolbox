@@ -13,3 +13,15 @@ end
 Then /^I should see "([^\"]*)" within the confirmation box$/ do |msg|
   assert !(evaluate_script("window.confirmation_message") =~ Regexp.new(msg)).nil?
 end
+
+When /^I close "([^\"]*)" modal box$/ do |dom_selector|
+  begin
+    evaluate_script("$('#{dom_selector}').dialog('close');")
+  rescue
+    Capybara::NotSupportedByDriverError
+  end
+end
+
+Then /^I refresh page$/ do
+  evaluate_script("window.location.reload()")
+end
