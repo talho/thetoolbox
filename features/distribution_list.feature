@@ -54,7 +54,7 @@ Feature: Manage Distribution List
     And "Test Contact" is a contact and a member of "Test List"
     When I follow "Add/Remove from Distribution List"
     And I select "Test List" within ".distribution_list_display"
-    And I select "Test Contact" within ".distribution_list_user_display"
+    And I select member "Test Contact" for list "Test List" within ".distribution_list_user_display"
     And I press "Remove User"
     Then I should not see "Test Contact" within ".distribution_list_user_display"
     And "Test Contact" should not be a member of "Test List"

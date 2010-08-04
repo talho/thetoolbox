@@ -6,8 +6,8 @@ When /^I clean up$/ do |table|
         group = DistributionGroup.find(hash[:name])
         group.delete
       when 'contact'
-        contact = ExchangeUser.new :alias => hash[:name], :type => 'MailContact'
-        contact.delete
+        contact = ExchangeUser.new :login => hash[:name], :alias => hash[:name], :type => 'MailContact'
+        contact.destroy
       when 'user'
         user = ExchangeUser.find(hash[:name])
         user.destroy

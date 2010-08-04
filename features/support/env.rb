@@ -27,7 +27,8 @@ Spork.prefork do
   # steps to use the XPath syntax.
   Capybara.default_selector = :css
   Capybara.default_driver   = :selenium
-
+  Capybara.default_wait_time = 5
+  
 end
  
 Spork.each_run do

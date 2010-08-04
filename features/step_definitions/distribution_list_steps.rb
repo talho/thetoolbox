@@ -27,7 +27,7 @@ Given /^"([^\"]*)" is a contact and a member of "([^\"]*)"$/ do |contactName, li
   end
   adminUser = User.all.first
 
-  user = ExchangeUser.new :cn => contactName, :type => "MailContact", :ou => adminUser.ou, :email => "doesnt@matter.com"
+  user = ExchangeUser.new :cn => contactName, :alias => contactName.gsub(" ", ""), :type => "MailContact", :ou => adminUser.ou, :email => "doesnt@matter.com"
   group.ExchangeUsers.push(user)
   group.update
 end
@@ -67,17 +67,33 @@ end
 
 When /^I select "([^\"]*)" within "([^\"]*)"$/ do |listItem, selector|
   within (selector) do
-    Capybara.default_wait_time = 5
     find('li .displayName', :text => listItem).click
+  end
+end
+
+When /^I select member "([^\"]*)" for list "([^"]*)" within "([^\"]*)"$/ do |listItem, listName, selector|
+  within (selector) do
+    elem = find('li.' + listName.gsub(" ", "_")).find("li", :text => listItem)
+    # capybara's wait isn't working for us, so do our own sleeping
+    if elem.nil?
+      i = 0
+      while i < 4 and elem.nil?
+        i += 1
+        sleep 1
+        elem = find('li.' + listName.gsub(" ", "_")).find("li", :text => listItem)        
+      end
+    end
+
+    elem.click
   end
 end
 
 Then /^"([^\"]*)" should be a member of "([^\"]*)"$/ do |userOrContactName, groupName|
   group = DistributionGroup.find(groupName)
-  group.ExchangeUsers.find(:cn => userOrContactName).should != nil
+  assert !(group.ExchangeUsers.find {|g| g.cn == userOrContactName }.nil?)
 end
 
 Then /^"([^\"]*)" should not be a member of "([^\"]*)"$/ do |userOrContactName, groupName|    
   group = DistributionGroup.find(groupName)
-  group.ExchangeUsers.find(:cn => userOrContactName).should == nil
+  assert (group.ExchangeUsers.find {|g| g.cn == userOrContactName }.nil?)
 end
