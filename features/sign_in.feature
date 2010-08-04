@@ -17,9 +17,7 @@ Feature: Sign in
     And I fill in "Password" with "WrongPasswordOne"
     And I select "Test" from "Authenticate"
     And I press "Sign In"
-    #And I sign in as "tester_test/WrongPasswordOne"
-    Then I should see "Password is not valid"
-    And this is not finished
+    Then I should see "Login is not valid"
     And I should be signed out
 
   Scenario: User signs in successfully

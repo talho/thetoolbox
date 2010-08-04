@@ -10,7 +10,7 @@ When /^I clean up$/ do |table|
         contact.delete
       when 'user'
         user = ExchangeUser.find(hash[:name])
-        user.delete
+        user.destroy
     end
   end
 end

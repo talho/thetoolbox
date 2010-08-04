@@ -184,7 +184,7 @@ function build_cacti_cred_form()
   input_elem1.setAttribute("type", "text");
   input_elem1.setAttribute("id", "cacti_user_name_cred");
   label_elem2 = document.createElement("label");
-  label_elem2.innerHTML = "Cacti User Password:";
+  label_elem2.innerHTML = "Cacti Password:";
   label_elem2.setAttribute("for", "cacti_user_pass_cred");
   input_elem2 = document.createElement("input");
   input_elem2.setAttribute("type", "password");
