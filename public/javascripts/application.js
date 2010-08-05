@@ -138,14 +138,15 @@ function toggle_distro_users(el, class_string)
   el = $(el);
   $('#distribution_list .distribution_list_display li').removeClass('selected');
   el.addClass('selected');
-  
-  $('#distribution_list .distribution_list_user_display .user_display_list').hide(); // hide all of the user list items so they don't show when they aren't really there
+  // hide all of the user list items so they don't show when they aren't really there
+  $('#distribution_list .distribution_list_user_display .user_display_list').hide();
   $("."+class_string).toggle();
-
+  $(".distro_overlay_msg").html("Loading distribution group members.")
+  $(".distro_overlay").toggle();
   $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
-
+    $(".distro_overlay").toggle();
   });
-
+  $("#add_to_group_button").show();
   $("#add_to_group_hidden").val(el.children("span.displayName").html())
   $(".remove_from_group_button").hide();
 }
@@ -157,9 +158,11 @@ function toggle_distro_user(el, member_alias, groupId, class_string)
   el.toggleClass('selected')
   $(".remove_from_group_button").show();
   $(".remove_from_group_button").click(function(e){
+    $(".distro_overlay_msg").html("Please wait while we remove member from distribution group.")
+    $(".distro_overlay").toggle();
     $("."+class_string).load("/distribution_group_users_remove", {group_name: groupId, member_alias: member_alias}, function(){
-
-    });  
+      $(".distro_overlay").toggle();
+    });
   })
 }
 

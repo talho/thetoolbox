@@ -89,7 +89,7 @@ div.pagination{margin:0px 10px;}
 }
 
 #distribution_list .distribution_list_display{
-  border: 1px solid #666666;
+  border: 1px solid #ccc;
   width: 135px;
   height: 150px;
   overflow-y:auto;
@@ -100,13 +100,13 @@ div.pagination{margin:0px 10px;}
 }
 
 #distribution_list .distribution_list_display li{
-  border-bottom: 1px solid black;
-  padding:2px;
+  border-bottom: 1px solid #ccc;
+  padding:2px 0px 2px 5px;
   cursor: pointer;
 }
 
 #distribution_list .distribution_list_user_display{
-  border: 1px solid #666666;
+  border: 1px solid #ccc;
   width: 135px;
   height: 150px;
   float:right;
@@ -117,8 +117,8 @@ div.pagination{margin:0px 10px;}
 }
 
 #distribution_list .distribution_list_user_display ul li ul li{
-  border-bottom: 1px solid black;
-  padding:2px;
+  border-bottom: 1px solid #ccc;
+  padding:2px 0px 2px 5px;
   display :block;
   cursor: pointer;
 }
@@ -178,6 +178,7 @@ div.distro_overlay div.distro_overlay_ajax{
 
 span.displayName{display:block;margin-left:12px;margin-top:-13px;}
 span.asterisk_note{color:red;}
+.add_to_group_button{display:none;}
 
 /*DISTRIBUTION GROUP STYLE END*/
 span.reset_user_password a{
