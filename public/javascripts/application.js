@@ -12,6 +12,11 @@ $(document).ready(function() {
     return false;
   });
   $("span.add_user_to_distro a").click(function(obj){
+    try{
+      $("#add_to_group_form_container").dialog("destroy");
+      $("#add_to_group_form_container").remove();
+    }
+    catch(err){}
     $('#add_to_distro_container').dialog({modal: true});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").html('');
@@ -56,43 +61,48 @@ $(document).ready(function() {
     $('#create_distribution_list').dialog({modal: true});
   });
   $('#add_to_distro').click(function(e){
+    try{
+      $("#add_to_group_form_container").dialog("destroy");
+      $("#add_to_group_form_container").remove();
+    }
+    catch(err){}
     $('#add_to_distro_container').dialog({modal: true});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").empty();
     $("#add_to_distro_internal_container").load("/distribution_group", function(){
       $(".distro_loader").hide();
       $("#add_to_group_button").click(function(e){
+        $("#add_to_group_form_container form").each(function(){
+          this.reset();
+        });
         $("#add_to_group_form_container").dialog({modal: true});
       });
-    $("#add_to_group_form_container form #add_to_group_submit").click(function(e){
-      if(!validate_add_to_group_form()){
-        return false;
-      }
-      $(".distro_overlay_msg").html("Please wait while we add contact to distribution group.")
-      $(".distro_overlay").toggle();
-      $.ajax({
-        type: "POST",
-        url: "/add_to_distribution_group",
-        data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
-        success: function() {
-          class_string = $(".distribution_list_display ul li.selected span.displayName").html();
-          class_string = class_string.replace(/ /g, "_");
-          $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
-            $(".distro_overlay").toggle();
-            $("#add_to_group_form_container form").each(function(){
-              this.reset();
-             });
-          });
-        },
-        error: function(req, status, text)
-        {
-            alert(req.responseText);
-            $(".distro_overlay").toggle();
+      $("#add_to_group_form_container form #add_to_group_submit").click(function(e){
+        if(!validate_add_to_group_form()){
+          return false;
         }
+        $(".distro_overlay_msg").html("Please wait while we add contact to distribution group.")
+        $(".distro_overlay").toggle();
+        $.ajax({
+          type: "POST",
+          url: "/add_to_distribution_group",
+          data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
+          success: function() {
+            class_string = $(".distribution_list_display ul li.selected span.displayName").html();
+            class_string = class_string.replace(/ /g, "_");
+            $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+              $(".distro_overlay").toggle();
+            });
+          },
+          error: function(req, status, text)
+          {
+              alert(req.responseText);
+              $(".distro_overlay").toggle();
+          }
+        });
+        $("#add_to_group_form_container").dialog("close");
+        return false;
       });
-      $("#add_to_group_form_container").dialog("close");
-      return false;
-    });
     });
 
   });
