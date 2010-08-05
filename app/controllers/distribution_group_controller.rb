@@ -45,11 +45,13 @@ class DistributionGroupController < ApplicationController
         d.ExchangeUsers.push(e)
         d.update
         flash[:completed] = "Contact Added Successfully. "
-      rescue
-        flash[:error] = "Unable to add contact, please contact your administrator. "
+        render :text => "Contact Added Successfully" #redirect_to users_path
+      rescue ActiveResource::ResourceConflict
+        render :text => "A contact with name " + params[:contact_name] + " with a different email was found on the server. Please provide a unique contact name.", :status => 409
+      rescue Exception => e
+        render :text => "An unknown error occurred, please contact your administrator" #flash[:error] = "Unable to add contact, please contact your administrator. "
       end
     end
-    redirect_to users_path
   end
 
   def users
