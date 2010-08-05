@@ -49,6 +49,25 @@ Feature: Manage Distribution List
     | Test List      | group        |
     | ContactTester  | contact      |
 
+
+  Scenario: Admin adds duplicate contact to distribution list
+    Given I have a distribution list named "Test List"
+    And "Test Contact" is a contact and a member of "Test List"
+    When I follow "Add/Remove from Distribution List"
+    And I select "Test List" within ".distribution_list_display"
+    And I press "Add To Group"
+    And I fill in "Contact Name" with "Test Contact"
+    And I fill in "Contact Address" with "unique135134@testme.com"
+    And I override alert
+    And I press "Submit" within "#add_to_group_form_container"
+    Then I should see "A contact with name Test Contact with a different email was found on the server\. Please provide a unique contact name\." within the alert box
+    And I should see "Test Contact" within ".distribution_list_user_display"
+    And "Test Contact" should be a member of "Test List"
+    And I clean up
+    | name           | exchangetype |
+    | Test List      | group        |
+    | ContactTester  | contact      |
+
   Scenario: Admin removes user or contact from distribution list
     Given I have a distribution list named "Test List"
     And "Test Contact" is a contact and a member of "Test List"

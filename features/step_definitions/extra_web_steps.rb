@@ -22,6 +22,14 @@ When /^I close "([^\"]*)" modal box$/ do |dom_selector|
   end
 end
 
+When /^I override alert$/ do
+  begin
+    evaluate_script("window.alert = function(msg) { window.alert_message = msg; return msg; }")
+  rescue Capybara::NotSupportedByDriverError
+  end
+end
+
 Then /^I refresh page$/ do
   evaluate_script("window.location.reload()")
 end
+
