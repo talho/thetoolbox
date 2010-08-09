@@ -3,20 +3,30 @@ class UsersController < ApplicationController
   verify :method => :get, :only => [ :delete, :enable_user, :forgot_password ], :redirect_to => { :action => :index }
 
   def index
-    user = User.find_by_login(current_user[:login])
-    if user.is_admin?
-      options            = {}
-      options[:page]     = params[:page] || 1
-      options[:per_page] = params[:per_page] || 5
-      @ldap_user_results = ExchangeUser.find(:all, :params => options)
-    else
-      redirect_to user_path(current_user)
+    begin
+      user = User.find_by_login(current_user[:login])
+      if user.is_admin?
+        options            = {}
+        options[:page]     = params[:page] || 1
+        options[:per_page] = params[:per_page] || 5
+        @ldap_user_results = ExchangeUser.find(:all, :params => options)
+      else
+        redirect_to user_path(current_user)
+      end
+      @new_user = User.new
+    rescue
+      flash[:error] = "The exchange restful service is currently down, please contact your administrator."  
     end
-    @new_user = User.new
+
   end
 
   def show
-    @user = User.find_by_id(params[:id])
+    begin
+      @user = User.find_by_id(params[:id])
+    rescue
+      flash[:error] = "The exchange restful service is currently down, please contact your administrator."
+    end
+
   end
 
   def create
@@ -52,8 +62,6 @@ class UsersController < ApplicationController
       rescue
          flash[:error] = "Entry #{attr_ldap[:alias]} Already Exists"
       end
-
-
     end
     redirect_to users_path
   end
@@ -154,11 +162,11 @@ class UsersController < ApplicationController
       if(params[:cacti_username].blank? || params[:cacti_password].blank?)
         render :text => "Error", :status => 400
       else
-        uri = URI.parse("https://cacti.thetoolbox.com/cacti/graph_view.php")
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
+        uri              = URI.parse(LDAP_Config[:cacti]+"graph_view.php")
+        http             = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl     = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        request = Net::HTTP::Post.new(uri.request_uri)
+        request          = Net::HTTP::Post.new(uri.request_uri)
         request.set_form_data({"action" => "login", "login_username" => params[:cacti_username], "login_password" => params[:cacti_password]})
         response = http.request(request)
         if(response.code == "302" && response.body.blank?)
@@ -244,22 +252,6 @@ class UsersController < ApplicationController
       return false
     end
     return true
-  end
-
-  def ldap_connect
-    begin
-      ldap = Net::LDAP.new(
-        :host       => LDAP_Config[:host][LDAP_Config[:auth_to]],
-        :port       => LDAP_Config[:port].to_i,
-        :encryption => :simple_tls,
-        :auth       => {:method => :simple, :username => LDAP_Config[:username][LDAP_Config[:auth_to]], :password => LDAP_Config[:password]})
-    rescue
-      return false
-    end
-    unless ldap.bind
-      return false
-    end
-    ldap
   end
   
 end

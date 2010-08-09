@@ -7,14 +7,19 @@ class UserSessionsController < ApplicationController
   end
 
   def create
-    LDAP_Config[:auth_to] = params[:host][:authenticate]
-    @user_session         = UserSession.new(params[:user_session])
-    if @user_session.save
-      flash[:completed] = "Login successful!"
-      redirect_to dashboard_path
-    else
-      current_user_session.destroy unless current_user_session.blank?
-      render :action => :new
+    begin
+      LDAP_Config[:auth_to] = params[:host][:authenticate]
+      @user_session         = UserSession.new(params[:user_session])
+      if @user_session.save
+        flash[:completed] = "Login successful!"
+        redirect_to dashboard_path
+      else
+        current_user_session.destroy unless current_user_session.blank?
+        render :action => :new
+      end
+    rescue
+      flash[:error] = "The exchange restful service is currently down, please contact your administrator."
+      redirect_back_or_default new_user_session_url
     end
   end
 

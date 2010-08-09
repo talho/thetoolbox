@@ -15,13 +15,8 @@ class DistributionGroup < ActiveResource::Base
   end
 
 
-  #self.primary_key :id
   self.site = "http://adtest2008/"
   self.element_name = "DstrSvc"
-
-  #def id
-  #  id if self.attributes.keys.include?("id")
-  #end
 
   def self.all
     self.find(:all)

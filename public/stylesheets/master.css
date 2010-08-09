@@ -14,6 +14,8 @@ a:hover{text-decoration:underline;}
 body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
 
 .ui-widget-content{color:#666666 !important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
+.ui-dialog .ui-dialog-title{color: #666666 !important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important; }
+
 .user_list{margin-top:10px;clear:left;width:100%;}
 .user_list .table_hr{border-top:1px solid #c6c6c6;}
 .user_list td{padding:5px 10px;vertical-align:middle;width:33%;}
@@ -85,9 +87,16 @@ div.pagination{margin:0px 10px;}
 
 /*DISTRIBUTION GROUP STYLE BEGIN*/
 #distribution_list{
-  width: 310px;  
+  width: auto;  
 }
 
+#distribution_list #accordion p{
+  height: auto;  
+}
+
+#distriubtion_list #accordion .accordion_user_container{
+  width: auto !important;
+}
 #distribution_list .distribution_list_display{
   border: 1px solid #ccc;
   width: 135px;
@@ -127,7 +136,15 @@ div.pagination{margin:0px 10px;}
   background-color:#E6EFC2;
 }
 
+#distribution_list .pagination{
+  margin: 10px 0px;
+  text-align: center;
+}
+
+#distribution_list .pagination span span{border: 1px solid #999999; background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121;}
+
 .add_to_distro_container{display:none;}
+
 .distro_loader{
   background:url("images/loader2.gif") no-repeat transparent;
   width: auto;
@@ -156,7 +173,8 @@ p.no_group_member_notice{
   padding:5px;
 }
 
-div.distro_overlay{
+div.distro_overlay,
+div.distro_user_overlay{
   display:none;
   background: #fff;
   width: 250px;
@@ -167,7 +185,12 @@ div.distro_overlay{
   border:1px solid #666666;
 }
 
-div.distro_overlay div.distro_overlay_ajax{
+div.distro_user_overlay{
+  display: block;
+}
+
+div.distro_overlay div.distro_overlay_ajax,
+div.distro_user_overlay div.distro_user_overlay_ajax{
   background:url("images/loader2.gif") no-repeat transparent;
   width: 32px;
   height: 32px;

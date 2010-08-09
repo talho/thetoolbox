@@ -1,3 +1,10 @@
+<div class="flash">
+  <%- [:notice, :instructions, :completed, :error].each do |type| -%>
+    <%- if flash[type] -%>
+      <p class="<%= type %>"><%= flash[type] %></p>
+    <%- end -%>
+  <%- end -%>
+</div>
 <h1>TALHO Toolbox: Login</h1>
 <% form_for @user_session, :url => user_session_path do |f| %>
   <%= f.error_messages %>
@@ -15,4 +22,4 @@
   <br />
   <%= f.submit "Sign In" %>
 <% end %>
-<iframe src="https://cacti.thetoolbox.com/cacti/logout.php" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>
+<iframe src="<%= LDAP_Config[:cacti] %>logout.php" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>

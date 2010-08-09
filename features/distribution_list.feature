@@ -36,7 +36,7 @@ Feature: Manage Distribution List
   Scenario: Admin adds new contact to distribution list
     Given I have a distribution list named "Test List"
     And "Test List" has no members
-    When I follow "Add/Remove from Distribution List"
+    When I follow "Manage Distribution List"
     And I select "Test List" within ".distribution_list_display"
     And I press "Add To Group"
     And I fill in "Contact Name" with "Contact Tester"
@@ -53,7 +53,7 @@ Feature: Manage Distribution List
   Scenario: Admin adds duplicate contact to distribution list
     Given I have a distribution list named "Test List"
     And "Test Contact" is a contact and a member of "Test List"
-    When I follow "Add/Remove from Distribution List"
+    When I follow "Manage Distribution List"
     And I select "Test List" within ".distribution_list_display"
     And I press "Add To Group"
     And I fill in "Contact Name" with "Test Contact"
@@ -71,7 +71,7 @@ Feature: Manage Distribution List
   Scenario: Admin removes user or contact from distribution list
     Given I have a distribution list named "Test List"
     And "Test Contact" is a contact and a member of "Test List"
-    When I follow "Add/Remove from Distribution List"
+    When I follow "Manage Distribution List"
     And I select "Test List" within ".distribution_list_display"
     And I select member "Test Contact" for list "Test List" within ".distribution_list_user_display"
     And I press "Remove User"

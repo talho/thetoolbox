@@ -1,10 +1,5 @@
 class User < ActiveRecord::Base
-  #before_create :sync_with_ldap
-  #before_save :sync_with_ldap
 
-  before_destroy :destroy_vpn_user
-  after_save :create_vpn_user
-  
   acts_as_authentic do |c|
     c.validate_password_field = false
     c.validate_email_field    = false
@@ -83,35 +78,4 @@ class User < ActiveRecord::Base
     return ldap
   end
 
-  private
-
-  def create_vpn_user
-    if vpn
-
-    end
-  end
-
-  def destroy_vpn_user
-    if vpn
-      
-    end
-  end
-
-  def sync_with_ldap
-    if new_record?
-      if login && dc
-        user         = LdapUser.find_by_login_and_dc(login, dc)
-        self.cn      = user.cn
-        self.dn      = user.dn
-        self.ou      = user.ou
-        self.email   = user.email
-        self.enabled = user.enabled
-        true
-      else
-        false
-      end
-    else
-
-    end
-  end
 end
