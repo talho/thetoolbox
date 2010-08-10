@@ -22,7 +22,7 @@ $(document).ready(function() {
       $("#add_to_group_form_container").remove();
     }
     catch(err){}
-    $('#add_to_distro_container').dialog({modal: true, draggable: true, resizable: true, title: "Manage Distribution Groups"});
+    $('#add_to_distro_container').dialog({modal: true, title: "Manage Distribution Groups"});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").html('');
     $("#add_to_distro_internal_container").load("/distribution_group", function(){
@@ -38,24 +38,17 @@ $(document).ready(function() {
       $("#add_to_group_form_container").remove();
     }
     catch(err){}
-    $('#add_to_distro_container').dialog({modal: true, title: "Manage Distribution Groups"});
+    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Manage Distribution Groups"});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").empty();
-    /*
-    $("#add_to_distro_internal_container").load("/distribution_group", function(response, status, xhr){
-      manage_distribution_groups(response);
-      //add_to_group_form();
-      $(".distro_loader").height($("#distribution_list").height()-29);
-      $("#add_to_distro_container").width($("#add_to_distro_container").width()+25);
-    });*/
     $.ajax({
       url: "/distribution_group",
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        //add_to_group_form();
-        $(".distro_loader").height($("#distribution_list").height()-29);
-        $("#add_to_distro_container").width($("#add_to_distro_container").width()+25);
+        add_to_group_form();
+        $(".distro_loader").height($("#accordion").height()-39);
+        $("#add_to_distro_container").width($("#add_to_distro_container").width()+3);
       }
     });
   });
@@ -129,13 +122,21 @@ $(document).ready(function() {
 
 function jaxify_pagination()
 {
-  $(" span, a", "#distribution_list .pagination").button();
+  //$("> span, a", "#distribution_list .pagination").button();
+  $("#distribution_list .pagination > span").button();
+  $("#distribution_list .pagination > a").button();
 	$("a", "#distribution_list .pagination").click(function() {
     $(".distro_loader").show();
-    $("#add_to_distro_internal_container").empty();
-    $("#add_to_distro_internal_container").load($(this).attr("href"), function(){
-      manage_distribution_groups();
-      add_to_group_form();
+    $("#accordion").remove();
+    $.ajax({
+      url: $(this).attr("href"),
+      dataType: "json",
+      success: function(response, status, xhr) {
+        manage_distribution_groups(response);
+        add_to_group_form();
+        $(".distro_loader").height($("#accordion").height()-39);
+        $("#add_to_distro_container").width($("#add_to_distro_container").width());
+      }
     });
     return false;
   });
@@ -144,60 +145,208 @@ function jaxify_pagination()
 function manage_distribution_groups(response)
 {
   build_distribution_view(response);
-  //var distribution_obj = jQuery.parseJSON(json_obj.distribution_groups);
-
-  //alert( distribution_obj[0].displayName )
-  
   $(".distro_loader").hide();
-  $("#accordion").accordion({change: function(event, ui){
+  $(document.getElementById("accordion")).accordion({change: function(event, ui){
+    $(".distro_user_overlay").show();
     toggle_distro_users(ui, $(ui.newHeader).find("a").html().replace(/ /g, "_"))
-  }});
-
-
+  }, active: false, collapsible: true});
   jaxify_pagination();
 }
 
 function build_distribution_view(json_obj)
 {
   distribution_obj = jQuery.parseJSON(json_obj.distribution_groups);
-  distribution_list = document.createElement("div");
-  distribution_list.setAttribute("id", "distribution_list");
+  if(document.getElementById("distribution_list")){
+    distribution_list = document.getElementById("distribution_list");
+  }else{
+    distribution_list = document.createElement("div");
+    distribution_list.setAttribute("id", "distribution_list");
+  }
   accordion_div = document.createElement("div");
   accordion_div.setAttribute("id", "accordion");
+
   for(i = 0; i < distribution_obj.length; i++){
-    h3_element = document.createElement("h3");
-    anchor_element = document.createElement("a");
-    anchor_element.setAttribute("href", "#");
+    h3_element               = document.createElement("h3");
+    anchor_element           = document.createElement("a");
+    div_element1             = document.createElement("div");
+    div_element2             = document.createElement("div");
+    div_element3             = document.createElement("div");
+    div_element4             = document.createElement("div");
+    //p_element2               = document.createElement("p");
+    div_element1.className   = "accordion_user_container user_display_list "+distribution_obj[i].displayName.replace(/ /g, "_");
+    div_element4.className   = "accordion_content";
+    div_element2.className   = "distro_user_overlay";
+    div_element3.className   = "distro_user_overlay_ajax";
+    //p_element2.className     = "distro_user_overlay_msg";
+    //p_element2.innerHTML     = "Please wait while we load user list."
     anchor_element.innerHTML = distribution_obj[i].displayName;
+    anchor_element.setAttribute("href", "#");
     h3_element.appendChild(anchor_element);
-    div_element1 = document.createElement("div");
-    div_element1.className = "accordion_user_container user_display_list "+distribution_obj[i].displayName.replace(/ /g, "_");
-    p_element1 = document.createElement("p");
-    p_element1.className = "accordion_content";
-    div_element2 = document.createElement("div");
-    div_element2.className = "distro_user_overlay";
-    div_element3 = document.createElement("div");
-    div_element3.className = "distro_user_overlay_ajax";
-    p_element2 = document.createElement("p");
-    p_element2.className = "distro_user_overlay_msg"
-    p_element2.innerHTML = "Please wait while we load user list."
-
     div_element2.appendChild(div_element3);
-    div_element2.appendChild(p_element2); 
-    p_element1.appendChild(div_element2);
-    div_element1.appendChild(p_element1);
-
+    //div_element2.appendChild(p_element2);
+    div_element4.appendChild(div_element2);
+    div_element1.appendChild(div_element4);
     accordion_div.appendChild(h3_element);
     accordion_div.appendChild(div_element1);
   }
-  distribution_list.appendChild(accordion_div);
-  $("#add_to_distro_internal_container").append($(distribution_list));
+  number_of_pages = Math.round(json_obj.total_entries/json_obj.per_page);
+  if(json_obj.total_entries%json_obj.per_page != 0){
+    number_of_pages++;
+  }
+
+  if(json_obj.current_page == 1){
+    traverse_prev           = document.createElement("span");
+    traverse_next           = document.createElement("a");
+    traverse_prev.className = "disabled prev_page";
+    traverse_next.className = "next_page";
+    traverse_prev.innerHTML = "&lt;&lt; Previous";
+    traverse_next.innerHTML = "Next &gt;&gt;";
+    traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1))
+  }else if(json_obj.current_page == number_of_pages){
+    traverse_next           = document.createElement("span");
+    traverse_prev           = document.createElement("a");
+    traverse_next.className = "disabled next_page";
+    traverse_prev.className = "prev_page";
+    traverse_next.innerHTML = "Next &gt;&gt;";
+    traverse_prev.innerHTML = "&lt;&lt; Previous";
+    traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1))
+  }else{
+    traverse_prev           = document.createElement("a");
+    traverse_next           = document.createElement("a");
+    traverse_prev.className = "prev_page";
+    traverse_next.className = "next_page";
+    traverse_prev.innerHTML = "&lt;&lt; Previous";
+    traverse_next.innerHTML = "Next &gt;&gt;";
+    traverse_prev.setAttribute("rel", "prev");
+    traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1));
+    traverse_next.setAttribute("rel", "next");
+    traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1));
+  }
+  if(document.getElementById("pagination")){
+    pagination_div = document.getElementById("pagination");
+    $(pagination_div).empty();
+  }else{
+    pagination_div           = document.createElement("div");
+    pagination_div.className = "pagination";
+    pagination_div.setAttribute("id", "pagination");
+  }
+
+  if(document.getElementById("dialog-confirm")){
+    dialog_confirm = document.getElementById("dialog-confirm");
+    $(dialog_confirm).find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?")
+  }else{
+    dialog_confirm = document.createElement("div");
+    dialog_confirm.setAttribute("id", "dialog-confirm");
+    dialog_confirm.setAttribute("title", "Delete Distribution Group Member?");
+    dialog_confirm_p = document.createElement("p");
+    dialog_confirm_span = document.createElement("span");
+    dialog_confirm_span.className = "ui-icon ui-icon-alert";
+    dialog_confirm_span_msg = document.createElement("span");
+    dialog_confirm_span_msg.innerHTML = "This distribution group member will be permanently deleted and cannot be recovered. Are you sure?";
+    dialog_confirm_p.appendChild(dialog_confirm_span);
+    dialog_confirm_p.appendChild(dialog_confirm_span_msg);
+    dialog_confirm.appendChild(dialog_confirm_p);
+  }
+  /*
+    <div id="add_to_group_form_container" class="add_to_group_form_container">
+    <form method="post" action="/add_to_distribution_group">
+      <input type="hidden" name="add_to_group_hidden" id="add_to_group_hidden">
+      <input type="hidden" name="contact_type" id="contact_type">
+      <label for="contact_name">Contact Name:</label><br>
+      <input type="text" name="contact_name" id="contact_name"><br>
+      <label for="contact_smtp_address">Contact Address:</label><br>
+      <input type="text" name="contact_smtp_address" id="contact_smtp_address"><br>
+      <input type="submit" value="Submit" name="commit" id="add_to_group_submit">
+    </form>
+  </div>
+   */
+  if(document.getElementById("add_to_group_form_container")){
+    add_to_group_form_container = document.getElementById("dd_to_group_form_container");
+  }else{
+    add_to_group_form_container = document.createElement("div");
+    add_to_group_form_container.setAttribute("id", "add_to_group_form_container");
+    add_to_group_form_container.className = "add_to_group_form_container";
+    add_to_group_form_elem = document.createElement("form");
+    add_to_group_form_elem.setAttribute("method", "post");
+    add_to_group_form_elem.setAttribute("action", "/add_to_distribution_group");
+    input_elem_1 = document.createElement("input");
+    input_elem_1.setAttribute("type", "hidden");
+    input_elem_1.setAttribute("name", "add_to_group_hidden");
+    input_elem_1.setAttribute("id", "add_to_group_hidden");
+    input_elem_2 = document.createElement("input");
+    input_elem_2.setAttribute("type", "hidden");
+    input_elem_2.setAttribute("name", "contact_type");
+    input_elem_2.setAttribute("id", "contact_type");
+    label_elem_1 = document.createElement("label");
+    label_elem_1.setAttribute("for", "contact_name");
+    label_elem_1.innerHTML = "Contact Name:";
+    input_elem_3 = document.createElement("input");
+    input_elem_3.setAttribute("type", "text");
+    input_elem_3.setAttribute("name", "contact_name");
+    input_elem_3.setAttribute("id", "contact_name");
+    label_elem_2 = document.createElement("label");
+    label_elem_2.setAttribute("for", "contact_smtp_address");
+    label_elem_2.innerHTML = "Contact Address:";
+    input_elem_4 = document.createElement("input");
+    input_elem_4.setAttribute("type", "text");
+    input_elem_4.setAttribute("name", "contact_smtp_address");
+    input_elem_4.setAttribute("id", "contact_smtp_address");
+    input_elem_5 = document.createElement("input");
+    input_elem_5.setAttribute("type", "submit");
+    input_elem_5.setAttribute("name", "commit");
+    input_elem_5.setAttribute("id", "add_to_group_submit");
+    input_elem_5.setAttribute("value", "Submit");
+    add_to_group_form_elem.appendChild(input_elem_1);
+    add_to_group_form_elem.appendChild(input_elem_2);
+    add_to_group_form_elem.appendChild(label_elem_1);
+    add_to_group_form_elem.appendChild(document.createElement("br"));
+    add_to_group_form_elem.appendChild(input_elem_3);
+    add_to_group_form_elem.appendChild(document.createElement("br"));
+    add_to_group_form_elem.appendChild(label_elem_2);
+    add_to_group_form_elem.appendChild(input_elem_4);
+    add_to_group_form_elem.appendChild(input_elem_5);
+    add_to_group_form_container.appendChild(add_to_group_form_elem);
+  }
+  pagination_div.appendChild(traverse_prev);
+  for(x=1;x<=number_of_pages;x++){
+    if(x == json_obj.current_page){
+      current_span           = document.createElement("span");
+      current_span.className = "current";
+      current_span.innerHTML = x;
+      pagination_div.appendChild(current_span);
+    }else{
+      page_link           = document.createElement("a");
+      page_link.innerHTML = x;
+      page_link.setAttribute("href", "/distribution_group?page="+x);
+      if((x+1) == json_obj.current_page){
+        page_link.setAttribute("rel", "prev")
+      }else if((x-1) == json_obj.current_page){
+        page_link.setAttribute("rel", "next");
+      }
+      pagination_div.appendChild(page_link);
+    }
+  }
+  pagination_div.appendChild(traverse_next);
+
+  if(!document.getElementById("pagination")){
+    distribution_list.appendChild(accordion_div);
+    distribution_list.appendChild(pagination_div);
+  }else{
+    distribution_list.insertBefore(accordion_div, pagination_div);  
+  }
+  if(!document.getElementById("dialog-confirm")){
+    distribution_list.appendChild(dialog_confirm);
+  }
+  if(!document.getElementById("add_to_group_form_container")){
+    distribution_list.appendChild(add_to_group_form_container);
+  }
+  document.getElementById("add_to_distro_internal_container").appendChild(distribution_list);
 
 }
 
 function add_to_group_form()
 {
-  $("#add_to_group_button").click(function(e){
+  $(".add_contact").click(function(e){
     $("#add_to_group_form_container form").each(function(){
       this.reset();
     });
@@ -253,26 +402,33 @@ function add_to_group_button()
 
 function toggle_distro_users(el, class_string)
 {
-  /*
-  el = $(el);
-  $('#distribution_list .distribution_list_display li').removeClass('selected');
-  el.addClass('selected');
-  // hide all of the user list items so they don't show when they aren't really there
-  $('#distribution_list .distribution_list_user_display .user_display_list').hide();
-  $("."+class_string).toggle();
-  $(".distro_overlay_msg").html("Loading distribution group members.")
-  $(".distro_overlay").toggle();
-  $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
-    $(".distro_overlay").toggle();
-  });
-  $("#add_to_group_button").show();
-  $("#add_to_group_hidden").val(el.children("span.displayName").html())
-  $(".remove_from_group_button").hide();*/
   $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
-    $(".distro_user_overlay").hide();
+    $("."+class_string+" .distro_user_overlay").hide();
     $("."+class_string).height("auto");
-    $(".distro_loader").height($("#distribution_list").height()-29);
-
+    $(".distro_loader").height($("#accordion").height()-39);
+    $("."+class_string+" .ucn_del a").click(function(e){
+      $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").show();
+      $("#dialog-confirm").find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?");
+      $("#dialog-confirm").dialog({
+        resizable: false,
+        height:140,
+        modal: true,
+        buttons: {
+          'Delete': function() {
+            $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").hide();
+            $(this).find("p:first").width($(this).find("p:first").width());
+            $(this).find("p span:last").html("Please wait while we remove the user.<div class='distro_user_overlay_ajax'></div>");
+            $("."+class_string).load("/distribution_group_users_remove", {group_name: class_string.replace(/_/g, " "), member_alias: $(e.target).attr('rel')}, function(){
+              $("#dialog-confirm").dialog('close');
+            });  
+          },
+          Cancel: function() {
+            $(this).dialog('close');
+          }
+        }
+      });
+      return false;
+    })
   });
 }
 
@@ -281,7 +437,7 @@ function toggle_distro_user(el, member_alias, groupId, class_string)
   el = $(el)
   $('#distribution_list .distribution_list_user_display ul li ul li').removeClass('selected');
   el.toggleClass('selected')
-  $(".remove_from_group_button").show();
+  //$(".remove_from_group_button").show();
   $(".remove_from_group_button").click(function(e){
     $(".distro_overlay_msg").html("Please wait while we remove member from distribution group.")
     $(".distro_overlay").toggle();
@@ -299,40 +455,38 @@ function begin_cacti_login()
 
 function build_cacti_cred_form()
 {
-  div_container = document.createElement("div");
+  div_container         = document.createElement("div");
+  p_elem1               = document.createElement("p");
+  p_elem2               = document.createElement("p");
+  input_elem1           = document.createElement("input");
+  label_elem1           = document.createElement("label");
+  label_elem2           = document.createElement("label");
+  label_elem2           = document.createElement("label");
+  input_elem2           = document.createElement("input");
+  button_elem           = document.createElement("button");
+  break_elem            = document.createElement("br");
+  p_elem1.innerHTML     = "It seems that you have not yet taken the time to fill in your Cacti Credentials."
+  p_elem2.innerHTML     = "In order to get access to Cacti graphs, please fill in your credentials below."
+  label_elem1.innerHTML = "Cacti User Name:";
+  label_elem2.innerHTML = "Cacti Password:";
+  button_elem.innerHTML = "Submit";
   div_container.setAttribute("id", "cacti_cred_container");
   div_container.setAttribute("class", "cacti_cred_container");
-  p_elem1 = document.createElement("p");
   p_elem1.setAttribute("class", "cacti_desc");
-  p_elem1.innerHTML ="It seems that you have not yet taken the time to fill in your Cacti Credentials."
-  p_elem2 = document.createElement("p");
   p_elem2.setAttribute("class", "cacti_desc");
-  p_elem2.innerHTML = "In order to get access to Cacti graphs, please fill in your credentials below."
-  label_elem1 = document.createElement("label");
-  label_elem1.innerHTML = "Cacti User Name:";
   label_elem1.setAttribute("for", "cacti_user_name_cred")
-  input_elem1 = document.createElement("input");
   input_elem1.setAttribute("type", "text");
   input_elem1.setAttribute("id", "cacti_user_name_cred");
-  label_elem2 = document.createElement("label");
-  label_elem2.innerHTML = "Cacti Password:";
   label_elem2.setAttribute("for", "cacti_user_pass_cred");
-  input_elem2 = document.createElement("input");
   input_elem2.setAttribute("type", "password");
   input_elem2.setAttribute("id", "cacti_user_pass_cred");
-  button_elem = document.createElement("button");
   button_elem.setAttribute("id", "cacti_submit_button");
-  button_elem.innerHTML = "Submit";
-  break_elem = document.createElement("br");
-
   div_container.appendChild(p_elem1);
   div_container.appendChild(p_elem2);
   div_container.appendChild(label_elem1);
   div_container.appendChild(input_elem1);
-
   div_container.appendChild(label_elem2);
   div_container.appendChild(input_elem2);
-
   div_container.appendChild(button_elem);
   document.getElementById("content").appendChild(div_container);
   cacti_form_events();
@@ -468,15 +622,13 @@ function validate_create_user_form(){
 }
 
 function validate_add_to_group_form(){
-  var error_list = '';
-  var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-  var contact_name = $.trim($("#contact_name").val());
+  var error_list           = '';
+  var filter               = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  var contact_name         = $.trim($("#contact_name").val());
   var contact_smtp_address = $.trim($("#contact_smtp_address").val());
-
   if(contact_name == '' || contact_name <= 2){
     error_list += "- Please enter a valid contact name.\t\n";
   }
-
   if (contact_smtp_address == '' || !filter.test(contact_smtp_address)) {
     error_list += "- Please provide a valid email address.\t\n";
   }

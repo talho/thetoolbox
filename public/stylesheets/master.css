@@ -20,7 +20,8 @@ body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-
 .user_list .table_hr{border-top:1px solid #c6c6c6;}
 .user_list td{padding:5px 10px;vertical-align:middle;width:33%;}
 .user_list td.delete{text-align:right;white-space:nowrap;}
-.user_list td.delete a{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px no-repeat;font-size:11px;padding:6px 0px 6px 25px;}
+.user_list td.delete a,
+div.ucn_del a{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px no-repeat;font-size:11px;padding:6px 0px 6px 25px;}
 
 #application {width:100%;overflow:hidden;}
 
@@ -90,8 +91,12 @@ div.pagination{margin:0px 10px;}
   width: auto;  
 }
 
-#distribution_list #accordion p{
+#distribution_list #accordion div.accordion_content{
   height: auto;  
+}
+
+#distribution_list #accordion div ul li{
+  height: 25px;
 }
 
 #distriubtion_list #accordion .accordion_user_container{
@@ -173,8 +178,7 @@ p.no_group_member_notice{
   padding:5px;
 }
 
-div.distro_overlay,
-div.distro_user_overlay{
+div.distro_overlay{
   display:none;
   background: #fff;
   width: 250px;
@@ -187,10 +191,10 @@ div.distro_user_overlay{
 
 div.distro_user_overlay{
   display: block;
+  background: #fff;
 }
 
-div.distro_overlay div.distro_overlay_ajax,
-div.distro_user_overlay div.distro_user_overlay_ajax{
+div.distro_overlay div.distro_overlay_ajax{
   background:url("images/loader2.gif") no-repeat transparent;
   width: 32px;
   height: 32px;
@@ -199,10 +203,28 @@ div.distro_user_overlay div.distro_user_overlay_ajax{
   margin-top: -3px;
 }
 
+div.distro_user_overlay_ajax{
+  background:url("images/loader2.gif") no-repeat transparent;
+  width: 32px;
+  height: 32px;
+}
+
 span.displayName{display:block;margin-left:12px;margin-top:-13px;}
 span.asterisk_note{color:red;}
 .add_to_group_button{display:none;}
-
+div.ui-resizable-handle{float: right;}
+div.ucn{float:left;clear:left}
+div.ucn_del{float:right}
+span.ui-icon-alert{float:left; margin:0 7px 20px 0;}
+#dialog-confirm{display:none;height:auto !important;}
+#dialog-confirm .ui-dialog-buttonpane{border:none;}
+a.add_contact{
+  background:url("images/add_icon.png") no-repeat scroll 0 0 transparent;
+  display:block;
+  height:25px;
+  padding-left:28px;
+  padding-top:3px;
+}
 /*DISTRIBUTION GROUP STYLE END*/
 span.reset_user_password a{
   background: url("images/reset_password.png") no-repeat scroll 0 0 transparent !important;

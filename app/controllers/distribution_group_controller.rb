@@ -8,18 +8,18 @@ class DistributionGroupController < ApplicationController
       options[:per_page] = params[:per_page] || 5
       @distribution_results = DistributionGroup.find(:all, :params => options)
       
-#      respond_to do |format|
-#        #format.html {render :partial => "users/add_to_distribution"}
-#        format.json {render :json => @distribution_results}
-#      end
-#      #render :partial => "users/add_to_distribution"
-#      #render :json => @distribution_results
-      render :json => {
+      respond_to do |format|
+        format.html {render :partial => "users/add_to_distribution"}
+        format.json {render :json => {
         :distribution_groups => @distribution_results.to_json(),
         :current_page        => @distribution_results.current_page,
         :per_page            => @distribution_results.per_page,
         :total_entries       => @distribution_results.total_entries
-      }
+        }}
+      end
+#      #render :partial => "users/add_to_distribution"
+#      #render :json => @distribution_results
+
     else
       redirect_to user_path(current_user)
     end

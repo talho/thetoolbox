@@ -114,6 +114,8 @@
   <% end %>
   </table>
   <%= will_paginate @ldap_user_results %>
+
+  
   <iframe src="<%= cacti_graphs_login_path %>" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>
   <%- if current_user.cacti_username.blank? %>
     <script type="text/javascript">
