@@ -22,12 +22,20 @@ $(document).ready(function() {
       $("#add_to_group_form_container").remove();
     }
     catch(err){}
-    $('#add_to_distro_container').dialog({modal: true, title: "Manage Distribution Groups"});
+    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Manage Distribution Groups"});
     $(".distro_loader").show();
-    $("#add_to_distro_internal_container").html('');
-    $("#add_to_distro_internal_container").load("/distribution_group", function(){
-      manage_distribution_groups();
-      add_to_group_button();
+    $("#add_to_distro_internal_container").empty();
+    $.ajax({
+      url: "/distribution_group",
+      dataType: "json",
+      success: function(response, status, xhr) {
+        manage_distribution_groups(response);
+        $(".distro_loader").height($("#accordion").height()-39);
+        $("#add_to_distro_container").width($("#add_to_distro_container").width()+3);
+        $("#contact_name").val($(obj.target).attr("alias"));
+        $("#contact_smtp_address").val($(obj.target).attr("email"));
+        $("#contact_type").val("UserMailbox")
+      }
     });
   });
 
@@ -46,7 +54,6 @@ $(document).ready(function() {
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        add_to_group_form();
         $(".distro_loader").height($("#accordion").height()-39);
         $("#add_to_distro_container").width($("#add_to_distro_container").width()+3);
       }
@@ -133,7 +140,7 @@ function jaxify_pagination()
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        add_to_group_form();
+        //add_to_group_form();
         $(".distro_loader").height($("#accordion").height()-39);
         $("#add_to_distro_container").width($("#add_to_distro_container").width());
       }
@@ -148,7 +155,11 @@ function manage_distribution_groups(response)
   $(".distro_loader").hide();
   $(document.getElementById("accordion")).accordion({change: function(event, ui){
     $(".distro_user_overlay").show();
-    toggle_distro_users(ui, $(ui.newHeader).find("a").html().replace(/ /g, "_"))
+    try{
+      toggle_distro_users($(ui.newHeader).find("a").html().replace(/ /g, "_"));
+    }catch(err){
+      toggle_distro_users($(ui.oldHeader).find("a").html().replace(/ /g, "_"));
+    }
   }, active: false, collapsible: true});
   jaxify_pagination();
 }
@@ -189,7 +200,7 @@ function build_distribution_view(json_obj)
     accordion_div.appendChild(h3_element);
     accordion_div.appendChild(div_element1);
   }
-  number_of_pages = Math.round(json_obj.total_entries/json_obj.per_page);
+  number_of_pages = Math.floor(json_obj.total_entries/json_obj.per_page);
   if(json_obj.total_entries%json_obj.per_page != 0){
     number_of_pages++;
   }
@@ -303,7 +314,9 @@ function build_distribution_view(json_obj)
     add_to_group_form_elem.appendChild(input_elem_3);
     add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(label_elem_2);
+    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(input_elem_4);
+    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(input_elem_5);
     add_to_group_form_container.appendChild(add_to_group_form_elem);
   }
@@ -346,33 +359,33 @@ function build_distribution_view(json_obj)
 
 function add_to_group_form()
 {
-  $(".add_contact").click(function(e){
-    $("#add_to_group_form_container form").each(function(){
-      this.reset();
-    });
-    $("#add_to_group_form_container").dialog({modal: true, title: "Add to Distribution Group"});
-  });
+  $("#add_to_group_form_container form #add_to_group_submit").unbind();
   $("#add_to_group_form_container form #add_to_group_submit").click(function(e){
     if(!validate_add_to_group_form()){
       return false;
     }
-    $(".distro_overlay_msg").html("Please wait while we add contact to distribution group.")
-    $(".distro_overlay").toggle();
+    class_string = $("#add_to_group_hidden").val();
+    class_string = class_string.replace(/ /g, "_");
+    html_string = "<div class=\"distro_user_overlay\" style=\"display:block;\">"+
+                  "<div class=\"distro_user_overlay_ajax\"></div>"+
+                  "Please wait while we add user."+
+                  "</div><br/>" + $("."+class_string+" .accordion_content").html();
+    $("."+class_string+" .accordion_content").html(html_string)
     $.ajax({
       type: "POST",
       url: "/add_to_distribution_group",
       data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
       success: function() {
-        class_string = $(".distribution_list_display ul li.selected span.displayName").html();
-        class_string = class_string.replace(/ /g, "_");
-        $("."+class_string).load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
-          $(".distro_overlay").toggle();
+        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+          toggle_distro_users(class_string)
         });
       },
       error: function(req, status, text)
       {
-          alert(req.responseText);
-          $(".distro_overlay").toggle();
+        alert(req.responseText);
+        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+          toggle_distro_users(class_string)
+        });
       }
     });
     $("#add_to_group_form_container").dialog("close");
@@ -382,13 +395,13 @@ function add_to_group_form()
 
 function add_to_group_button()
 {
+  /*
   $("#add_to_group_button").click(function(e){
-    $(".distro_overlay_msg").html("Please wait while we add user to distribution group.")
-    $(".distro_overlay").toggle();
+    $(".distro_user_overlay").show();
     $.ajax({
       type: "POST",
       url: "/add_to_distribution_group",
-      data: {contact_name: $(obj.target).attr("alias"), contact_smtp_address: $(obj.target).attr("email"), add_to_group_hidden: $(".distribution_list_display ul li.selected span.displayName").html(), contact_type: "UserMailbox"},
+      data: {contact_name: $(e.target).attr("alias"), contact_smtp_address: $(e.target).attr("email"), add_to_group_hidden: $(".distribution_list_display ul li.selected span.displayName").html(), contact_type: "UserMailbox"},
       success: function() {
         class_string = $(".distribution_list_display ul li.selected span.displayName").html();
         class_string = class_string.replace(/ /g, "_");
@@ -397,15 +410,38 @@ function add_to_group_button()
         });
       }
     });
-  });  
+  }); */ 
 }
 
-function toggle_distro_users(el, class_string)
+function toggle_distro_users(class_string)
 {
-  $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+  var argv = toggle_distro_users.arguments;
+  if(typeof(argv[1]) != "undefined"){
+    group_uri = argv[1];
+  }else{
+    group_uri = "/distribution_group_users"
+  }
+
+  $("."+class_string+" .accordion_content").load(group_uri, {group_name: class_string.replace(/_/g, " ")}, function(){
+    accordion_content = this;
     $("."+class_string+" .distro_user_overlay").hide();
     $("."+class_string).height("auto");
     $(".distro_loader").height($("#accordion").height()-39);
+    $("."+class_string+" .add_contact").click(function(e){
+      //$("#add_to_group_form_container form #contact_type").reset();
+      $("#add_to_group_form_container form #add_to_group_hidden").val($(e.target).attr("rel"));
+      if($("#contact_type").val() == "UserMailbox"){
+        add_to_group_form();
+        $("#add_to_group_form_container form #add_to_group_submit").click();
+      }else{
+        $("#add_to_group_form_container form").each(function(){
+          this.reset();
+        });
+        $("#add_to_group_form_container").dialog({modal: true, title: "Add to Distribution Group"});
+        add_to_group_form();
+      }
+      return false;
+    });
     $("."+class_string+" .ucn_del a").click(function(e){
       $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").show();
       $("#dialog-confirm").find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?");
@@ -428,23 +464,12 @@ function toggle_distro_users(el, class_string)
         }
       });
       return false;
-    })
-  });
-}
-
-function toggle_distro_user(el, member_alias, groupId, class_string)
-{
-  el = $(el)
-  $('#distribution_list .distribution_list_user_display ul li ul li').removeClass('selected');
-  el.toggleClass('selected')
-  //$(".remove_from_group_button").show();
-  $(".remove_from_group_button").click(function(e){
-    $(".distro_overlay_msg").html("Please wait while we remove member from distribution group.")
-    $(".distro_overlay").toggle();
-    $("."+class_string).load("/distribution_group_users_remove", {group_name: groupId, member_alias: member_alias}, function(){
-      $(".distro_overlay").toggle();
     });
-  })
+    $("."+class_string+" .pagination a").click(function(obj){
+      toggle_distro_users(class_string, $(obj.target).attr("href"));
+      return false;
+    });
+  });
 }
 
 function begin_cacti_login()
@@ -491,7 +516,6 @@ function build_cacti_cred_form()
   document.getElementById("content").appendChild(div_container);
   cacti_form_events();
 }
-
 
 function cacti_form_events()
 {
@@ -578,11 +602,13 @@ function toolbox_log_out()
   window.location = "/user_sessions/destroy";  
 }
 
-function write_to_full_name(){
+function write_to_full_name()
+{
   $("#user_full_name").val($("#user_first_name").val() + " " + $("#user_last_name").val());  
 }
 
-function validate_pass_form(){
+function validate_pass_form()
+{
   if($('#ldap_user_new_password').val() == '' || $('#ldap_user_confirm_password').val() == ''){
     alert("Please make sure that both fields are not empty.");
     return false;
@@ -594,7 +620,8 @@ function validate_pass_form(){
   return true;
 }
 
-function validate_create_user_form(){
+function validate_create_user_form()
+{
   var error_list = '';
   if($("#user_first_name").val() == ''){
     error_list += "- Please enter a first name.\t\n";
@@ -621,7 +648,8 @@ function validate_create_user_form(){
   return true;
 }
 
-function validate_add_to_group_form(){
+function validate_add_to_group_form()
+{
   var error_list           = '';
   var filter               = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   var contact_name         = $.trim($("#contact_name").val());

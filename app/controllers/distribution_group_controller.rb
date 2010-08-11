@@ -44,15 +44,18 @@ class DistributionGroupController < ApplicationController
     if validate_params
       unless params[:contact_name].blank?
         begin
-          unless params[:contact_type].blank?
-            e = ExchangeUser.find(params[:contact_name])
-          else
-            e = ExchangeUser.new :cn => params[:contact_name], :alias => params[:contact_name].gsub(" ", ""), :type => "MailContact", :ou => current_user.ou, :email => params[:contact_smtp_address]
+          begin
+            e_user = ExchangeUser.find(params[:contact_name])
+          rescue
+            e_user = ExchangeUser.new :cn => params[:contact_name], :alias => params[:contact_name].gsub(" ", ""), :type => "MailContact", :ou => current_user.ou, :email => params[:contact_smtp_address]
+            begin
+              e_user = e_user.contact
+            rescue
+            end
           end
           d = DistributionGroup.find(params[:add_to_group_hidden])
-          d.ExchangeUsers.push(e)
+          d.ExchangeUsers.push(e_user)
           d.update
-          flash[:completed] = "Contact Added Successfully. "
           render :text => "Contact Added Successfully" #redirect_to users_path
         rescue ActiveResource::ResourceConflict
           render :text => "A contact with name " + params[:contact_name] + " with a different email was found on the server. Please provide a unique contact name.", :status => 409
@@ -67,21 +70,30 @@ class DistributionGroupController < ApplicationController
 
   def users
     if !params[:group_name].blank?
-      @distribution_results = DistributionGroup.find(params[:group_name])
+      options            = {}
+      options[:page]     = params[:page] || 1
+      options[:per_page] = params[:per_page] || 5
+      @distribution_results = DistributionGroup.find(params[:group_name]).ExchangeUsers.paginate(options)
+      @distribution_group_name = params[:group_name]
       render :partial => "users/distribution_group_users"
     else
-      flash[:error] = "Invalid group name."
+      render :text => "Invalid group name."
     end
   end
 
   def remove_user
     if !params[:group_name].blank?
+      options            = {}
+      options[:page]     = params[:page] || 1
+      options[:per_page] = params[:per_page] || 5
       @distribution_results = DistributionGroup.find(params[:group_name])
       @distribution_results.ExchangeUsers.delete_if{|e| e.alias == params[:member_alias]}
       @distribution_results.update
+      @distribution_results = @distribution_results.ExchangeUsers.paginate(options)
+      @distribution_group_name = params[:group_name]
       render :partial => "users/distribution_group_users"
     else
-      flash[:error] = "Invalid group name."
+      render :text => "Invalid group name."
     end
   end
 
@@ -93,6 +105,7 @@ class DistributionGroupController < ApplicationController
     rescue
       flash[:error] = "Unable to delete Distribution Group, please contact your administrator."
     end
+    redirect_to users_path
   end
   
 

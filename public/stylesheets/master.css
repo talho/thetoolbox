@@ -102,44 +102,6 @@ div.pagination{margin:0px 10px;}
 #distriubtion_list #accordion .accordion_user_container{
   width: auto !important;
 }
-#distribution_list .distribution_list_display{
-  border: 1px solid #ccc;
-  width: 135px;
-  height: 150px;
-  overflow-y:auto;
-}
-
-#distribution_list .distribution_list_display li.selected{
-  background-color:#E6EFC2;
-}
-
-#distribution_list .distribution_list_display li{
-  border-bottom: 1px solid #ccc;
-  padding:2px 0px 2px 5px;
-  cursor: pointer;
-}
-
-#distribution_list .distribution_list_user_display{
-  border: 1px solid #ccc;
-  width: 135px;
-  height: 150px;
-  float:right;
-}
-
-#distribution_list .distribution_list_user_display ul li{
-  display :none;
-}
-
-#distribution_list .distribution_list_user_display ul li ul li{
-  border-bottom: 1px solid #ccc;
-  padding:2px 0px 2px 5px;
-  display :block;
-  cursor: pointer;
-}
-
-#distribution_list .distribution_list_user_display ul li ul li.selected{
-  background-color:#E6EFC2;
-}
 
 #distribution_list .pagination{
   margin: 10px 0px;
@@ -162,15 +124,6 @@ distribution-group{
 }
 
 .add_to_group_form_container{
-  display:none;
-}
-
-p.has_member_notice{
-  padding: 5px 0px;  
-}
-
-.remove_from_group_button{
-  float:right;
   display:none;
 }
 
@@ -211,7 +164,7 @@ div.distro_user_overlay_ajax{
 
 span.displayName{display:block;margin-left:12px;margin-top:-13px;}
 span.asterisk_note{color:red;}
-.add_to_group_button{display:none;}
+
 div.ui-resizable-handle{float: right;}
 div.ucn{float:left;clear:left}
 div.ucn_del{float:right}
@@ -224,6 +177,15 @@ a.add_contact{
   height:25px;
   padding-left:28px;
   padding-top:3px;
+  float: left;
+}
+a.remove_group{
+  background:url("images/remove_group.png") no-repeat scroll 100% 0 transparent;
+  display:block;
+  height:25px;
+  padding-right:28px;
+  padding-top:3px;
+  float: right;
 }
 /*DISTRIBUTION GROUP STYLE END*/
 span.reset_user_password a{

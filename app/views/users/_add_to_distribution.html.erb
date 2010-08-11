@@ -1,25 +1,4 @@
 <div id="distribution_list">
-  <div class="distribution_list_user_display" style="display:none;">
-    <ul>
-      <%- @distribution_results.each do |d| %>
-          <li class="user_display_list <%= d.displayName.gsub(" ", "_") %>"></li>
-      <%- end %>
-    </ul>  
-  </div>
-  <div class="distribution_list_display" style="display:none;">
-    <ul>
-      <%- @distribution_results.each do |d| %>
-          <li onclick="toggle_distro_users(this, '<%= d.displayName.gsub(" ", "_") %>')">
-            <span class="asterisk_note">
-              <%- unless d.has_children == nil or d.has_children == "false" %>*<%-else%>&nbsp;<%end%>
-            </span>
-            <span class="displayName"><%= d.displayName %></span>
-          </li>
-      <%- end %>
-    </ul>
-  </div>
-
-
   <div id="accordion">
     <%- @distribution_results.each do |d| %>
       <h3><a href="#"><%= d.displayName %></a></h3>
@@ -35,11 +14,7 @@
   </div>
 
   <%= will_paginate @distribution_results %>
-  <!--
-  <p class="has_member_notice"><span class="asterisk_note">*</span> - has members</p>
-  -->
-  <button name="add_to_group_button" class="add_to_group_button" id="add_to_group_button">Add To Group</button>
-  <button name="remove_from_group_button" class="remove_from_group_button" id="remove_from_group_button">Remove User</button>
+
   <div class="add_to_group_form_container" id="add_to_group_form_container">
     <% form_tag(add_to_distribution_path, :method => "post") do %>
       <%= hidden_field_tag :add_to_group_hidden %>

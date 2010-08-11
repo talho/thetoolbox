@@ -1,7 +1,7 @@
-<%- unless @distribution_results.ExchangeUsers.blank? %>
+<%- unless @distribution_results.blank? %>
   <ul>
-    <%- @distribution_results.ExchangeUsers.each do |u| %>
-      <li onclick="toggle_distro_user(this, '<%= u.alias %>', '<%= @distribution_results.displayName %>', '<%= @distribution_results.displayName.gsub(" ", "_") %>')">
+    <%- @distribution_results.each do |u| %>
+      <li>
         <div class="ucn">
           <%= u.cn %>
         </div>
@@ -11,7 +11,12 @@
       </li>
     <%- end %>
   </ul>
+  <%= will_paginate @distribution_results, :params => {:group_name => @distribution_group_name} %>
 <%- else %>
   <p class="no_group_member_notice">There are no group members.</p>
 <%- end %>
-  <a href="#" class="add_contact">Add Contact</a>
+<a href="#" class="add_contact" rel="<%= @distribution_group_name %>">Add Contact</a>
+<%= link_to 'Delete This Group', distribution_group_delete_path(:distribution_group_name => @distribution_group_name), :method => :delete, :class => "remove_group", :confirm => "Are you sure you want to delete this Group?" %>
+<!--
+<a href="#" class="remove_group" rel="<%= @distribution_group_name %>">Delete This Group</a>
+-->

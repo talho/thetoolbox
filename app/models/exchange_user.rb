@@ -38,4 +38,8 @@ class ExchangeUser < ActiveResource::Base
   def has_vpn_account?
     self.has_vpn.downcase ==  "true"
   end
+
+  def contact
+    self.get(:contact, {:email => self.email, :dn => self.cn})
+  end
 end
