@@ -88,6 +88,22 @@ When /^I select member "([^\"]*)" for list "([^"]*)" within "([^\"]*)"$/ do |lis
   end
 end
 
+
+When /^I have found the distribution group with display name "([^\"]*)"$/ do |displayName|
+  sleep 1
+  debugger
+  elem = find("#distribution_list ." + displayName.gsub(" ", "_") )
+  debugger
+  if elem.nil?
+    within ("#distribution_list") do
+      elem_link = find('.next_page')
+      elem_link.click()
+      And %{I have found the distribution group with display name "#{displayName}"}
+    end
+  end
+  elem
+end
+
 Then /^"([^\"]*)" should be a member of "([^\"]*)"$/ do |userOrContactName, groupName|
   group = DistributionGroup.find(groupName)
   assert !(group.ExchangeUsers.find {|g| g.cn == userOrContactName }.nil?)

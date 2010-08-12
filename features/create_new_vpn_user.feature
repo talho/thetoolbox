@@ -8,6 +8,7 @@ Feature: Create new vpn user
     When I go to the dashboard
 
   Scenario: User creates user successfully
+    Given "tester_b_test" should not be a user 
     When I follow "Create User"
     And I fill in "First Name" with "Tester_b"
     And I fill in "Last Name" with "Test"

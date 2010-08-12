@@ -8,6 +8,7 @@ Feature: Create new user
     When I go to the dashboard
 
   Scenario: User creates user successfully
+    Given "tester_b_test" should not be a user
     When I follow "Create User"
     And I fill in "First Name" with "Tester_b"
     And I fill in "Last Name" with "Test"
@@ -34,13 +35,17 @@ Feature: Create new user
     Then I should see "Please correct the following items" within the alert box
 
   Scenario: User attempts to create existing member
+    Given I have a user with alias "junk_tester"
     And I follow "Create User"
-    And I fill in "First Name" with "Tester"
-    And I fill in "Last Name" with "Test"
-    And I fill in "Full Name" with "Tester Test"
-    And I fill in "Log On Name" with "admin_tester"
+    And I fill in "First Name" with "Junk"
+    And I fill in "Last Name" with "Tester"
+    And I fill in "Full Name" with "Junk Tester"
+    And I fill in "Log On Name" with "junk_tester"
     And I fill in "User Password" with "Password1"
     And I fill in "Confirm Password" with "Password1"
     And I check "User must change password"
     And I press "Submit" within ".create_new_user_container"
-    Then I should see "Entry admin_tester Already Exists" 
+    Then I should see "Entry junk_tester Already Exists"
+    And I clean up
+      | name         | exchangetype |
+      | junk_tester  | user |
