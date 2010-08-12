@@ -1,5 +1,5 @@
 <% form_for :distribution_group, :url => create_distribution_group_path(@user || current_user) do |f| %>
   <%= f.label :distribution_list_name%>:
-  <%= f.text_field :distribution_list_name, :id => "distribution_list_name" %><br/>
+  <%= f.text_field :distribution_list_name %><br/>
   <%= f.submit "Submit", :id => "create_distribution_submit" %>
 <% end %>

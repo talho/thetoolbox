@@ -78,7 +78,7 @@ Feature: Manage Distribution List
     When I follow "Manage Distribution List"
     When I have found the distribution group with display name "Test List"
     And I select "Test List" within "#distribution_list"
-    And I follow "Delete" within "#ucn_del_TestList"
+    And I follow "Delete" within "#ucn_del_TestContact"
     And I press "Delete"
     Then I should not see "Test Contact" within "#distribution_list .Test_List"
     And "Test Contact" should not be a member of "Test List"

@@ -67,7 +67,7 @@ end
 
 When /^I select "([^\"]*)" within "([^\"]*)"$/ do |listItem, selector|
   within (selector) do
-    find('li .displayName', :text => listItem).click
+    find_link(listItem).click
   end
 end
 
@@ -90,16 +90,14 @@ end
 
 
 When /^I have found the distribution group with display name "([^\"]*)"$/ do |displayName|
-  sleep 1
-  debugger
+  sleep 2
   elem = find("#distribution_list ." + displayName.gsub(" ", "_") )
-  debugger
   if elem.nil?
     within ("#distribution_list") do
       elem_link = find('.next_page')
       elem_link.click()
-      And %{I have found the distribution group with display name "#{displayName}"}
     end
+    And %{I have found the distribution group with display name "#{displayName}"}
   end
   elem
 end

@@ -58,7 +58,6 @@ end
 Then /^I should be signed out$/ do
   #assert ! UserSession.find
   When %{I go to the dashboard page}
-  Then %{show me the page}
   Then %{I should see "TALHO Toolbox: Login" within "body"}
 end
 

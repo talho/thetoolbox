@@ -122,7 +122,7 @@ $(document).ready(function() {
    */
   $('#create_distribution_submit').click(function(e){
     var filter = /^[a-zA-Z0-9.-]/;
-    if(!filter.test($("#distribution_list_name").val())){
+    if(!filter.test($("#distribution_group_distribution_list_name").val())){
       alert("Please enter a valid name for your distribution group.");
       return false;
     }
