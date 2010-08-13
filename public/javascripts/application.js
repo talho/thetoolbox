@@ -1,4 +1,4 @@
-//var cacti_call = false;
+var cacti_call = false;
 /**
  * On Document ready function will attach event handlers to existing DOM elements
  */

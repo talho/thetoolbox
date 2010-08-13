@@ -6,7 +6,7 @@ Feature: Manage Distribution List
   Background: Logged in and closed cacti
     Given I am logged in as "admin_tester/Password1"
     And I am on the dashboard
-    And I close ".cacti_cred_container" modal box
+    And I close "#cacti_cred_container" modal box
 
   Scenario: User Creates A New Distribution List
     Given "Test List" does not exist
@@ -52,6 +52,40 @@ Feature: Manage Distribution List
     | Test List      | group        |
     | ContactTester  | contact      |
 
+  Scenario: Admin enters invalid email into new contact form
+    Given I have a distribution list named "Test List"
+    And "Test List" has no members
+    When I follow "Manage Distribution List"
+    When I have found the distribution group with display name "Test List"
+    And I select "Test List" within "#distribution_list"
+    And I follow "Add Contact"
+    And I fill in "Contact Name" with "Contact Tester"
+    And I fill in "Contact Address" with "contact@testme"
+    And I override alert
+    And I press "Submit" within "#add_to_group_form_container"
+    Then I should see "Please provide a valid email address" within the alert box
+    Then I should not see "Contact Tester" within "#distribution_list .Test_List"
+    And "Contact Tester" should not be a member of "Test List"
+    And I clean up
+    | name           | exchangetype |
+    | Test List      | group        |
+    | ContactTester  | contact      |
+
+  Scenario: Admin enters invalid input into new contact form
+    Given I have a distribution list named "Test List"
+    And "Test List" has no members
+    When I follow "Manage Distribution List"
+    When I have found the distribution group with display name "Test List"
+    And I select "Test List" within "#distribution_list"
+    And I follow "Add Contact"
+    And I fill in "Contact Name" with ""
+    And I fill in "Contact Address" with ""
+    And I override alert
+    And I press "Submit" within "#add_to_group_form_container"
+    Then I should see "Please correct the following items and try again" within the alert box
+    And I clean up
+    | name           | exchangetype |
+    | Test List      | group        |
 
   Scenario: Admin adds duplicate contact to distribution list
     Given I have a distribution list named "Test List"
@@ -61,16 +95,15 @@ Feature: Manage Distribution List
     And I select "Test List" within "#distribution_list"
     And I follow "Add Contact"
     And I fill in "Contact Name" with "Test Contact"
-    And I fill in "Contact Address" with "unique135134@testme.com"
+    And I fill in "Contact Address" with "fake_email@testme.com"
     And I override alert
     And I press "Submit" within "#add_to_group_form_container"
-    Then I should see "A contact with name Test Contact with a different email was found on the server\. Please provide a unique contact name\." within the alert box
+    Then I should see "A contact with name Test Contact with a different email was found on the server" within the alert box
     And I should see "Test Contact" within "#distribution_list .Test_List"
-    And "Test Contact" should be a member of "Test List"
     And I clean up
     | name           | exchangetype |
     | Test List      | group        |
-    | ContactTester  | contact      |
+    | TestContact    | contact      |
 
   Scenario: Admin removes user or contact from distribution list
     Given I have a distribution list named "Test List"

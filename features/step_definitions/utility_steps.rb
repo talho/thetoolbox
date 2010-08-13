@@ -1,4 +1,5 @@
 When /^I clean up$/ do |table|
+  sleep 3
   # table is a | Test List      | group    |
   table.hashes.each do |hash|
     case hash[:exchangetype]

@@ -5,7 +5,8 @@ Feature: Create new vpn user
 
   Background:
     Given I am logged in as "admin_tester/Password1"
-    When I go to the dashboard
+    And I go to the dashboard
+    And I close "#cacti_cred_container" modal box
 
   Scenario: User creates user successfully
     Given "tester_b_test" should not be a user 

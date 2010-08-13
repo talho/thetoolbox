@@ -4,8 +4,8 @@ When /^I have found the user with alias "([^\"]*)"$/ do |userName|
     unless  find_link("Next").nil?
       When %{I follow "Next"}
       And  %{I close ".cacti_cred_container" modal box}
-      And  %{I have found the user with alias "#{userName}"}
     end
+    And  %{I have found the user with alias "#{userName}"}
   end
   elem
 end
@@ -67,7 +67,7 @@ end
 
 When /^I close "([^\"]*)" modal box$/ do |dom_selector|
   begin
-    evaluate_script("try{$('#{dom_selector}').dialog('close');}cactch(err){}")
+    evaluate_script("$('#{dom_selector}').dialog('close');")
   rescue
     Capybara::NotSupportedByDriverError
   end

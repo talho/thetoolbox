@@ -4,8 +4,9 @@ Feature: Delete user
   Delete user
 
   Background:
-    Given I am logged in as "admin_tester/Password1"
     Given I have a user with alias "test_delete"
+    And I am logged in as "admin_tester/Password1"
+    And I close "#cacti_cred_container" modal box
 
   Scenario: Admin deletes user successfully    
     And I have found the user with alias "test_delete"
