@@ -67,7 +67,8 @@ end
 
 When /^I close "([^\"]*)" modal box$/ do |dom_selector|
   begin
-    evaluate_script("$('#{dom_selector}').dialog('close');")
+    wait_until{page.find("#{dom_selector}").nil? == false}
+    page.execute_script("$('#{dom_selector}').dialog('close');")
   rescue
     Capybara::NotSupportedByDriverError
   end
@@ -81,6 +82,6 @@ When /^I override alert$/ do
 end
 
 Then /^I refresh page$/ do
-  evaluate_script("window.location.reload()")
+  execute_script("window.location.reload()")
 end
 
