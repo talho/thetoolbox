@@ -45,7 +45,7 @@ Given /^"([^\"]*)" is a user with alias "([^\"]*)"$/ do |userName, userAlias|
     EchangeUser.find(userName)
   rescue
     user = User.all.first
-    ExchangeUser.create(:cn                 => userName,
+    ExchangeUser.create(:cn          => userName,
                  :name               => userName,
                  :displayName        => userName,
                  :distinguishedName  => userName,
@@ -57,10 +57,10 @@ Given /^"([^\"]*)" is a user with alias "([^\"]*)"$/ do |userName, userAlias|
                  :domain             => "upn.com",
                  :alias              => userAlias,
                  :ou                 => user.ou,
-                 :changePwd          => false,
-                 :isVPN              => false,
-                 :acctDisabled       => false,
-                 :pwdExpires         => false
+                 :changePwd          => 0,
+                 :isVPN              => 0,
+                 :acctDisabled       => 0,
+                 :pwdExpires         => 0
     )
   end
 end

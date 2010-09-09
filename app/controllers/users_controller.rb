@@ -9,7 +9,14 @@ class UsersController < ApplicationController
         options            = {}
         options[:page]     = params[:page] || 1
         options[:per_page] = params[:per_page] || 5
+        options[:vpn_only] = params[:vpn_only] || false
         @ldap_user_results = ExchangeUser.find(:all, :params => options)
+        unless params[:vpn_only].blank?
+          respond_to do |format|
+            format.html {render :partial => "users/vpn_users"}
+          end
+        end
+        
       else
         redirect_to user_path(current_user)
       end
@@ -33,25 +40,44 @@ class UsersController < ApplicationController
     unless !valid_params?
       dn           = "OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
       email_domain = "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1]
-      attr_ldap = {
-        :cn                 => params[:user][:first_name] + " " + params[:user][:last_name],
-        :name               => params[:user][:first_name] + " " + params[:user][:last_name],
-        :displayName        => params[:user][:first_name] + " " + params[:user][:last_name],
-        :distinguishedName  => dn,
-        :givenName          => params[:user][:first_name],
-        :samAccountName     => params[:user][:logon_name],
-        :userPrincipalName  => params[:user][:logon_name] + email_domain,
-        :password           => params[:user][:password],
-        :sn                 => params[:user][:last_name],
-        :domain             => email_domain.split('@')[1],
-        :alias              => params[:user][:logon_name],
-        :ou                 => "TALHO",
-        :changePwd          => params[:user][:ch_pwd],
-        :isVPN              => params[:user][:vpn_usr],
-        :acctDisabled       => params[:user][:acct_dsbl],
-        :pwdExpires         => params[:user][:pwd_exp]
-      }
-
+      begin
+        attr_ldap = {
+          :cn                 => params[:user][:first_name] + " " + params[:user][:last_name],
+          :name               => params[:user][:first_name] + " " + params[:user][:last_name],
+          :displayName        => params[:user][:first_name] + " " + params[:user][:last_name],
+          :distinguishedName  => dn,
+          :givenName          => params[:user][:first_name],
+          :samAccountName     => params[:user][:logon_name],
+          :userPrincipalName  => params[:user][:logon_name] + email_domain,
+          :password           => params[:user][:password],
+          :sn                 => params[:user][:last_name],
+          :domain             => email_domain.split('@')[1],
+          :alias              => params[:user][:logon_name],
+          :ou                 => "TALHO",
+          :changePwd          => params[:user][:ch_pwd],
+          :isVPN              => params[:user][:vpn_usr]
+        }
+      rescue
+        attr_ldap = {
+          :cn                 => params[:user_vpn][:first_name] + " " + params[:user_vpn][:last_name],
+          :name               => params[:user_vpn][:first_name] + " " + params[:user_vpn][:last_name],
+          :displayName        => params[:user_vpn][:first_name] + " " + params[:user_vpn][:last_name],
+          :distinguishedName  => dn,
+          :givenName          => params[:user_vpn][:first_name],
+          :samAccountName     => params[:user_vpn][:logon_name],
+          :userPrincipalName  => params[:user_vpn][:logon_name] + email_domain,
+          :password           => params[:user_vpn][:password],
+          :sn                 => params[:user_vpn][:last_name],
+          :domain             => email_domain.split('@')[1],
+          :alias              => params[:user_vpn][:logon_name],
+          :ou                 => "TALHO",
+          :changePwd          => params[:user_vpn][:ch_pwd],
+          :isVPN              => params[:user_vpn][:vpn_usr],
+          :acctDisabled       => params[:user_vpn][:acct_dsbl] == "0" ? "1" : "0",
+          :pwdExpires         => params[:user_vpn][:pwd_exp],
+          :vpnUsr             => params[:user_vpn][:vpn_usr_only]
+        }
+      end
       begin
         e = ExchangeUser.create(attr_ldap)
         if e.attributes["mailboxEnabled"] != "true"
@@ -63,7 +89,11 @@ class UsersController < ApplicationController
          flash[:error] = "Entry #{attr_ldap[:alias]} Already Exists"
       end
     end
-    redirect_to users_path
+    unless params[:vpn_only].blank?
+      redirect_to users_path :vpn_only => params[:vpn_only]
+    else
+      redirect_to users_path
+    end
   end
 
   def delete
@@ -231,27 +261,51 @@ class UsersController < ApplicationController
   end
 
   def valid_params?
-    errors = ''
-    if params[:user][:first_name].blank?
-      errors = errors + "- Please enter a first name.<br/>"
+    begin
+      errors = ''
+      if params[:user][:first_name].blank?
+        errors = errors + "- Please enter a first name.<br/>"
+      end
+      if params[:user][:last_name].blank?
+        errors = errors + "- Please enter a last name.<br/>"
+      end
+      if params[:user][:logon_name].blank?
+        errors = errors + "- Please enter a log on name.<br/>"
+      end
+      if params[:user][:password].blank?
+        errors = errors + "- Please enter a password.<br/>"
+      end
+      if params[:user][:confirm_password].blank?
+        errors = errors + "- Please confirm password.<br/>"
+      end
+      if !errors.blank?
+        flash[:error] = "Please correct the following items:<br/>"+errors
+        return false
+      end
+      return true
+    rescue
+      errors = ''
+      if params[:user_vpn][:first_name].blank?
+        errors = errors + "- Please enter a first name.<br/>"
+      end
+      if params[:user_vpn][:last_name].blank?
+        errors = errors + "- Please enter a last name.<br/>"
+      end
+      if params[:user_vpn][:logon_name].blank?
+        errors = errors + "- Please enter a log on name.<br/>"
+      end
+      if params[:user_vpn][:password].blank?
+        errors = errors + "- Please enter a password.<br/>"
+      end
+      if params[:user_vpn][:confirm_password].blank?
+        errors = errors + "- Please confirm password.<br/>"
+      end
+      if !errors.blank?
+        flash[:error] = "Please correct the following items:<br/>"+errors
+        return false
+      end
+      return true
     end
-    if params[:user][:last_name].blank?
-      errors = errors + "- Please enter a last name.<br/>"
-    end
-    if params[:user][:logon_name].blank?
-      errors = errors + "- Please enter a log on name.<br/>"
-    end
-    if params[:user][:password].blank?
-      errors = errors + "- Please enter a password.<br/>"
-    end
-    if params[:user][:confirm_password].blank?
-      errors = errors + "- Please confirm password.<br/>"
-    end
-    if !errors.blank?
-      flash[:error] = "Please correct the following items:<br/>"+errors
-      return false
-    end
-    return true
   end
   
 end

@@ -12,6 +12,9 @@ When /^I clean up$/ do |table|
       when 'user'
         user = ExchangeUser.find(hash[:name])
         user.destroy
+      when 'vpn-user'
+        user = ExchangeUser.find(hash[:name]+"@"+User.find_by_login("admin_tester").dc.split(",")[0].split("DC=")[1]+"."+User.find_by_login("admin_tester").dc.split(",")[1].split("DC=")[1])
+        user.destroy
     end
   end
 end

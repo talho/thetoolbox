@@ -10,36 +10,30 @@
   <div class="settings_panel" id="settings_panel">
 
       <span class="first create_user">
-        <%= link_to "Create User", "#", :id => "create_new_user" %>
+        <%= link_to "Create User", "#", :id => "create_new_user", :title => "Create User" %>
+      </span>
+      <span class="new_distribution_list">
+        <%= link_to "Create Distribution List", "#", :id => "create_new_distro", :title => "Create Distribution List" %>
+      </span>
+      <span class="manage_vpn_user">
+        <%= link_to "Manage VPN Users", "#", :id => "vpn_users", :title => "Manage VPN Users" %>
+      </span>      
+      <span class="add_distribution_list">
+        <%= link_to "Manage Distribution List", "#", :id => "add_to_distro", :title => "Manage Distribution List" %>
       </span>
       <span class="reset_password">
-        <%= link_to "Reset Password", "#", :id => "reset_password" %>
+        <%= link_to "Reset Password", "#", :id => "reset_password", :title => "Reset Password" %>
       </span>
-
-      <span class="add_white_list">
-        <%= link_to "Add White List Entry", "#", :id => "add_white_list_entry" %>
-      </span>
-      <span class="white_list_settings">
-        <%= link_to "White List Settings", white_lists_path, :id => "white_list" %>
-      </span>
-
-      <span class="new_distribution_list">
-        <%= link_to "Create Distribution List", "#", :id => "create_new_distro" %>
-      </span>
-      <span class="add_distribution_list">
-        <%= link_to "Manage Distribution List", "#", :id => "add_to_distro" %>
-      </span>
-
       <span id="cacti_graphs_link" class="cacti_graphs" <%- if current_user.cacti_username.blank? %> style="display:none"<%- end %> >
-        <%= link_to "View Cacti Graphs", cacti_graphs_path, :id => "cacti_graphs" %>
+        <%= link_to "View Cacti Graphs", cacti_graphs_path, :id => "cacti_graphs", :title => "View Cacti Graphs" %>
       </span>
 
   </div>
   <div class="create_new_user_container" id="create_new_user_container">
     <%= render :partial => 'create_new_user_form' %>
   </div>
-  <div class="white_list_panel" id="white_list_panel">
-    <%= render :partial => 'white_lists/white_list_panel' %>
+  <div class="create_vpn_user_container" id="create_vpn_user_container">
+    <%= render :partial => 'create_vpn_user_form' %>
   </div>
   <div class="reset_password_container" id="reset_password_container">
     <%= render :partial => 'reset_password_form' %>
@@ -50,6 +44,11 @@
   <div class="add_to_distro_container" id="add_to_distro_container">
     <div class="distro_loader">Please wait while we retrieve Distribution Group information.</div>
     <div class="add_to_distro_internal_container" id="add_to_distro_internal_container"></div>
+  </div>
+  <div class="vpn_users_container" id="vpn_users_container">
+    <div class="vpn_loader">Please wait while we retrieve VPN users.</div>
+    <div class="flash"></div>
+    <div class="vpn_users_internal_container" id="vpn_users_internal_container"></div>
   </div>
   <hr/>
   <table class="user_list">
@@ -63,12 +62,12 @@
         </td>
         <td id="<%= index.login %>" class="delete">
           <span class="add_user_to_distro" >
-            <a href="#" alias="<%= index.login %>" email="<%= index.email %>" user="<%= index.id %>" >Add to Distribution List</a>
+            <a href="#" rel="<%= index.cn %>" alias="<%= index.login %>" email="<%= index.email %>" user="<%= index.id %>" title="Add to Distribution List">Add to Distribution List</a>
           </span>
           <span class="reset_user_password">
-            <a href="#" user="<%= index.id %>" >Reset Password</a>
+            <a href="#" user="<%= index.id %>" title="Reset Password">Reset Password</a>
           </span>
-          <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?' %>
+          <%= link_to 'Delete', {:action => 'delete', :id => index.id}, :confirm => 'Are you sure?', :title => "Delete" %>
         </td>
       </tr>
       <tr>

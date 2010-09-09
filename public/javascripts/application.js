@@ -1,4 +1,18 @@
-var cacti_call = false;
+/**
+ * Declare static and global variables
+ */
+var _RESET_PASSWORD_CONTAINER_WIDTH = 300;
+var _MODAL_TOP_POSITION             = 130;
+var _MODAL_CONFIRM_HEIGHT           = 140;
+var _DISTRO_LOADER_ADJUSTMENT       = 31;
+var _VPN_LOADER_ADJUSTMENT          = 26;
+var _DISTRO_CONTAINER_ADJUSTMENT    = 3;
+var _LOADER_DIVIDE_BY               = 2;
+var _EMAIL_FILTER                   = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+var _DISTRO_NAME_FILTER             = /^[a-zA-Z0-9.-]/;
+var _DOMAIN_NAME_FILTER             = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+var cacti_call                      = false;
+
 /**
  * On Document ready function will attach event handlers to existing DOM elements
  */
@@ -8,7 +22,7 @@ $(document).ready(function() {
    * Add onclick event for Reset Password
    */
   $('#reset_password').click(function(e){
-    $('#reset_password_container').dialog({width: 300,modal: true, title: "Reset Password"});
+    $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, title: "Reset Password", position: ['center', _MODAL_TOP_POSITION]});
     return false;
   });
 
@@ -16,13 +30,15 @@ $(document).ready(function() {
    * Add onclick events for Reset Password for individual users
    */
   $('span.reset_user_password a').click(function(e){
-    $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"));
-    $('#reset_password_container').dialog({width: 300, modal: true, draggable: true, resizable: true});
+    $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"), function(){
+      $("#reset_password_container form").form();
+    });
+    $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});
     return false;
   });
 
   /**
-   * Onclick events for "Manage Distribution List" per user
+   * Onclick events for "Add to Distribution List" per user
    */
   $("span.add_user_to_distro a").click(function(obj){
     try{
@@ -30,7 +46,7 @@ $(document).ready(function() {
       $("#add_to_group_form_container").remove();
     }
     catch(err){}
-    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Manage Distribution Groups"});
+    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Add \""+$(obj.target).attr("rel")+"\" to Distribution List", position: ['center', _MODAL_TOP_POSITION]});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").empty();
     $.ajax({
@@ -38,8 +54,9 @@ $(document).ready(function() {
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        $(".distro_loader").height($("#accordion").height()-39);
-        $("#add_to_distro_container").width($("#add_to_distro_container").width()+3);
+        $(".distro_loader").css("margin-top", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
+        $(".distro_loader").css("margin-bottom", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
+        $("#add_to_distro_container").width($("#add_to_distro_container").width()+_DISTRO_CONTAINER_ADJUSTMENT);
         $("#contact_name").val($(obj.target).attr("alias"));
         $("#contact_smtp_address").val($(obj.target).attr("email"));
         $("#contact_type").val("UserMailbox")
@@ -56,7 +73,7 @@ $(document).ready(function() {
       $("#add_to_group_form_container").remove();
     }
     catch(err){}
-    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Manage Distribution Groups"});
+    $('#add_to_distro_container').dialog({modal: true, resizable: false, title: "Manage Distribution List", position: ['center', _MODAL_TOP_POSITION]});
     $(".distro_loader").show();
     $("#add_to_distro_internal_container").empty();
     $.ajax({
@@ -64,18 +81,34 @@ $(document).ready(function() {
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        $(".distro_loader").height($("#accordion").height()-39);
-        $("#add_to_distro_container").width($("#add_to_distro_container").width()+3);
+        $(".distro_loader").css("margin-top", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY  - _DISTRO_LOADER_ADJUSTMENT )+"px");
+        $(".distro_loader").css("margin-bottom", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY  - _DISTRO_LOADER_ADJUSTMENT )+"px");
+        $("#add_to_distro_container").width($("#add_to_distro_container").width()+_DISTRO_CONTAINER_ADJUSTMENT);
       }
     });
   });
 
   /**
+   * Onclick events for "VPN Users" on admin panel
+   */
+   $("#vpn_users").click(function(e){
+    $("#vpn_users_container").dialog({modal: true, resizable: false, title: "VPN Users", position: ['center', _MODAL_TOP_POSITION]});
+    $("#vpn_users_container div.flash").hide();
+    $(".vpn_loader").html("Please wait while we retrieve VPN users.")
+    $(".vpn_loader").show();
+    $("#vpn_users_internal_container").empty();
+    $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+      $(".vpn_loader").hide();
+      jaxify_vpn_user_pagination();
+      manage_vpn_users();
+    });
+   });
+
+  /**
    * Onclick events for Create User
    */
   $('#create_new_user').click(function(e){
-    $('#white_list_panel').hide();
-    $('#create_new_user_container').dialog({modal: true, title: "Create User"});
+    $('#create_new_user_container').dialog({modal: true, title: "Create User", position: ['center', _MODAL_TOP_POSITION]});
     return false;
   });
 
@@ -83,7 +116,7 @@ $(document).ready(function() {
    * Onclick events for the "Create Distribution Group" link
    */
   $('#create_new_distro').click(function(e){
-    $('#create_distribution_list').dialog({modal: true, title: "Create Distribution Group"});
+    $('#create_distribution_list').dialog({modal: true, title: "Create Distribution Group", position: ['center', _MODAL_TOP_POSITION]});
   });
 
   /**
@@ -97,6 +130,58 @@ $(document).ready(function() {
   $("#create_new_user_submit").click(validate_create_user_form);
 
   /**
+   * Validate user input on submit within the create vpn user form
+   * and submit form.
+   */
+  $("#create_vpn_user_container form").submit(function(e){
+    $("#vpn_users_container div.flash").hide();
+    $("#create_vpn_user_container").dialog("close");
+    $(".vpn_loader").html("Creating VPN user. Please wait.");
+    $(".vpn_loader").show();
+    $("#vpn_users_internal_container").empty();
+    if (validate_create_vpn_user_form()){
+      $.ajax({
+        type: "POST",
+        url: "/users",
+        data: $("#create_vpn_user_container form.new_user").serialize(),
+        success: function() {
+          $("#vpn_users_container div.flash").html("<p class=\"completed\">User added</p>");
+        },
+        error: function(req, status, text)
+        {
+          $("#vpn_users_container div.flash").html("<p class=\"error\">"+req.responseText+"</p>");
+        },
+        complete: function(req, status)
+        {
+          $("#create_vpn_user_container form.new_user").each(function(){
+            this.reset();
+          });
+          $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+            $(".vpn_loader").hide();
+            $("#vpn_users_container div.flash").show();
+            jaxify_vpn_user_pagination();
+            manage_vpn_users();
+          });
+        }
+      });
+    }
+    return false;
+  });
+
+  /**
+   * Add support for checkbox toggle on change password and password never expires check boxes 
+   */
+  $("#user_vpn_ch_pwd").click(function(e){
+    if($("#user_vpn_ch_pwd").is(":checked")){
+      $("#user_vpn_pwd_exp").attr("checked", false)  
+    }
+  });
+  $("#user_vpn_pwd_exp").click(function(e){
+    if($("#user_vpn_pwd_exp").is(":checked")){
+      $("#user_vpn_ch_pwd").attr("checked", false)  
+    }
+  });
+  /**
    * Add on key press events on user first name field
    */
   $("#user_first_name").keyup(write_to_full_name);
@@ -107,11 +192,20 @@ $(document).ready(function() {
   $("#user_last_name").keyup(write_to_full_name);
 
   /**
+   * Add on key press events on user first name field
+   */
+  $("#user_vpn_first_name").keyup(write_to_full_vpn_name);
+
+  /**
+   * Add on key press events on user last name field
+   */
+  $("#user_vpn_last_name").keyup(write_to_full_vpn_name);
+
+  /**
    * Validate email entry within white list form
    */
   $('#wl_email_submit').click(function(e){
-    var filter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if (!filter.test($('#wl_email_email').val())) {
+    if (!_EMAIL_FILTER.test($('#wl_email_email').val())) {
       alert('Please provide a valid email address');
       return false;
     }
@@ -121,8 +215,7 @@ $(document).ready(function() {
    * Quick validate function onclick on create distribution form
    */
   $('#create_distribution_submit').click(function(e){
-    var filter = /^[a-zA-Z0-9.-]/;
-    if(!filter.test($("#distribution_group_distribution_list_name").val())){
+    if(!_DISTRO_NAME_FILTER.test($("#distribution_group_distribution_list_name").val())){
       alert("Please enter a valid name for your distribution group.");
       return false;
     }
@@ -132,8 +225,7 @@ $(document).ready(function() {
    * Domain name validate within white list entry form
    */
   $('#wl_domain_submit').click(function(e){
-    var filter = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if(!filter.test($('#wl_domain_domain').val())){
+    if(!_DOMAIN_NAME_FILTER.test($('#wl_domain_domain').val())){
       alert('Please provide a valid domain name in the following format:\t\n   example.com');
       return false;
     }
@@ -158,11 +250,41 @@ $(document).ready(function() {
   $("#log_out").click(function(e){
     cacti_log_out();
   });
+
+  $("form.new_user").form();
+  $("#create_distribution_list form").form();
+  $("#reset_password_container form").form();
+  $("form#new_user_session").form();
+  $("div.pagination span, div.pagination a").button();
 });
 
+function jaxify_vpn_user_pagination()
+{
 
+  $('#create_vpn_user').click(function(e){
+    $('#create_vpn_user_container').dialog({modal: true, title: "Create VPN User", position: ['center', _MODAL_TOP_POSITION]});
+    return false;
+  });
+  $("#vpn_users_internal_container .pagination > span").button();
+  $("#vpn_users_internal_container .pagination > a").button();
+  $("a", "#vpn_users_internal_container .pagination").click(function() {
+    $("#vpn_users_container div.flash").hide();
+    $(".vpn_loader").css("margin-top", Math.floor($("ul.vpn_user_list").height()/_LOADER_DIVIDE_BY - _VPN_LOADER_ADJUSTMENT)+"px");
+    $(".vpn_loader").css("margin-bottom", Math.floor($("ul.vpn_user_list").height()/_LOADER_DIVIDE_BY - _VPN_LOADER_ADJUSTMENT)+"px");
+    $("ul.vpn_user_list").hide();
+    $(".vpn_loader").html("Please wait while we retrieve VPN users.");
+    $(".vpn_loader").show();
+    $("#vpn_users_internal_container").load($(this).attr("href"), function(){
+      $("ul.vpn_user_list").show();
+      $(".vpn_loader").hide();
+      jaxify_vpn_user_pagination();
+      manage_vpn_users();
+    });
+    return false;
+  });
+}
 
-function jaxify_pagination()
+function jaxify_distro_pagination()
 {
   $("#distribution_list .pagination > span").button();
   $("#distribution_list .pagination > a").button();
@@ -174,8 +296,8 @@ function jaxify_pagination()
       dataType: "json",
       success: function(response, status, xhr) {
         manage_distribution_groups(response);
-        //add_to_group_form();
-        $(".distro_loader").height($("#accordion").height()-39);
+        $(".distro_loader").css("margin-top", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
+        $(".distro_loader").css("margin-bottom", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
         $("#add_to_distro_container").width($("#add_to_distro_container").width());
       }
     });
@@ -183,19 +305,71 @@ function jaxify_pagination()
   });
 }
 
+function manage_vpn_users()
+{
+  $("a.vpn_del").each(function(){
+    $(this).click(function(e){
+      $(".vpn_user_overlay_ajax").hide();
+      $("#vpn-confirm").find("p span:last").html("This VPN user will be permanently deleted and cannot be recovered. Are you sure?");
+      $("#vpn_confirm").dialog({
+        resizable: false,
+        height: _MODAL_CONFIRM_HEIGHT,
+        modal: true,
+        position: ['center', _MODAL_TOP_POSITION],
+        buttons: {
+          'Delete': function() {
+            $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").hide();
+            $(this).find("p:first").width($(this).find("p:first").width());
+            $(this).find("p span:last").html("Please wait while we remove the user.<div class='vpn_user_overlay_ajax'></div>");
+            dialog_obj = this;
+            $.ajax({
+              type: "GET",
+              url: "/users/delete/"+$(e.target).attr('rel'),
+              success: function(req, status, text){
+                $("#vpn_users_container div.flash").html("<p class=\"completed\">User Deleted</p>");
+              },
+              error: function(req, status, text){
+                $("#vpn_users_container div.flash").html("<p class=\"completed\">"+req.responseText+"</p>");
+              },
+              complete: function(reg, status){
+                $(dialog_obj).dialog('close');
+                $(".vpn_loader").html("Please wait while we retrieve VPN users.")
+                $(".vpn_loader").show();
+                $("#vpn_users_internal_container").empty();
+                $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+                  $(".vpn_loader").hide();
+                  $("#vpn_users_container div.flash").show();
+                  jaxify_vpn_user_pagination();
+                  manage_vpn_users();
+                });
+              }
+            });
+          },
+          Cancel: function() {
+            $(this).dialog('close');
+          }
+        }
+      });
+      return false;
+    });
+  });
+}
+
 function manage_distribution_groups(response)
 {
-  build_distribution_view(response);
-  $(".distro_loader").hide();
-  $(document.getElementById("accordion")).accordion({change: function(event, ui){
-    $(".distro_user_overlay").show();
-    try{
-      toggle_distro_users($(ui.newHeader).find("a").html().replace(/ /g, "_"));
-    }catch(err){
-      toggle_distro_users($(ui.oldHeader).find("a").html().replace(/ /g, "_"));
-    }
-  }, active: false, collapsible: true});
-  jaxify_pagination();
+  build_result = build_distribution_view(response);
+  if(build_result){
+    $(".distro_loader").hide();
+    $(document.getElementById("accordion")).accordion({change: function(event, ui){
+      $(".distro_user_overlay").show();
+      try{
+        toggle_distro_users($(ui.newHeader).find("a").html().replace(/ /g, "_"));
+      }catch(err){
+        toggle_distro_users($(ui.oldHeader).find("a").html().replace(/ /g, "_"));
+      }
+    }, active: false, collapsible: true});
+    jaxify_distro_pagination();
+  }
 }
 
 function build_distribution_view(json_obj)
@@ -327,13 +501,9 @@ function build_distribution_view(json_obj)
     add_to_group_form_elem.appendChild(input_elem_1);
     add_to_group_form_elem.appendChild(input_elem_2);
     add_to_group_form_elem.appendChild(label_elem_1);
-    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(input_elem_3);
-    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(label_elem_2);
-    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(input_elem_4);
-    add_to_group_form_elem.appendChild(document.createElement("br"));
     add_to_group_form_elem.appendChild(input_elem_5);
     add_to_group_form_container.appendChild(add_to_group_form_elem);
   }
@@ -371,7 +541,8 @@ function build_distribution_view(json_obj)
     distribution_list.appendChild(add_to_group_form_container);
   }
   document.getElementById("add_to_distro_internal_container").appendChild(distribution_list);
-
+  $("#add_to_distro_internal_container form").form();
+  return true;
 }
 
 function add_to_group_form()
@@ -425,7 +596,8 @@ function toggle_distro_users(class_string)
       accordion_content = this;
       $("."+class_string+" .distro_user_overlay").hide();
       $("."+class_string).height("auto");
-      $(".distro_loader").height($("#accordion").height()-39);
+      $(".distro_loader").css("margin-top", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
+      $(".distro_loader").css("margin-bottom", Math.floor($("#accordion").height()/_LOADER_DIVIDE_BY - _DISTRO_LOADER_ADJUSTMENT )+"px");
       $("."+class_string+" .add_contact").click(function(e){
         $("#add_to_group_form_container form #add_to_group_hidden").val($(e.target).attr("rel"));
         if($("#contact_type").val() == "UserMailbox"){
@@ -435,7 +607,7 @@ function toggle_distro_users(class_string)
           $("#add_to_group_form_container form").each(function(){
             this.reset();
           });
-          $("#add_to_group_form_container").dialog({modal: true, title: "Add to Distribution Group"});
+          $("#add_to_group_form_container").dialog({modal: true, title: "Add to Distribution Group", position: ['center', _MODAL_TOP_POSITION]});
           add_to_group_form();
         }
         return false;
@@ -445,15 +617,17 @@ function toggle_distro_users(class_string)
         $("#dialog-confirm").find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?");
         $("#dialog-confirm").dialog({
           resizable: false,
-          height:140,
+          height: _MODAL_CONFIRM_HEIGHT,
           modal: true,
+          position: ['center', _MODAL_TOP_POSITION],
           buttons: {
             'Delete': function() {
               $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").hide();
               $(this).find("p:first").width($(this).find("p:first").width());
               $(this).find("p span:last").html("Please wait while we remove the user.<div class='distro_user_overlay_ajax'></div>");
-              $("."+class_string).load("/distribution_group_users_remove", {group_name: class_string.replace(/_/g, " "), member_alias: $(e.target).attr('rel')}, function(){
+              $("."+class_string+" .accordion_content").load("/distribution_group_users_remove", {group_name: class_string.replace(/_/g, " "), member_alias: $(e.target).attr('rel')}, function(){
                 $("#dialog-confirm").dialog('close');
+                setTimeout(function(){toggle_distro_users(class_string)}, 500);
               });
             },
             Cancel: function() {
@@ -464,9 +638,18 @@ function toggle_distro_users(class_string)
         return false;
       });
       $("."+class_string+" .pagination a").click(function(obj){
-        toggle_distro_users(class_string, $(obj.target).attr("href"));
+        try{
+          toggle_distro_users(class_string, $(obj.target).parent("a").attr("href"));
+        }catch(err){
+          toggle_distro_users(class_string, $(obj.target).attr("href"));
+        }
         return false;
       });
+      if($("."+class_string+" .pagination").length){
+        $("#add_to_distro_container").width("auto");
+        $("."+class_string+" .pagination span, ."+class_string+" .pagination a").button();
+        $("#add_to_distro_container").width($("#add_to_distro_container").width()+_DISTRO_CONTAINER_ADJUSTMENT);  
+      }
     }
   );
 }
@@ -474,7 +657,7 @@ function toggle_distro_users(class_string)
 function begin_cacti_login()
 {
   build_cacti_cred_form();
-  $("#cacti_cred_container").dialog({modal:true, title: "Cacti Login"});
+  $("#cacti_cred_container").dialog({modal:true, title: "Cacti Login", position: ['center', _MODAL_TOP_POSITION]});
 }
 
 function build_cacti_cred_form()
@@ -531,6 +714,7 @@ function cacti_form_events()
       submit_cacti_login_form();
     }
   });
+  $("#cacti_cred_container").form();
 }
 
 function submit_cacti_login_form()
@@ -552,8 +736,8 @@ function submit_cacti_login_form()
 
 function cacti_login()
 {
-   var cacti_username = '';
-   var cacti_password = '';
+  var cacti_username = '';
+  var cacti_password = '';
   if(arguments.length != 0){
     cacti_username = arguments[0];
     cacti_password = arguments[1];
@@ -606,6 +790,11 @@ function write_to_full_name()
   $("#user_full_name").val($("#user_first_name").val() + " " + $("#user_last_name").val());  
 }
 
+function write_to_full_vpn_name()
+{
+  $("#user_vpn_full_name").val($("#user_vpn_first_name").val() + " " + $("#user_vpn_last_name").val());  
+}
+
 function validate_pass_form()
 {
   if($('#ldap_user_new_password').val() == '' || $('#ldap_user_confirm_password').val() == ''){
@@ -647,16 +836,43 @@ function validate_create_user_form()
   return true;
 }
 
+function validate_create_vpn_user_form()
+{
+  var error_list = '';
+  if($("#user_vpn_first_name").val() == ''){
+    error_list += "- Please enter a first name.\t\n";
+  }
+  if($("#user_vpn_last_name").val() == ''){
+    error_list += "- Please enter a last name.\t\n";
+  }
+  if($("#user_vpn_full_name").val() == ''){
+    error_list += "- Please enter a full name.\t\n";
+  }
+  if($("#user_vpn_logon_name").val() == ''){
+    error_list += "- Please enter a logon name.\t\n";
+  }
+  if($("#user_vpn_password").val() == ''){
+    error_list += "- Please enter a valid password.\t\n";
+  }
+  if($("#user_vpn_confirm_password").val() == '' || ($("#user_vpn_password").val() != $("#user_vpn_confirm_password").val())){
+    error_list += "- Please confirm password.\t\n";
+  }
+  if(error_list != ''){
+    alert("Please correct the following items and try again.\t\n"+error_list);
+    return false;
+  }
+  return true;
+}
+
 function validate_add_to_group_form()
 {
   var error_list           = '';
-  var filter               = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   var contact_name         = $.trim($("#contact_name").val());
   var contact_smtp_address = $.trim($("#contact_smtp_address").val());
   if(contact_name == '' || contact_name <= 2){
     error_list += "- Please enter a valid contact name.\t\n";
   }
-  if (contact_smtp_address == '' || !filter.test(contact_smtp_address)) {
+  if (contact_smtp_address == '' || !_EMAIL_FILTER.test(contact_smtp_address)) {
     error_list += "- Please provide a valid email address.\t\n";
   }
   if(error_list != ''){

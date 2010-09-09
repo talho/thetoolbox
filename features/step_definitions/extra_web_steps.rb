@@ -1,11 +1,18 @@
-When /^I have found the user with alias "([^\"]*)"$/ do |userName|
+When /^I have found the user with alias "([^\"]*)"(?: within "([^\"]*)")?$/ do |userName, selector|
   elem = find("#" + userName + ".delete") # look for the delete container with the user name
   if elem.nil?
+    elem = find("#vpn_del_"+userName)
+  end
+  
+  if elem.nil?
     unless  find_link("Next").nil?
-      When %{I follow "Next"}
+      with_scope(selector) do
+        When %{I follow "Next"}
+        sleep 1
+      end
       And  %{I close ".cacti_cred_container" modal box}
     end
-    And  %{I have found the user with alias "#{userName}"}
+    And  %{I have found the user with alias "#{userName}" within "#{selector}"}
   end
   elem
 end
@@ -21,7 +28,7 @@ When /^I have a user with alias "([^\"]*)"$/ do |userName|
       :cn => "Junk User",
       :name => "Junk User",
       :displayName => "Junk User",
-      :dn => "OU=TALHO,DC=thetoolbox,DC=com",
+      :distinguishedName => "OU=TALHO,DC=thetoolbox,DC=com",
       :givenName => "Junk",
       :samAccountName => "#{userName}",
       :userPrincipalName => "#{userName}@thetoolbox.com",
@@ -32,6 +39,33 @@ When /^I have a user with alias "([^\"]*)"$/ do |userName|
       :ou => "TALHO",
       :changePwd => 0,
       :isVPN => 0,
+      :acctDisabled => 0,
+      :pwdExpires => 0
+    })
+  end
+end
+
+When /^I have a vpn user with alias "([^\"]*)"$/ do |userName|
+  begin
+    e_user = ExchangeUser.find(userName+"-vpn@"+User.find_by_login("admin_tester").dc.split(",")[0].split("DC=")[1]+"."+User.find_by_login("admin_tester").dc.split(",")[1].split("DC=")[1])
+  rescue
+  end
+  if e_user.nil?
+    e_user = ExchangeUser.create({
+      :cn => "Junk User VPN",
+      :name => "Junk User VPN",
+      :displayName => "Junk User VPN",
+      :distinguishedName => "OU=TALHO,DC=thetoolbox,DC=com",
+      :givenName => "Junk",
+      :samAccountName => "#{userName}",
+      :userPrincipalName => "#{userName}@thetoolbox.com",
+      :password => "Password1",
+      :sn => "Junk",
+      :domain => "thetoolbox.com",
+      :alias => "#{userName}",
+      :ou => "TALHO",
+      :changePwd => 0,
+      :vpnUsr => true,
       :acctDisabled => 0,
       :pwdExpires => 0
     })
@@ -79,6 +113,10 @@ When /^I override alert$/ do
     evaluate_script("window.alert = function(msg) { window.alert_message = msg; return msg; }")
   rescue Capybara::NotSupportedByDriverError
   end
+end
+
+When /^I click on "([^\"]*)"$/ do |element|
+  page.execute_script("$('#{element}').click()") 
 end
 
 Then /^I refresh page$/ do

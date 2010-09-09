@@ -15,21 +15,22 @@ body{color:#666666;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-
 
 .ui-widget-content{color:#666666 !important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;}
 .ui-dialog .ui-dialog-title{color: #666666 !important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important; }
-
+/*.ui-dialog{top: 45px !important;}   */
 .user_list{margin-top:10px;clear:left;width:100%;}
 .user_list .table_hr{border-top:1px solid #c6c6c6;}
 .user_list td{padding:5px 10px;vertical-align:middle;width:33%;}
 .user_list td.delete{text-align:right;white-space:nowrap;}
 .user_list td.delete a,
-div.ucn_del a{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px no-repeat;font-size:11px;padding:6px 0px 6px 25px;}
+div.ucn_del a,
+.vpn_users_internal_container a.vpn_del{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px no-repeat;font-size:11px;padding:6px 0px 6px 25px;color:#039AC5;}
 
 #application {width:100%;overflow:hidden;}
 
 
 #reset_password_container{display:none;}
 
-.create_new_user_container{display:none;height: 380px;width: 600px;}
-.create_new_user_container table tr td{padding:5px;}
+.create_new_user_container, .create_vpn_user_container{display:none;height: 380px;width: 600px;}
+.create_new_user_container table tr td, .create_vpn_user_container table tr td{padding:5px;}
 #portal_toolbar {background:url("../images/app_header.png");height:32px;line-height:32px;position:relative;}
 #portal_toolbar .title{color:#fff;font-weight:bold;margin-left:10px;}
 #portal_toolbar .title a{color:#fff;text-decoration:none;}
@@ -48,7 +49,8 @@ div.ucn_del a{background:url(images/Crystal_Clear_action_editdelete.png) 0px 2px
 .completed, .error, .notice, .instructions, #errorExplanation {border:2px solid #DDDDDD;font-size:12px;margin-top:0;padding:0.8em;}
 .flash {margin:0.8em 10px 0.4em;}
 
-form.new_user_session{margin-top:10px;}
+form.new_user_session{margin-top:10px;width:auto !important;height:auto !important;}
+form.new_user_session #host_authenticate{margin-bottom:15px;}
 #errorExplanation {background: #FBE3E4; color: #8a1f11; border-color: #FBC2C4;margin:0.8em 0;}
 #errorExplanation p{margin:5px 0px;}
 #errorExplanation ul{margin-left:10px;list-style:circle;list-style-position:inside;}
@@ -58,6 +60,7 @@ form.new_user_session{margin-top:10px;}
 #settings_panel span.first{border-left:none !important;}
 #settings_panel span a{padding:40px 0px 12px;color:#039AC5;font-size:11px;}
 #settings_panel .create_user a{background: url(images/create_user.png) 0px 0px no-repeat;}
+#settings_panel .manage_vpn_user a {background:url(images/create_vpn_user.png) 0px 0px no-repeat;}
 #settings_panel .reset_password a{background: url(images/reset_password.png) 0px 0px no-repeat;}
 #settings_panel .add_white_list,
 #settings_panel .white_list_settings{display:none;}
@@ -78,12 +81,17 @@ div.pagination{margin:0px 10px;}
 #cacti_graphs_iframe{margin-top:-60px;height:850px;}
 #cacti_graphs_iframe body{margin-top:-10px !important;}
 .cacti_form{display:none;}
-#login_status_msg{display:none;background:url(images/loader2.gif) no-repeat transparent;width:50%;margin-left:10px;margin-top:10px;height:32px;}
+#login_status_msg{display:none;background:url(images/ajax-loader.gif) 50% 0% no-repeat transparent;width:50%;margin-left:10px;margin-top:10px;height:32px;}
 #login_status_msg p{color:#666666;padding:8px 5px 5px 40px;}
 #cacti_cred_container{display:none;}
 #cacti_cred_container *{display:block;}
-#cacti_cred_container input{margin-bottom:5px;}
-.cacti_desc{width:200px;margin-bottom:10px;}
+#cacti_cred_container label,
+#add_to_group_form_container label{float:left; clear:left; margin:4px 20px 10px 0px;}
+#cacti_cred_container input,
+#add_to_group_form_container input{clear:right;float:right;}
+#cacti_cred_container button,
+#add_to_group_form_container input[type="submit"]{clear:both;float:left;}
+.cacti_desc{width:350px;margin-bottom:10px;}
 /* CACTI STYLE END */
 
 /*DISTRIBUTION GROUP STYLE BEGIN*/
@@ -103,20 +111,35 @@ div.pagination{margin:0px 10px;}
   width: auto !important;
 }
 
-#distribution_list .pagination{
+#distribution_list .pagination,
+.vpn_users_container .pagination{
   margin: 10px 0px;
   text-align: center;
 }
 
-#distribution_list .pagination span span{border: 1px solid #999999; background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121;}
+div.pagination span span {border: 1px solid #999999; background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121;}
 
 .add_to_distro_container{display:none;}
-
+.vpn_users_container{display:none;min-width:400px;}
+.vpn_users_container div.flash{margin:0px !important;display:none;}
+.vpn_users_internal_container div.vpn_user_desc ul li{border:none !important;}
+.vpn_users_internal_container div.vpn_user_desc ul li strong{float:left;clear:left;padding-bottom:10px;padding-right:10px;}
+.vpn_users_internal_container div.vpn_user_desc ul li span{float:right;padding-bottom:10px;}
+.vpn_users_internal_container div.vpn_user_desc{height:50px;}
+.vpn_users_internal_container div.vpn_user_desc ul li span.vpn_user_login{margin-right:67px;}
+.vpn_users_internal_container a.vpn_del{margin-left:10px;color:#039AC5;}
+.vpn_users_internal_container ul.vpn_user_list li{margin-bottom:10px;border-bottom:1px solid #C6C6C6;}
+.vpn_users_internal_container span.create_vpn_user a {color:#039AC5;}
+#vpn_confirm{display:none;height: auto !important;}
+#vpn_confirm .ui-dialog-buttonpane{border:none;}
+.vpn_users_internal_container .ui-dialog-buttonpane{border:none !important;}
+.vpn_loader,
 .distro_loader{
-  background:url("images/loader2.gif") no-repeat transparent;
+  background:url("images/ajax-loader.gif") 50% 10px no-repeat transparent;
   width: auto;
-  height: 32px;
-  padding-top: 40px;
+  padding-top: 60px;
+  text-align: center;
+  position: relative;
 }
 
 distribution-group{
@@ -148,7 +171,7 @@ div.distro_user_overlay{
 }
 
 div.distro_overlay div.distro_overlay_ajax{
-  background:url("images/loader2.gif") no-repeat transparent;
+  background:url("images/ajax-loader.gif") 50% 0% no-repeat transparent;
   width: 32px;
   height: 32px;
   float:left;
@@ -157,11 +180,15 @@ div.distro_overlay div.distro_overlay_ajax{
 }
 
 div.distro_user_overlay_ajax{
-  background:url("images/loader2.gif") no-repeat transparent;
-  width: 32px;
-  height: 32px;
+  background:url("images/ajax-loader.gif") 50% 0% no-repeat transparent;
+  height: 45px;
 }
 
+div.vpn_user_overlay_ajax{
+  background:url("images/ajax-loader.gif") 50% 0% no-repeat transparent;
+  height: 45px;
+  margin-top: 5px;
+}
 span.displayName{display:block;margin-left:12px;margin-top:-13px;}
 span.asterisk_note{color:red;}
 
@@ -171,13 +198,15 @@ div.ucn_del{float:right}
 span.ui-icon-alert{float:left; margin:0 7px 20px 0;}
 #dialog-confirm{display:none;height:auto !important;}
 #dialog-confirm .ui-dialog-buttonpane{border:none;}
-a.add_contact{
+a.add_contact,
+#create_vpn_user{
   background:url("images/add_icon.png") no-repeat scroll 0 0 transparent;
   display:block;
   height:25px;
   padding-left:28px;
   padding-top:3px;
   float: left;
+  color:#039AC5 !important;
 }
 a.remove_group{
   background:url("images/remove_group.png") no-repeat scroll 100% 0 transparent;
@@ -186,6 +215,7 @@ a.remove_group{
   padding-right:28px;
   padding-top:3px;
   float: right;
+  color:#039AC5 !important;
 }
 /*DISTRIBUTION GROUP STYLE END*/
 span.reset_user_password a{

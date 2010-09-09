@@ -60,7 +60,7 @@ ActionController::Routing::Routes.draw do |map|
   map.distribution_group_users_remove "/distribution_group_users_remove/", :controller => "distribution_group", :action => "remove_user"
   map.distribution_group_delete "/distribution_group_delete", :controller => "distribution_group", :action => "delete"
   map.reset_password_form "/reset_password_form/:id", :controller => "users", :action => "reset_password_form"
-
+  map.vpn_users "/vpn_users/:id", :controller => "users", :action => "index"
   map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
 
 

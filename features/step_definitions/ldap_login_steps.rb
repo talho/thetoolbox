@@ -71,7 +71,7 @@ When /^I sign in( with "remember me")? as "(.*)\/(.*)"$/ do |remember, login, pa
   When %{I go to the sign in page}
   And %{I fill in "Login" with "#{login}"}
   And %{I fill in "Password" with "#{password}"}
-  And %{I check "Remember me"} if remember
+  And %{I click on "#_user_session_remember_me"} if remember
   And %{I press "Sign In"}
 end
 

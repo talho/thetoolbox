@@ -64,32 +64,6 @@
         <%= check_box(:user, :ch_pwd) %>
       </td>
     </tr>
-    <!--
-    <tr>
-      <td>
-        <%= label(:user, :can_ch_pwd, "User cannot change password:") %>
-      </td>
-      <td>
-        <%= check_box(:user, :can_ch_pwd) %>
-      </td>
-    </tr>
-    -->
-    <tr>
-      <td>
-        <%= label(:user, :pwd_exp, "Password never expires:") %>
-      </td>
-      <td>
-        <%= check_box(:user, :pwd_exp) %>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <%= label(:user, :acct_dsbl, "Account is disabled:") %>
-      </td>
-      <td>
-        <%= check_box(:user, :acct_dsbl) %>
-      </td>
-    </tr>
   </table>
   <%= submit_tag "Submit", :id => "create_new_user_submit" %>
 <% end %>

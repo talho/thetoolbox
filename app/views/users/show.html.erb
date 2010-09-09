@@ -15,17 +15,8 @@
     <li class="first">
       <%= link_to "Reset Password", "#", :id => "reset_password" %>
     </li>
-    <li>
-      <%= link_to "Add White List Entry", "#", :id => "add_white_list_entry" %>
-    </li>
-    <li>
-      <%= link_to "White List Settings", "#{white_lists_path}/#{@user.id}", :id => "white_list" %>
-    </li>
   </ul>
 </div>
 <div class="reset_password_container" id="reset_password_container">
   <%= render :partial => 'reset_password_form' %>
-</div>
-<div class="white_list_panel" id="white_list_panel">
-    <%= render :partial => 'white_lists/white_list_panel' %>
 </div>

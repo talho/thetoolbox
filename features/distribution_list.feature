@@ -23,7 +23,7 @@ Feature: Manage Distribution List
     And "testuser" should not be a user
     And "Test List" has no members
     And "Test User" is a user with alias "testuser"
-    When I have found the user with alias "testuser"
+    When I have found the user with alias "testuser" within "#application"
     And I follow "Add to Distribution List" within "#testuser.delete"
     When I have found the distribution group with display name "Test List"
     And I select "Test List" within "#distribution_list"

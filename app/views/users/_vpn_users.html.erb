@@ -1,0 +1,33 @@
+<%- unless @ldap_user_results.blank? %>
+  <ul class="vpn_user_list">
+    <%- @ldap_user_results.each do |u| %>
+      <li>
+        <div class="vpn_user_desc">
+          <ul>
+            <li>
+              <strong>Display Name:</strong>
+              <span>
+                <%= u.cn %>
+                <a class="vpn_del" id="vpn_del_<%= u.login %>" href="#" rel="<%= begin u.upn.gsub(".", "%2E") rescue u.upn end %>">Delete</a>
+              </span>
+            </li>
+            <li>
+              <strong>Login:</strong>
+              <span class="vpn_user_login"><%= u.login %></span>
+            </li>
+          </ul>
+        </div>
+      </li>
+    <%- end %>
+  </ul>
+  <%= will_paginate @ldap_user_results, :params => {:vpn_only => true} %>
+  <span class="create_vpn_user">
+    <%= link_to "Create VPN User", "#", :id => "create_vpn_user" %>
+  </span>
+  <div id="vpn_confirm" title="Delete VPN User?">
+    <p>
+      <span class="ui-icon ui-icon-alert"></span>
+      <span>This VPN User will be permanently deleted and cannot be recovered.  Are you sure?</span>
+    </p>
+  </div>
+<%- end %>

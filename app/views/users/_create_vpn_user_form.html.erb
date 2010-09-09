@@ -1,0 +1,79 @@
+<% form_for @new_user, :html => {:id => "new_vpn_user"} do |f| %>
+  <table>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :first_name, "First Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user_vpn, :first_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :last_name, "Last Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user_vpn, :last_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :full_name, "Full Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user_vpn, :full_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :logon_name, "Log On Name:") %>
+      </td>
+      <td>
+        <%= text_field(:user_vpn, :logon_name) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :password, "User Password:") %>
+      </td>
+      <td>
+        <%= password_field(:user_vpn, :password) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :confirm_password, "Confirm Password:") %>
+      </td>
+      <td>
+        <%= password_field(:user_vpn, :confirm_password) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :ch_pwd, "User must change password:") %>
+      </td>
+      <td>
+        <%= check_box(:user_vpn, :ch_pwd) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :pwd_exp, "Password never expires:") %>
+      </td>
+      <td>
+        <%= check_box(:user_vpn, :pwd_exp) %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <%= label(:user_vpn, :acct_dsbl, "Account is disabled:") %>
+      </td>
+      <td>
+        <%= check_box(:user_vpn, :acct_dsbl) %>
+      </td>
+    </tr>
+  </table>
+  <%= hidden_field(:user_vpn, :vpn_usr_only, :value => true) %>
+  <input type="hidden" name="vpn_only" id="vpn_only" value="true" />
+  <%= submit_tag "Submit", :id => "create_vpn_user_submit" %>
+<% end %>
