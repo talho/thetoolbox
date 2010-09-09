@@ -6,7 +6,6 @@
   <%- end -%>
 </div>
 <% if @ldap_user_results %>
-  <h3>You are authorized to administer the following accounts:</h3>
   <div class="settings_panel" id="settings_panel">
 
       <span class="first create_user">
@@ -29,6 +28,7 @@
       </span>
 
   </div>
+  <h3>You are authorized to administer the following accounts:</h3>
   <div class="create_new_user_container" id="create_new_user_container">
     <%= render :partial => 'create_new_user_form' %>
   </div>
