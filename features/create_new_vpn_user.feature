@@ -36,7 +36,6 @@ Feature: Create new vpn user
     And I fill in "Log On Name" with "tester_b_test" within "#create_vpn_user_container"
     And I fill in "User Password" with "Password1" within "#create_vpn_user_container"
     And I fill in "Confirm Password" with "Password1" within "#create_vpn_user_container"
-    And I click on "#_user_vpn_ch_pwd"
     And I press "Submit" within "#create_vpn_user_container"
     Then I should see "User added"
     And I have found the user with alias "tester_b_test-vpn" within "#vpn_users_container"

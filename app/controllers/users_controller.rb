@@ -71,7 +71,7 @@ class UsersController < ApplicationController
           :domain             => email_domain.split('@')[1],
           :alias              => params[:user_vpn][:logon_name],
           :ou                 => "TALHO",
-          :changePwd          => params[:user_vpn][:ch_pwd],
+          :changePwd          => params[:user_vpn][:ch_pwd].blank? ? "0" : params[:user_vpn][:ch_pwd],
           :isVPN              => params[:user_vpn][:vpn_usr],
           :acctDisabled       => params[:user_vpn][:acct_dsbl] == "0" ? "1" : "0",
           :pwdExpires         => params[:user_vpn][:pwd_exp],

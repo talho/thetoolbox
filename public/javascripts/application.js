@@ -11,6 +11,8 @@ var _LOADER_DIVIDE_BY               = 2;
 var _EMAIL_FILTER                   = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 var _DISTRO_NAME_FILTER             = /^[a-zA-Z0-9.-]/;
 var _DOMAIN_NAME_FILTER             = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+var _USER_VPN_CH_PWD_FLAG           = false;
+var _USER_VPN_PWD_EXP_FLAG          = false;
 var cacti_call                      = false;
 
 /**
@@ -171,16 +173,29 @@ $(document).ready(function() {
   /**
    * Add support for checkbox toggle on change password and password never expires check boxes 
    */
+  /*
   $("#user_vpn_ch_pwd").click(function(e){
-    if($("#user_vpn_ch_pwd").is(":checked")){
-      $("#user_vpn_pwd_exp").attr("checked", false)  
+    if($("#user_vpn_ch_pwd").is(":checked") && !_USER_VPN_CH_PWD_FLAG){
+      _USER_VPN_CH_PWD_FLAG = true;
+      _USER_VPN_PWD_EXP_FLAG = false;
+      if($("#user_vpn_pwd_exp").is(":checked")){
+        _USER_VPN_PWD_EXP_FLAG = true;
+        $("#_user_vpn_pwd_exp").click();
+      }
+    }else{
+      alert('here')
     }
   });
   $("#user_vpn_pwd_exp").click(function(e){
-    if($("#user_vpn_pwd_exp").is(":checked")){
-      $("#user_vpn_ch_pwd").attr("checked", false)  
+    if($("#user_vpn_pwd_exp").is(":checked") && !_USER_VPN_PWD_EXP_FLAG){
+      _USER_VPN_PWD_EXP_FLAG = true;
+      _USER_VPN_CH_PWD_FLAG = false;
+      if($("#user_vpn_ch_pwd").is(":checked")){
+        _USER_VPN_CH_PWD_FLAG = true;
+        $("#_user_vpn_ch_pwd").click();  
+      }
     }
-  });
+  });*/
   /**
    * Add on key press events on user first name field
    */
