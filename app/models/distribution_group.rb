@@ -15,7 +15,7 @@ class DistributionGroup < ActiveResource::Base
   end
 
 
-  self.site = "http://adtest2008/"
+  self.site = "http://192.168.1.191/"
   self.element_name = "DstrSvc"
 
   def self.all

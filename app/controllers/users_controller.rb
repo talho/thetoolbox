@@ -10,6 +10,7 @@ class UsersController < ApplicationController
         options[:page]     = params[:page] || 1
         options[:per_page] = params[:per_page] || 5
         options[:vpn_only] = params[:vpn_only] || false
+        options[:ou]       = create_ou_string(user.dn)
         @ldap_user_results = ExchangeUser.find(:all, :params => options)
         unless params[:vpn_only].blank?
           respond_to do |format|
@@ -251,6 +252,23 @@ class UsersController < ApplicationController
       return false
     end
     return true
+  end
+
+  def create_ou_string(dn)
+    dn_array = dn.split(",")
+    @ou_string = dn_array[dn_array.length-2].split("=")[1]+"."+dn_array[dn_array.length-1].split("=")[1]
+    @dn_index = dn_array.length-3
+    for dn_item in dn_array
+      unless dn_array[@dn_index].nil?
+        if dn_array[@dn_index].split("=")[0] == "OU"
+          @ou_string += "/" + dn_array[@dn_index].split("=")[1]
+        else
+          break
+        end
+        @dn_index-=1
+      end
+    end
+    return @ou_string
   end
 
   def microsoft_encode_password(pwd)
