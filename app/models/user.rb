@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
     end
     true
   end
-
+  
   protected
 
   def ldap_connect

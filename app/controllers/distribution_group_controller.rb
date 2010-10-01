@@ -6,6 +6,7 @@ class DistributionGroupController < ApplicationController
       options            = {}
       options[:page]     = params[:page] || 1
       options[:per_page] = params[:per_page] || 5
+      options[:ou]       = create_ou_string(current_user.dn)
       @distribution_results = DistributionGroup.find(:all, :params => options)
       
       respond_to do |format|
@@ -17,9 +18,6 @@ class DistributionGroupController < ApplicationController
         :total_entries       => @distribution_results.total_entries
         }}
       end
-#      #render :partial => "users/add_to_distribution"
-#      #render :json => @distribution_results
-
     else
       redirect_to user_path(current_user)
     end
@@ -126,5 +124,22 @@ class DistributionGroupController < ApplicationController
       return false
     end
     return true
+  end
+
+  def create_ou_string(dn)
+    dn_array = dn.split(",")
+    ou_string = dn_array[dn_array.length-2].split("=")[1]+"."+dn_array[dn_array.length-1].split("=")[1]
+    dn_index = dn_array.length-3
+    for dn_item in dn_array
+      unless dn_array[dn_index].nil?
+        if dn_array[dn_index].split("=")[0] == "OU"
+          ou_string += "/" + dn_array[dn_index].split("=")[1]
+        else
+          break
+        end
+        dn_index-=1
+      end
+    end
+    return ou_string
   end
 end

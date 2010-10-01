@@ -396,167 +396,176 @@ function build_distribution_view(json_obj)
     distribution_list = document.createElement("div");
     distribution_list.setAttribute("id", "distribution_list");
   }
-  accordion_div = document.createElement("div");
-  accordion_div.setAttribute("id", "accordion");
+  if(json_obj.total_entries != 0){
+    accordion_div = document.createElement("div");
+    accordion_div.setAttribute("id", "accordion");
 
-  for(i = 0; i < distribution_obj.length; i++){
-    h3_element               = document.createElement("h3");
-    anchor_element           = document.createElement("a");
-    div_element1             = document.createElement("div");
-    div_element2             = document.createElement("div");
-    div_element3             = document.createElement("div");
-    div_element4             = document.createElement("div");
-    div_element1.className   = "accordion_user_container user_display_list "+distribution_obj[i].displayName.replace(/ /g, "_");
-    div_element4.className   = "accordion_content";
-    div_element2.className   = "distro_user_overlay";
-    div_element3.className   = "distro_user_overlay_ajax";
-    anchor_element.innerHTML = distribution_obj[i].displayName;
-    anchor_element.setAttribute("href", "#");
-    h3_element.appendChild(anchor_element);
-    div_element2.appendChild(div_element3);
-    div_element4.appendChild(div_element2);
-    div_element1.appendChild(div_element4);
-    accordion_div.appendChild(h3_element);
-    accordion_div.appendChild(div_element1);
-  }
-  number_of_pages = Math.floor(json_obj.total_entries/json_obj.per_page);
-  if(json_obj.total_entries%json_obj.per_page != 0){
-    number_of_pages++;
-  }
-
-  if(json_obj.current_page == 1){
-    traverse_prev           = document.createElement("span");
-    traverse_next           = document.createElement("a");
-    traverse_prev.className = "disabled prev_page";
-    traverse_next.className = "next_page";
-    traverse_prev.innerHTML = "&lt;&lt; Previous";
-    traverse_next.innerHTML = "Next &gt;&gt;";
-    traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1))
-  }else if(json_obj.current_page == number_of_pages){
-    traverse_next           = document.createElement("span");
-    traverse_prev           = document.createElement("a");
-    traverse_next.className = "disabled next_page";
-    traverse_prev.className = "prev_page";
-    traverse_next.innerHTML = "Next &gt;&gt;";
-    traverse_prev.innerHTML = "&lt;&lt; Previous";
-    traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1))
-  }else{
-    traverse_prev           = document.createElement("a");
-    traverse_next           = document.createElement("a");
-    traverse_prev.className = "prev_page";
-    traverse_next.className = "next_page";
-    traverse_prev.innerHTML = "&lt;&lt; Previous";
-    traverse_next.innerHTML = "Next &gt;&gt;";
-    traverse_prev.setAttribute("rel", "prev");
-    traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1));
-    traverse_next.setAttribute("rel", "next");
-    traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1));
-  }
-  if(document.getElementById("pagination")){
-    pagination_div = document.getElementById("pagination");
-    $(pagination_div).empty();
-  }else{
-    pagination_div           = document.createElement("div");
-    pagination_div.className = "pagination";
-    pagination_div.setAttribute("id", "pagination");
-  }
-
-  if(document.getElementById("dialog-confirm")){
-    dialog_confirm = document.getElementById("dialog-confirm");
-    $(dialog_confirm).find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?")
-  }else{
-    dialog_confirm                    = document.createElement("div");
-    dialog_confirm_p                  = document.createElement("p");
-    dialog_confirm_span               = document.createElement("span");
-    dialog_confirm_span_msg           = document.createElement("span");
-    dialog_confirm_span.className     = "ui-icon ui-icon-alert";
-    dialog_confirm_span_msg.innerHTML = "This distribution group member will be permanently deleted and cannot be recovered. Are you sure?";
-    dialog_confirm.setAttribute("id", "dialog-confirm");
-    dialog_confirm.setAttribute("title", "Delete Distribution Group Member?");
-    dialog_confirm_p.appendChild(dialog_confirm_span);
-    dialog_confirm_p.appendChild(dialog_confirm_span_msg);
-    dialog_confirm.appendChild(dialog_confirm_p);
-  }
-  if(document.getElementById("add_to_group_form_container")){
-    add_to_group_form_container = document.getElementById("dd_to_group_form_container");
-  }else{
-    add_to_group_form_container           = document.createElement("div");
-    add_to_group_form_elem                = document.createElement("form");
-    input_elem_1                          = document.createElement("input");
-    input_elem_2                          = document.createElement("input");
-    label_elem_1                          = document.createElement("label");
-    input_elem_3                          = document.createElement("input");
-    label_elem_2                          = document.createElement("label");
-    input_elem_4                          = document.createElement("input");
-    input_elem_5                          = document.createElement("input");
-    add_to_group_form_container.className = "add_to_group_form_container";
-    label_elem_1.innerHTML                = "Contact Name:";
-    label_elem_2.innerHTML                = "Contact Address:";
-    add_to_group_form_container.setAttribute("id", "add_to_group_form_container");
-    add_to_group_form_elem.setAttribute("method", "post");
-    add_to_group_form_elem.setAttribute("action", "/add_to_distribution_group");
-    input_elem_1.setAttribute("type", "hidden");
-    input_elem_1.setAttribute("name", "add_to_group_hidden");
-    input_elem_1.setAttribute("id", "add_to_group_hidden");
-    input_elem_2.setAttribute("type", "hidden");
-    input_elem_2.setAttribute("name", "contact_type");
-    input_elem_2.setAttribute("id", "contact_type");
-    label_elem_1.setAttribute("for", "contact_name");
-    input_elem_3.setAttribute("type", "text");
-    input_elem_3.setAttribute("name", "contact_name");
-    input_elem_3.setAttribute("id", "contact_name");
-    label_elem_2.setAttribute("for", "contact_smtp_address");
-    input_elem_4.setAttribute("type", "text");
-    input_elem_4.setAttribute("name", "contact_smtp_address");
-    input_elem_4.setAttribute("id", "contact_smtp_address");
-    input_elem_5.setAttribute("type", "submit");
-    input_elem_5.setAttribute("name", "commit");
-    input_elem_5.setAttribute("id", "add_to_group_submit");
-    input_elem_5.setAttribute("value", "Submit");
-    add_to_group_form_elem.appendChild(input_elem_1);
-    add_to_group_form_elem.appendChild(input_elem_2);
-    add_to_group_form_elem.appendChild(label_elem_1);
-    add_to_group_form_elem.appendChild(input_elem_3);
-    add_to_group_form_elem.appendChild(label_elem_2);
-    add_to_group_form_elem.appendChild(input_elem_4);
-    add_to_group_form_elem.appendChild(input_elem_5);
-    add_to_group_form_container.appendChild(add_to_group_form_elem);
-  }
-  pagination_div.appendChild(traverse_prev);
-  for(x=1;x<=number_of_pages;x++){
-    if(x == json_obj.current_page){
-      current_span           = document.createElement("span");
-      current_span.className = "current";
-      current_span.innerHTML = x;
-      pagination_div.appendChild(current_span);
-    }else{
-      page_link           = document.createElement("a");
-      page_link.innerHTML = x;
-      page_link.setAttribute("href", "/distribution_group?page="+x);
-      if((x+1) == json_obj.current_page){
-        page_link.setAttribute("rel", "prev")
-      }else if((x-1) == json_obj.current_page){
-        page_link.setAttribute("rel", "next");
-      }
-      pagination_div.appendChild(page_link);
+    for(i = 0; i < distribution_obj.length; i++){
+      h3_element               = document.createElement("h3");
+      anchor_element           = document.createElement("a");
+      div_element1             = document.createElement("div");
+      div_element2             = document.createElement("div");
+      div_element3             = document.createElement("div");
+      div_element4             = document.createElement("div");
+      div_element1.className   = "accordion_user_container user_display_list "+distribution_obj[i].displayName.replace(/ /g, "_");
+      div_element4.className   = "accordion_content";
+      div_element2.className   = "distro_user_overlay";
+      div_element3.className   = "distro_user_overlay_ajax";
+      anchor_element.innerHTML = distribution_obj[i].displayName;
+      anchor_element.setAttribute("href", "#");
+      h3_element.appendChild(anchor_element);
+      div_element2.appendChild(div_element3);
+      div_element4.appendChild(div_element2);
+      div_element1.appendChild(div_element4);
+      accordion_div.appendChild(h3_element);
+      accordion_div.appendChild(div_element1);
     }
-  }
-  pagination_div.appendChild(traverse_next);
+    number_of_pages = Math.floor(json_obj.total_entries/json_obj.per_page);
+    if(json_obj.total_entries%json_obj.per_page != 0){
+      number_of_pages++;
+    }
 
-  if(!document.getElementById("pagination")){
-    distribution_list.appendChild(accordion_div);
-    distribution_list.appendChild(pagination_div);
+    if(json_obj.current_page == 1){
+      traverse_prev           = document.createElement("span");
+      if(number_of_pages != 1){
+        traverse_next = document.createElement("a");
+      }else{
+        traverse_next = document.createElement("span");  
+      }
+      traverse_prev.className = "disabled prev_page";
+      traverse_next.className = "next_page";
+      traverse_prev.innerHTML = "&lt;&lt; Previous";
+      traverse_next.innerHTML = "Next &gt;&gt;";
+      traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1))
+    }else if(json_obj.current_page == number_of_pages){
+      traverse_next           = document.createElement("span");
+      traverse_prev           = document.createElement("a");
+      traverse_next.className = "disabled next_page";
+      traverse_prev.className = "prev_page";
+      traverse_next.innerHTML = "Next &gt;&gt;";
+      traverse_prev.innerHTML = "&lt;&lt; Previous";
+      traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1))
+    }else{
+      traverse_prev           = document.createElement("a");
+      traverse_next           = document.createElement("a");
+      traverse_prev.className = "prev_page";
+      traverse_next.className = "next_page";
+      traverse_prev.innerHTML = "&lt;&lt; Previous";
+      traverse_next.innerHTML = "Next &gt;&gt;";
+      traverse_prev.setAttribute("rel", "prev");
+      traverse_prev.setAttribute("href", "/distribution_group?page="+(json_obj.current_page-1));
+      traverse_next.setAttribute("rel", "next");
+      traverse_next.setAttribute("href", "/distribution_group?page="+(json_obj.current_page+1));
+    }
+    if(document.getElementById("pagination")){
+      pagination_div = document.getElementById("pagination");
+      $(pagination_div).empty();
+    }else{
+      pagination_div           = document.createElement("div");
+      pagination_div.className = "pagination";
+      pagination_div.setAttribute("id", "pagination");
+    }
+
+    if(document.getElementById("dialog-confirm")){
+      dialog_confirm = document.getElementById("dialog-confirm");
+      $(dialog_confirm).find("p span:last").html("This distribution group member will be permanently deleted and cannot be recovered. Are you sure?")
+    }else{
+      dialog_confirm                    = document.createElement("div");
+      dialog_confirm_p                  = document.createElement("p");
+      dialog_confirm_span               = document.createElement("span");
+      dialog_confirm_span_msg           = document.createElement("span");
+      dialog_confirm_span.className     = "ui-icon ui-icon-alert";
+      dialog_confirm_span_msg.innerHTML = "This distribution group member will be permanently deleted and cannot be recovered. Are you sure?";
+      dialog_confirm.setAttribute("id", "dialog-confirm");
+      dialog_confirm.setAttribute("title", "Delete Distribution Group Member?");
+      dialog_confirm_p.appendChild(dialog_confirm_span);
+      dialog_confirm_p.appendChild(dialog_confirm_span_msg);
+      dialog_confirm.appendChild(dialog_confirm_p);
+    }
+    if(document.getElementById("add_to_group_form_container")){
+      add_to_group_form_container = document.getElementById("dd_to_group_form_container");
+    }else{
+      add_to_group_form_container           = document.createElement("div");
+      add_to_group_form_elem                = document.createElement("form");
+      input_elem_1                          = document.createElement("input");
+      input_elem_2                          = document.createElement("input");
+      label_elem_1                          = document.createElement("label");
+      input_elem_3                          = document.createElement("input");
+      label_elem_2                          = document.createElement("label");
+      input_elem_4                          = document.createElement("input");
+      input_elem_5                          = document.createElement("input");
+      add_to_group_form_container.className = "add_to_group_form_container";
+      label_elem_1.innerHTML                = "Contact Name:";
+      label_elem_2.innerHTML                = "Contact Address:";
+      add_to_group_form_container.setAttribute("id", "add_to_group_form_container");
+      add_to_group_form_elem.setAttribute("method", "post");
+      add_to_group_form_elem.setAttribute("action", "/add_to_distribution_group");
+      input_elem_1.setAttribute("type", "hidden");
+      input_elem_1.setAttribute("name", "add_to_group_hidden");
+      input_elem_1.setAttribute("id", "add_to_group_hidden");
+      input_elem_2.setAttribute("type", "hidden");
+      input_elem_2.setAttribute("name", "contact_type");
+      input_elem_2.setAttribute("id", "contact_type");
+      label_elem_1.setAttribute("for", "contact_name");
+      input_elem_3.setAttribute("type", "text");
+      input_elem_3.setAttribute("name", "contact_name");
+      input_elem_3.setAttribute("id", "contact_name");
+      label_elem_2.setAttribute("for", "contact_smtp_address");
+      input_elem_4.setAttribute("type", "text");
+      input_elem_4.setAttribute("name", "contact_smtp_address");
+      input_elem_4.setAttribute("id", "contact_smtp_address");
+      input_elem_5.setAttribute("type", "submit");
+      input_elem_5.setAttribute("name", "commit");
+      input_elem_5.setAttribute("id", "add_to_group_submit");
+      input_elem_5.setAttribute("value", "Submit");
+      add_to_group_form_elem.appendChild(input_elem_1);
+      add_to_group_form_elem.appendChild(input_elem_2);
+      add_to_group_form_elem.appendChild(label_elem_1);
+      add_to_group_form_elem.appendChild(input_elem_3);
+      add_to_group_form_elem.appendChild(label_elem_2);
+      add_to_group_form_elem.appendChild(input_elem_4);
+      add_to_group_form_elem.appendChild(input_elem_5);
+      add_to_group_form_container.appendChild(add_to_group_form_elem);
+    }
+    pagination_div.appendChild(traverse_prev);
+    for(x=1;x<=number_of_pages;x++){
+      if(x == json_obj.current_page){
+        current_span           = document.createElement("span");
+        current_span.className = "current";
+        current_span.innerHTML = x;
+        pagination_div.appendChild(current_span);
+      }else{
+        page_link           = document.createElement("a");
+        page_link.innerHTML = x;
+        page_link.setAttribute("href", "/distribution_group?page="+x);
+        if((x+1) == json_obj.current_page){
+          page_link.setAttribute("rel", "prev")
+        }else if((x-1) == json_obj.current_page){
+          page_link.setAttribute("rel", "next");
+        }
+        pagination_div.appendChild(page_link);
+      }
+    }
+    pagination_div.appendChild(traverse_next);
+
+    if(!document.getElementById("pagination")){
+      distribution_list.appendChild(accordion_div);
+      distribution_list.appendChild(pagination_div);
+    }else{
+      distribution_list.insertBefore(accordion_div, pagination_div);
+    }
+    if(!document.getElementById("dialog-confirm")){
+      distribution_list.appendChild(dialog_confirm);
+    }
+    if(!document.getElementById("add_to_group_form_container")){
+      distribution_list.appendChild(add_to_group_form_container);
+    }
+    document.getElementById("add_to_distro_internal_container").appendChild(distribution_list);
+    $("#add_to_distro_internal_container form").form();
   }else{
-    distribution_list.insertBefore(accordion_div, pagination_div);  
+    document.getElementById("add_to_distro_internal_container").innerHTML = "<div>There are no Distribution Groups.</div>";   
   }
-  if(!document.getElementById("dialog-confirm")){
-    distribution_list.appendChild(dialog_confirm);
-  }
-  if(!document.getElementById("add_to_group_form_container")){
-    distribution_list.appendChild(add_to_group_form_container);
-  }
-  document.getElementById("add_to_distro_internal_container").appendChild(distribution_list);
-  $("#add_to_distro_internal_container form").form();
+
   return true;
 }
 

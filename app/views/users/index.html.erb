@@ -116,25 +116,7 @@
 
   
   <iframe src="<%= cacti_graphs_login_path %>" name="cacti_form_login" id="cacti_form_login_container" class="cacti_form"></iframe>
-  <%- if current_user.cacti_username.blank? %>
-    <script type="text/javascript">
-      $('iframe').load(function() {
-        if(!cacti_call){
-          begin_cacti_login();
-          cacti_call = true;
-        }
-      });
-    </script>
-  <%- elsif !current_user.cacti_logged_in %>
-    <script type="text/javascript">
-      $('iframe').load(function() {
-        if(!cacti_call){
-          cacti_login('<%= current_user.cacti_username %>', '<%= current_user.cacti_password %>');
-          cacti_call = true;
-        }
-      });
-    </script>
-  <%- end %>
+
 <% else %>
   <h3>You are not authorized to administer any accounts</h3>
 <% end %>
