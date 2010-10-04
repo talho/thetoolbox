@@ -5,7 +5,7 @@ class DistributionGroupController < ApplicationController
     if user.is_admin?
       options            = {}
       options[:page]     = params[:page] || 1
-      options[:per_page] = params[:per_page] || 5
+      options[:per_page] = params[:per_page] || 10
       options[:ou]       = create_ou_string(current_user.dn)
       @distribution_results = DistributionGroup.find(:all, :params => options)
       
@@ -70,7 +70,7 @@ class DistributionGroupController < ApplicationController
     if !params[:group_name].blank?
       options            = {}
       options[:page]     = params[:page] || 1
-      options[:per_page] = params[:per_page] || 5
+      options[:per_page] = params[:per_page] || 10
       @distribution_results = DistributionGroup.find(params[:group_name]).ExchangeUsers.paginate(options)
       @distribution_group_name = params[:group_name]
       render :partial => "users/distribution_group_users"
@@ -83,7 +83,7 @@ class DistributionGroupController < ApplicationController
     if !params[:group_name].blank?
       options            = {}
       options[:page]     = params[:page] || 1
-      options[:per_page] = params[:per_page] || 5
+      options[:per_page] = params[:per_page] || 10
       @distribution_results = DistributionGroup.find(params[:group_name])
       @distribution_results.ExchangeUsers.delete_if{|e| e.alias == params[:member_alias]}
       @distribution_results.update

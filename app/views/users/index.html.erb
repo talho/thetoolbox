@@ -21,7 +21,7 @@
         <%= link_to "Manage Distribution List", "#", :id => "add_to_distro", :title => "Manage Distribution List" %>
       </span>
       <span class="reset_password">
-        <%= link_to "Reset Password", "#", :id => "reset_password", :title => "Reset Password" %>
+        <%= link_to "Reset Password", "#", :id => "reset_password", :title => "Reset Password", :user => current_user.login %>
       </span>
       <span id="cacti_graphs_link" class="cacti_graphs" <%- if current_user.cacti_username.blank? %> style="display:none"<%- end %> >
         <%= link_to "View Cacti Graphs", cacti_graphs_path, :id => "cacti_graphs", :title => "View Cacti Graphs" %>

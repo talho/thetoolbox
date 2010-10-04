@@ -8,7 +8,7 @@ class UsersController < ApplicationController
       if user.is_admin?
         options            = {}
         options[:page]     = params[:page] || 1
-        options[:per_page] = params[:per_page] || 5
+        options[:per_page] = params[:per_page] || 10
         options[:vpn_only] = params[:vpn_only] || false
         options[:ou]       = create_ou_string(current_user.dn)
         @ldap_user_results = ExchangeUser.find(:all, :params => options)

@@ -1,0 +1,28 @@
+span.add_user_to_distro a{
+  display:block;
+  width: 110px;
+  float: left;
+  position:relative;
+  top: -6px;
+}
+
+span.reset_user_password a{
+  display:block;
+  width: 80px;
+  float: left;
+  margin-left:10px;
+  padding-bottom: 15px !important;
+  position:relative;
+  top: -6px;
+}
+
+.user_list td.delete a{
+  float: left;
+  background-position: 0px 0px;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.ui-dialog{
+  width: 450px !important;
+}

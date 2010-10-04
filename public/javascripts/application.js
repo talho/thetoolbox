@@ -30,6 +30,7 @@ $(document).ready(function() {
    */
   $('#reset_password').click(function(e){
     $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, title: "Reset Password", position: ['center', _MODAL_TOP_POSITION]});
+    $('#reset_pass_user_name_validate').val($(e.target).attr("user"));
     return false;
   });
 
@@ -39,8 +40,8 @@ $(document).ready(function() {
   $('span.reset_user_password a').click(function(e){
     $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"), function(){
       $("#reset_password_container form").form();
-      $("#reset_password_container form").submit(function(e){
-        return validate_pass_form();
+      $("#reset_password_container form").submit(function(submit_event){
+        return validate_pass_form($(e.target).attr("user"));
       });
     });
     $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});
@@ -133,7 +134,7 @@ $(document).ready(function() {
    * Validate user input on submit within the reset password form
    */
   $("#reset_password_container form").submit(function(e){
-    return validate_pass_form();
+    return validate_pass_form($('#reset_pass_user_name_validate').val());
   });
 
   /**
@@ -803,7 +804,7 @@ function write_to_full_vpn_name()
   $("#user_vpn_full_name").val($("#user_vpn_first_name").val() + " " + $("#user_vpn_last_name").val());  
 }
 
-function validate_pass_form()
+function validate_pass_form(user_handle)
 {
   if($('#ldap_user_new_password').val() == '' || $('#ldap_user_confirm_password').val() == ''){
     alert("Please make sure that both fields are not empty.");
@@ -811,6 +812,10 @@ function validate_pass_form()
   }
   if($('#ldap_user_new_password').val() != $('#ldap_user_confirm_password').val()){
     alert("Please make sure that both passwords match.");
+    return false;
+  }
+  if($('#ldap_user_new_password').val().toLowerCase().indexOf(user_handle.toLowerCase()) != -1){
+    alert("Please make sure your password does not contain your login name.");
     return false;
   }
   pass_valid = validate_password($('#ldap_user_new_password').val());
@@ -906,7 +911,7 @@ function validate_add_to_group_form()
 function validate_password(value){
   var password_check_requirement = 0;
   var msg = '';
-  if(value.length <= _PASSWORD_LENGTH){
+  if(value.length < _PASSWORD_LENGTH){
     msg += "Please make sure that your password is at least eight characters in length.";
   }
   if(_PASSWORD_FILTER_ALPHA_LOWER.test(value)){

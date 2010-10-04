@@ -29,6 +29,14 @@ Feature: Reset user password
     And I press "Submit" within "#reset_password_container"
     Then I should see "Please make sure that both passwords match" within the alert box
 
+  Scenario: User enters invalid password using his login name
+    When I will confirm on next step
+    And I follow "Reset Password"
+    And I fill in "New password" with "Admin_tester1"
+    And I fill in "Confirm password" with "Admin_tester1"
+    And I press "Submit" within "#reset_password_container"
+    Then I should see "Please make sure your password does not contain your login name" within the alert box
+
   Scenario: User enters invalid password
     When I will confirm on next step
     And I follow "Reset Password"
