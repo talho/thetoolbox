@@ -41,7 +41,7 @@ $(document).ready(function() {
     $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"), function(){
       $("#reset_password_container form").form();
       $("#reset_password_container form").submit(function(submit_event){
-        return validate_pass_form($(e.target).attr("user"));
+        return validate_pass_form($(e.target).attr("user"),$("#reset_pass_name_validate").val());
       });
     });
     $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});
@@ -134,7 +134,7 @@ $(document).ready(function() {
    * Validate user input on submit within the reset password form
    */
   $("#reset_password_container form").submit(function(e){
-    return validate_pass_form($('#reset_pass_user_name_validate').val());
+    return validate_pass_form($('#reset_pass_user_name_validate').val(),$("#reset_pass_name_validate").val());
   });
 
   /**
@@ -804,7 +804,7 @@ function write_to_full_vpn_name()
   $("#user_vpn_full_name").val($("#user_vpn_first_name").val() + " " + $("#user_vpn_last_name").val());  
 }
 
-function validate_pass_form(user_handle)
+function validate_pass_form(user_handle,user_names)
 {
   if($('#ldap_user_new_password').val() == '' || $('#ldap_user_confirm_password').val() == ''){
     alert("Please make sure that both fields are not empty.");
@@ -818,6 +818,17 @@ function validate_pass_form(user_handle)
     alert("Please make sure your password does not contain your login name.");
     return false;
   }
+
+  pass_valid = true
+  $.each(user_names.split(" "), function(index, value){
+    if($('#ldap_user_new_password').val().toLowerCase().indexOf(value.toLowerCase()) != -1){
+      alert("Please make sure your password does not contain part of your first or last name.");
+      pass_valid = false
+      return false;
+    }
+  });
+  if(!pass_valid) return false;
+  
   pass_valid = validate_password($('#ldap_user_new_password').val());
   if(pass_valid.length != 0){
     alert(pass_valid);
