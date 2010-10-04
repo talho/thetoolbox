@@ -1,4 +1,5 @@
 When /^I have found the user with alias "([^\"]*)"(?: within "([^\"]*)")?$/ do |userName, selector|
+  sleep 1
   elem = find("#" + userName + ".delete") # look for the delete container with the user name
   if elem.nil?
     elem = find("#vpn_del_"+userName)
@@ -28,7 +29,7 @@ When /^I have a user with alias "([^\"]*)"$/ do |userName|
       :cn => "Junk User",
       :name => "Junk User",
       :displayName => "Junk User",
-      :distinguishedName => "OU=TALHO,DC=thetoolbox,DC=com",
+      :distinguishedName => User.find_by_login("admin_tester").dn.gsub(/CN=[^,]*,/, ""),
       :givenName => "Junk",
       :samAccountName => "#{userName}",
       :userPrincipalName => "#{userName}@thetoolbox.com",
@@ -36,7 +37,7 @@ When /^I have a user with alias "([^\"]*)"$/ do |userName|
       :sn => "Junk",
       :domain => "thetoolbox.com",
       :alias => "#{userName}", 
-      :ou => "TALHO",
+      :ou => User.find_by_login("admin_tester").ou,
       :changePwd => 0,
       :isVPN => 0,
       :acctDisabled => 0,
@@ -55,7 +56,7 @@ When /^I have a vpn user with alias "([^\"]*)"$/ do |userName|
       :cn => "Junk User VPN",
       :name => "Junk User VPN",
       :displayName => "Junk User VPN",
-      :distinguishedName => "OU=TALHO,DC=thetoolbox,DC=com",
+      :distinguishedName => User.find_by_login("admin_tester").dn.gsub(/CN=[^,]*,/, ""),
       :givenName => "Junk",
       :samAccountName => "#{userName}",
       :userPrincipalName => "#{userName}@thetoolbox.com",
@@ -63,7 +64,7 @@ When /^I have a vpn user with alias "([^\"]*)"$/ do |userName|
       :sn => "Junk",
       :domain => "thetoolbox.com",
       :alias => "#{userName}",
-      :ou => "TALHO",
+      :ou => User.find_by_login("admin_tester").ou,
       :changePwd => 0,
       :vpnUsr => true,
       :acctDisabled => 0,

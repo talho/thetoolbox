@@ -14,13 +14,13 @@ Given /^I signed up with "(.*)\/(.*)"$/ do |login, password|
     :login                 => login
 end
 
-Given /^I am signed up as "(.*)\/(.*)\/(.*)\/(.*)"$/ do |login, cn, email, ou|
+Given /^I am signed up as "(.*)\/(.*)\/(.*)\/(.*)\/(.*)"$/ do |login, cn, email, ou_branch, ou|
   include Authlogic::TestCase
   activate_authlogic
   user = Factory :user,
     :login => login,
     :email => email,
-    :dn => "CN=#{cn},OU=TALHO,DC=thetoolbox,DC=com",
+    :dn => "CN=#{cn},#{ou_branch},DC=thetoolbox,DC=com",
     :dc => 'DC=thetoolbox,DC=com',
     :cn => cn,
     :ou => ou,

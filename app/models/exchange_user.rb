@@ -16,7 +16,7 @@ class ExchangeUser < ActiveResource::Base
 
 
   self.primary_key :login
-  self.site = "http://ad3.talho.net/"
+  self.site = "http://192.168.1.191/"
   self.element_name = "ExchSvc"
 
   def id

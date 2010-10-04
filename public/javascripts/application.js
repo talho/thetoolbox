@@ -11,6 +11,11 @@ var _LOADER_DIVIDE_BY               = 2;
 var _EMAIL_FILTER                   = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 var _DISTRO_NAME_FILTER             = /^[a-zA-Z0-9.-]/;
 var _DOMAIN_NAME_FILTER             = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+var _PASSWORD_FILTER_ALPHA_LOWER    = /^.*[a-z]/;
+var _PASSWORD_FILTER_ALPHA_UPPER    = /^.*[A-Z]/;
+var _PASSWORD_FILTER_NUMERIC        = /^.*[0-9]/;
+var _PASSWORD_FILTER_CHAR           = /^.*[\W]/;
+var _PASSWORD_LENGTH                = 8;
 var _USER_VPN_CH_PWD_FLAG           = false;
 var _USER_VPN_PWD_EXP_FLAG          = false;
 var cacti_call                      = false;
@@ -34,6 +39,9 @@ $(document).ready(function() {
   $('span.reset_user_password a').click(function(e){
     $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"), function(){
       $("#reset_password_container form").form();
+      $("#reset_password_container form").submit(function(e){
+        return validate_pass_form();
+      });
     });
     $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});
     return false;
@@ -124,7 +132,9 @@ $(document).ready(function() {
   /**
    * Validate user input on submit within the reset password form
    */
-  $("#reset_password_submit").click(validate_pass_form);
+  $("#reset_password_container form").submit(function(e){
+    return validate_pass_form();
+  });
 
   /**
    * Validate user input on submit within the create user form
@@ -170,32 +180,6 @@ $(document).ready(function() {
     return false;
   });
 
-  /**
-   * Add support for checkbox toggle on change password and password never expires check boxes 
-   */
-  /*
-  $("#user_vpn_ch_pwd").click(function(e){
-    if($("#user_vpn_ch_pwd").is(":checked") && !_USER_VPN_CH_PWD_FLAG){
-      _USER_VPN_CH_PWD_FLAG = true;
-      _USER_VPN_PWD_EXP_FLAG = false;
-      if($("#user_vpn_pwd_exp").is(":checked")){
-        _USER_VPN_PWD_EXP_FLAG = true;
-        $("#_user_vpn_pwd_exp").click();
-      }
-    }else{
-      alert('here')
-    }
-  });
-  $("#user_vpn_pwd_exp").click(function(e){
-    if($("#user_vpn_pwd_exp").is(":checked") && !_USER_VPN_PWD_EXP_FLAG){
-      _USER_VPN_PWD_EXP_FLAG = true;
-      _USER_VPN_CH_PWD_FLAG = false;
-      if($("#user_vpn_ch_pwd").is(":checked")){
-        _USER_VPN_CH_PWD_FLAG = true;
-        $("#_user_vpn_ch_pwd").click();  
-      }
-    }
-  });*/
   /**
    * Add on key press events on user first name field
    */
@@ -829,6 +813,11 @@ function validate_pass_form()
     alert("Please make sure that both passwords match.");
     return false;
   }
+  pass_valid = validate_password($('#ldap_user_new_password').val());
+  if(pass_valid.length != 0){
+    alert(pass_valid);
+    return false;
+  }
   return true;
 }
 
@@ -852,6 +841,10 @@ function validate_create_user_form()
   }
   if($("#user_confirm_password").val() == '' || ($("#user_password").val() != $("#user_confirm_password").val())){
     error_list += "- Please confirm password.\t\n";
+  }
+  pass_valid = validate_password($("#user_password").val());
+  if(pass_valid.length != 0){
+    error_list += "- "+pass_valid+"\t\n";
   }
   if(error_list != ''){
     alert("Please correct the following items and try again.\t\n"+error_list);
@@ -881,6 +874,10 @@ function validate_create_vpn_user_form()
   if($("#user_vpn_confirm_password").val() == '' || ($("#user_vpn_password").val() != $("#user_vpn_confirm_password").val())){
     error_list += "- Please confirm password.\t\n";
   }
+  pass_valid = validate_password($("#user_vpn_password").val());
+  if(pass_valid.length != 0){
+    error_list += pass_valid+"\t\n";
+  }
   if(error_list != ''){
     alert("Please correct the following items and try again.\t\n"+error_list);
     return false;
@@ -904,4 +901,29 @@ function validate_add_to_group_form()
     return false;
   }
   return true;
+}
+
+function validate_password(value){
+  var password_check_requirement = 0;
+  var msg = '';
+  if(value.length <= _PASSWORD_LENGTH){
+    msg += "Please make sure that your password is at least eight characters in length.";
+  }
+  if(_PASSWORD_FILTER_ALPHA_LOWER.test(value)){
+    password_check_requirement++;
+  }
+  if(_PASSWORD_FILTER_ALPHA_UPPER.test(value)){
+    password_check_requirement++;
+  }
+  if(_PASSWORD_FILTER_CHAR.test(value)){
+    password_check_requirement++;
+  }
+  if(_PASSWORD_FILTER_NUMERIC.test(value)){
+    password_check_requirement++;
+  }
+  if(password_check_requirement <= 2){
+    msg += "The password did not meet password complexity requirements. Please make sure that your password contains "+
+          "at least three of the following requirements:\t\n one upper-case letter, one lower-case letter, one number, and one special character.";
+  }
+  return msg;
 }

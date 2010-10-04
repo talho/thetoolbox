@@ -1,5 +1,5 @@
-<%- unless @ldap_user_results.blank? %>
-  <ul class="vpn_user_list">
+<ul class="vpn_user_list">
+  <%- unless @ldap_user_results.blank? %>
     <%- @ldap_user_results.each do |u| %>
       <li>
         <div class="vpn_user_desc">
@@ -19,7 +19,11 @@
         </div>
       </li>
     <%- end %>
-  </ul>
+  <%- else %>
+    <li style="border:none;">
+      <div style="text-align:center;">There are no VPN Users.</div>
+    </li>
+  <%- end %>
   <%= will_paginate @ldap_user_results, :params => {:vpn_only => true} %>
   <span class="create_vpn_user">
     <%= link_to "Create VPN User", "#", :id => "create_vpn_user" %>
@@ -30,6 +34,4 @@
       <span>This VPN User will be permanently deleted and cannot be recovered.  Are you sure?</span>
     </p>
   </div>
-<%- else %>
-  <div style="text-align:center;">There are no VPN Users.</div>
-<%- end %>
+</ul>

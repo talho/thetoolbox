@@ -39,7 +39,7 @@ class UsersController < ApplicationController
 
   def create
     unless !valid_params?
-      dn           = "OU=TALHO," + LDAP_Config[:base][LDAP_Config[:auth_to]]
+      dn           = current_user.dn.gsub(/CN=[^,]*,/, "")
       email_domain = "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1]
       begin
         attr_ldap = {
@@ -54,7 +54,7 @@ class UsersController < ApplicationController
           :sn                 => params[:user][:last_name],
           :domain             => email_domain.split('@')[1],
           :alias              => params[:user][:logon_name],
-          :ou                 => "TALHO",
+          :ou                 => current_user.ou,
           :changePwd          => params[:user][:ch_pwd],
           :isVPN              => params[:user][:vpn_usr]
         }
@@ -71,9 +71,8 @@ class UsersController < ApplicationController
           :sn                 => params[:user_vpn][:last_name],
           :domain             => email_domain.split('@')[1],
           :alias              => params[:user_vpn][:logon_name],
-          :ou                 => "TALHO",
+          :ou                 => current_user.ou,
           :changePwd          => params[:user_vpn][:ch_pwd].blank? ? "0" : params[:user_vpn][:ch_pwd],
-          :isVPN              => params[:user_vpn][:vpn_usr],
           :acctDisabled       => params[:user_vpn][:acct_dsbl] == "0" ? "1" : "0",
           :pwdExpires         => params[:user_vpn][:pwd_exp],
           :vpnUsr             => params[:user_vpn][:vpn_usr_only]
@@ -164,25 +163,25 @@ class UsersController < ApplicationController
       else
         e = ExchangeUser.find(current_user.login)
       end
+      unless e.attributes["login"].blank?
+        e.attributes.delete("xmlns:i")
+        e.attributes.delete("error")
+        e.attributes.delete("xmlns")
+        e.password = params[:ldap_user][:new_password]
+        e.identity = e.attributes["login"].gsub("-vpn","")
+        e.update
+        if e.has_vpn_account?
+          e.identity += "-vpn@thetoolbox.com"
+          e.update()
+        end
+        flash[:completed] = "User password changed successfully."
+      else
+        flash[:error] = "Unable change password, please contact your administrator."
+      end
     rescue
       flash[:error] = "Unable to change password, please contact your administrator."
       redirect_to users_path
       return
-    end
-    unless e.attributes["login"].blank?
-      e.attributes.delete("xmlns:i")
-      e.attributes.delete("error")
-      e.attributes.delete("xmlns")
-      e.password = params[:ldap_user][:new_password]
-      e.identity = e.attributes["login"].gsub("-vpn","")
-      e.update
-      if e.has_vpn_account?
-        e.identity += "-vpn@thetoolbox.com"
-        e.update()
-      end
-      flash[:completed] = "User password changed successfully."
-    else
-      flash[:error] = "Unable change password, please contact your administrator."
     end
     redirect_to users_path
   end

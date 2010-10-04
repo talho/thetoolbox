@@ -72,15 +72,6 @@
       </tr>
       <tr>
         <td>
-          <strong>Organizational Unit</strong>:
-        </td>
-        <td>
-          <%= index.ou %>
-        </td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td>
           <strong>Login</strong>:
         </td>
         <td>
@@ -88,15 +79,17 @@
         </td>
         <td>&nbsp;</td>
       </tr>
+      <%- if index.has_vpn_account? %>
       <tr>
         <td>
           <strong>VPN Login</strong>:
         </td>
         <td>
-          <%= "#{index.login}-vpn" if index.has_vpn_account? %>
+          <%= "#{index.login}-vpn" %>
         </td>
         <td>&nbsp;</td>
       </tr>
+      <%- end %>
       <tr>
         <td>
           <strong>Email</strong>:
