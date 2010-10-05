@@ -41,4 +41,32 @@ Feature: Create new vpn user
     And I have found the user with alias "tester_b_test-vpn" within "#vpn_users_container"
     And I clean up
         | name              | exchangetype |
-        | tester_b_test-vpn | vpn-user     |   
+        | tester_b_test-vpn | vpn-user     |
+
+  Scenario: User attempts to create vpn user with a password containing their login name
+    Given "tester_b_test" should not be a user
+    And I will confirm on next step
+    And I follow "Manage VPN Users"
+    And I follow "Create VPN User"
+    And I fill in "First Name" with "Tester_b" within "#create_vpn_user_container"
+    And I fill in "Last Name" with "Test" within "#create_vpn_user_container"
+    And I fill in "Full Name" with "Tester Test" within "#create_vpn_user_container"
+    And I fill in "Log On Name" with "tester_b_test" within "#create_vpn_user_container"
+    And I fill in "User Password" with "Tester_b_test1" within "#create_vpn_user_container"
+    And I fill in "Confirm Password" with "Tester_b_test1" within "#create_vpn_user_container"
+    And I press "Submit" within "#create_vpn_user_container"
+    Then I should see "Please make sure your password does not contain your login name" within the alert box
+
+  Scenario: User attempts to create vpn user with a password containing part of their full name
+    Given "tester_b_test" should not be a user
+    And I will confirm on next step
+    And I follow "Manage VPN Users"
+    And I follow "Create VPN User"
+    And I fill in "First Name" with "Tester_b" within "#create_vpn_user_container"
+    And I fill in "Last Name" with "Test" within "#create_vpn_user_container"
+    And I fill in "Full Name" with "Tester Test" within "#create_vpn_user_container"
+    And I fill in "Log On Name" with "tester_b_test" within "#create_vpn_user_container"
+    And I fill in "User Password" with "TesterPassword1" within "#create_vpn_user_container"
+    And I fill in "Confirm Password" with "TesterPassword1" within "#create_vpn_user_container"
+    And I press "Submit" within "#create_vpn_user_container"
+    Then I should see "Please make sure your password does not contain part of your first or last name" within the alert box

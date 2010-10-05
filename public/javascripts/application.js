@@ -8,7 +8,7 @@ var _DISTRO_LOADER_ADJUSTMENT       = 31;
 var _VPN_LOADER_ADJUSTMENT          = 26;
 var _DISTRO_CONTAINER_ADJUSTMENT    = 3;
 var _LOADER_DIVIDE_BY               = 2;
-var _EMAIL_FILTER                   = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+var _EMAIL_FILTER                   = /^([\w+\W])+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 var _DISTRO_NAME_FILTER             = /^[a-zA-Z0-9.-]/;
 var _DOMAIN_NAME_FILTER             = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 var _PASSWORD_FILTER_ALPHA_LOWER    = /^.*[a-z]/;
@@ -38,7 +38,7 @@ $(document).ready(function() {
    * Add onclick events for Reset Password for individual users
    */
   $('span.reset_user_password a').click(function(e){
-    $("#reset_password_container").load("/reset_password_form/"+$(e.target).attr("user"), function(){
+    $("#reset_password_container").load("/reset_password_form/"+encodeURI($(e.target).attr("user")), function(){
       $("#reset_password_container form").form();
       $("#reset_password_container form").submit(function(submit_event){
         return validate_pass_form($(e.target).attr("user"),$("#reset_pass_name_validate").val());
@@ -177,6 +177,13 @@ $(document).ready(function() {
           });
         }
       });
+    }else{
+      $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+        $(".vpn_loader").hide();
+        $("#vpn_users_container div.flash").show();
+        jaxify_vpn_user_pagination();
+        manage_vpn_users();
+      });  
     }
     return false;
   });
@@ -324,7 +331,7 @@ function manage_vpn_users()
             dialog_obj = this;
             $.ajax({
               type: "GET",
-              url: "/users/delete/"+$(e.target).attr('rel'),
+              url: "/users/delete/"+encodeURI($(e.target).attr('rel')),
               success: function(req, status, text){
                 $("#vpn_users_container div.flash").html("<p class=\"completed\">User Deleted</p>");
               },
@@ -858,6 +865,15 @@ function validate_create_user_form()
   if($("#user_confirm_password").val() == '' || ($("#user_password").val() != $("#user_confirm_password").val())){
     error_list += "- Please confirm password.\t\n";
   }
+  if($('#user_password').val().toLowerCase().indexOf($("#user_logon_name").val().toLowerCase()) != -1){
+    error_list += "Please make sure your password does not contain your login name.";
+  }
+  $.each($("#user_full_name").val().split(" "), function(index, value){
+    if($('#user_password').val().toLowerCase().indexOf(value.toLowerCase()) != -1){
+      error_list += "Please make sure your password does not contain part of your first or last name.";
+      return false;
+    }
+  });
   pass_valid = validate_password($("#user_password").val());
   if(pass_valid.length != 0){
     error_list += "- "+pass_valid+"\t\n";
@@ -890,6 +906,15 @@ function validate_create_vpn_user_form()
   if($("#user_vpn_confirm_password").val() == '' || ($("#user_vpn_password").val() != $("#user_vpn_confirm_password").val())){
     error_list += "- Please confirm password.\t\n";
   }
+  if($('#user_vpn_password').val().toLowerCase().indexOf($("#user_vpn_logon_name").val().toLowerCase()) != -1){
+    error_list += "Please make sure your password does not contain your login name.";
+  }
+  $.each($("#user_vpn_full_name").val().split(" "), function(index, value){
+    if($('#user_vpn_password').val().toLowerCase().indexOf(value.toLowerCase()) != -1){
+      error_list += "Please make sure your password does not contain part of your first or last name.";
+      return false;
+    }
+  });
   pass_valid = validate_password($("#user_vpn_password").val());
   if(pass_valid.length != 0){
     error_list += pass_valid+"\t\n";
@@ -923,7 +948,7 @@ function validate_password(value){
   var password_check_requirement = 0;
   var msg = '';
   if(value.length < _PASSWORD_LENGTH){
-    msg += "Please make sure that your password is at least eight characters in length.";
+    msg += "- Please make sure that your password is at least eight characters in length.\t\n";
   }
   if(_PASSWORD_FILTER_ALPHA_LOWER.test(value)){
     password_check_requirement++;
