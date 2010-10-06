@@ -52,3 +52,31 @@ Feature: Reset user password
     And I fill in "Confirm password" with "pass.word"
     And I press "Submit" within "#reset_password_container"
     Then I should see "The password did not meet password complexity requirements" within the alert box
+
+  Scenario: Admin changes user password successfully
+    And I have a user with alias "test_reset"
+    When I go to the dashboard
+    And I have found the user with alias "test_reset" within "#application"
+    And I follow "Reset Password" within "#test_reset"
+    And I wait "1" second
+    And I fill in "New password" with "Password2"
+    And I fill in "Confirm password" with "Password2"
+    And I press "Submit" within "#reset_password_container"
+    Then I should see "User password changed successfully"
+    And I clean up
+        | name          | exchangetype |
+        | test_reset    | user         |
+
+  Scenario: Admin changes password successfully on a user name with a dot
+    And I have a user with alias "test.reset"
+    When I go to the dashboard
+    And I have found the user with alias "test.reset" within "#application"
+    And I follow "Reset Password" within "td[@id='test.reset']"
+    And I wait "1" second
+    And I fill in "New password" with "Password2"
+    And I fill in "Confirm password" with "Password2"
+    And I press "Submit" within "#reset_password_container"
+    Then I should see "User password changed successfully"
+    And I clean up
+        | name        | exchangetype |
+        | test.reset  | user         |

@@ -43,6 +43,7 @@ end
 
 Given /^I am logged in as "([^\"]*)"$/ do |credentials|
   When %{I go to the sign in page}
+  sleep 1
   And %{I select "Test" from "Authenticate"}
   And %{I sign in as "#{credentials}"}
   And %{I should see "Login successful"}

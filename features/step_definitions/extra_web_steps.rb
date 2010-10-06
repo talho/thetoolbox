@@ -1,6 +1,6 @@
 When /^I have found the user with alias "([^\"]*)"(?: within "([^\"]*)")?$/ do |userName, selector|
   sleep 1
-  elem = find("#" + userName + ".delete") # look for the delete container with the user name
+  elem = find(:xpath,".//td[@id='#{userName}'][@class='delete']") # look for the delete container with the user name
   if elem.nil?
     elem = find("#vpn_del_"+userName)
   end
@@ -122,5 +122,9 @@ end
 
 Then /^I refresh page$/ do
   execute_script("window.location.reload()")
+end
+
+When /^I wait "([^\"]*)" second(?:s)?$/ do |seconds|
+  sleep seconds.to_i
 end
 

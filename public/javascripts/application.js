@@ -29,6 +29,7 @@ $(document).ready(function() {
    * Add onclick event for Reset Password
    */
   $('#reset_password').click(function(e){
+    $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(".", "%2E")));
     $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, title: "Reset Password", position: ['center', _MODAL_TOP_POSITION]});
     $('#reset_pass_user_name_validate').val($(e.target).attr("user"));
     return false;
@@ -38,13 +39,21 @@ $(document).ready(function() {
    * Add onclick events for Reset Password for individual users
    */
   $('span.reset_user_password a').click(function(e){
-    $("#reset_password_container").load("/reset_password_form/"+encodeURI($(e.target).attr("user")), function(){
-      $("#reset_password_container form").form();
-      $("#reset_password_container form").submit(function(submit_event){
-        return validate_pass_form($(e.target).attr("user"),$("#reset_pass_name_validate").val());
-      });
+    $("#reset_password_container").load("/reset_password_form/"+encodeURI($(e.target).attr("user").replace(".", "%2E")), function(response, status, xhr){
+      if(status == "error"){
+        msg  = "Sorry but there was an error: "+ xhr.status + " " + xhr.statusText+"<br/>";
+        msg += "On user: "+$(e.target).attr("user")+"<br/>";
+        msg += "Please contact your administrator.";
+        display_msg("error", msg);
+      }else{
+        $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(".", "%2E")));
+        $("#reset_password_container form").form();
+        $("#reset_password_container form").submit(function(submit_event){
+          return validate_pass_form($(e.target).attr("user"),$("#reset_pass_name_validate").val());
+        });
+        $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});        
+      }
     });
-    $('#reset_password_container').dialog({width: _RESET_PASSWORD_CONTAINER_WIDTH, modal: true, draggable: true, resizable: true, position: ['center', _MODAL_TOP_POSITION]});
     return false;
   });
 
@@ -108,7 +117,7 @@ $(document).ready(function() {
     $(".vpn_loader").html("Please wait while we retrieve VPN users.")
     $(".vpn_loader").show();
     $("#vpn_users_internal_container").empty();
-    $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+    $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(response, status, xhr){
       $(".vpn_loader").hide();
       jaxify_vpn_user_pagination();
       manage_vpn_users();
@@ -169,7 +178,7 @@ $(document).ready(function() {
           $("#create_vpn_user_container form.new_user").each(function(){
             this.reset();
           });
-          $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+          $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(response, status, xhr){
             $(".vpn_loader").hide();
             $("#vpn_users_container div.flash").show();
             jaxify_vpn_user_pagination();
@@ -178,7 +187,7 @@ $(document).ready(function() {
         }
       });
     }else{
-      $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+      $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(response, status, xhr){
         $(".vpn_loader").hide();
         $("#vpn_users_container div.flash").show();
         jaxify_vpn_user_pagination();
@@ -281,7 +290,7 @@ function jaxify_vpn_user_pagination()
     $("ul.vpn_user_list").hide();
     $(".vpn_loader").html("Please wait while we retrieve VPN users.");
     $(".vpn_loader").show();
-    $("#vpn_users_internal_container").load($(this).attr("href"), function(){
+    $("#vpn_users_internal_container").load($(this).attr("href"), function(response, status, xhr){
       $("ul.vpn_user_list").show();
       $(".vpn_loader").hide();
       jaxify_vpn_user_pagination();
@@ -331,7 +340,7 @@ function manage_vpn_users()
             dialog_obj = this;
             $.ajax({
               type: "GET",
-              url: "/users/delete/"+encodeURI($(e.target).attr('rel')),
+              url: "/users/delete/"+encodeURI($(e.target).attr('rel').replace(".", "%2E")),
               success: function(req, status, text){
                 $("#vpn_users_container div.flash").html("<p class=\"completed\">User Deleted</p>");
               },
@@ -343,7 +352,7 @@ function manage_vpn_users()
                 $(".vpn_loader").html("Please wait while we retrieve VPN users.")
                 $(".vpn_loader").show();
                 $("#vpn_users_internal_container").empty();
-                $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(){
+                $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(response, status, xhr){
                   $(".vpn_loader").hide();
                   $("#vpn_users_container div.flash").show();
                   jaxify_vpn_user_pagination();
@@ -580,14 +589,14 @@ function add_to_group_form()
       url: "/add_to_distribution_group",
       data: {contact_name: $("#contact_name").val(), contact_smtp_address: $("#contact_smtp_address").val(), add_to_group_hidden: $("#add_to_group_hidden").val()},
       success: function() {
-        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(response, status, xhr){
           toggle_distro_users(class_string)
         });
       },
       error: function(req, status, text)
       {
         alert(req.responseText);
-        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(){
+        $("."+class_string+" .accordion_content").load("/distribution_group_users", {group_name: class_string.replace(/_/g, " ")}, function(response, status, xhr){
           toggle_distro_users(class_string)
         });
       }
@@ -608,7 +617,7 @@ function toggle_distro_users(class_string)
 
   $("."+class_string+" .accordion_content").load(group_uri, {
     group_name: class_string.replace(/_/g, " ")},
-    function(){
+    function(response, status, xhr){
       accordion_content = this;
       $("."+class_string+" .distro_user_overlay").hide();
       $("."+class_string).height("auto");
@@ -641,7 +650,9 @@ function toggle_distro_users(class_string)
               $(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix").hide();
               $(this).find("p:first").width($(this).find("p:first").width());
               $(this).find("p span:last").html("Please wait while we remove the user.<div class='distro_user_overlay_ajax'></div>");
-              $("."+class_string+" .accordion_content").load("/distribution_group_users_remove", {group_name: class_string.replace(/_/g, " "), member_alias: $(e.target).attr('rel')}, function(){
+              $("."+class_string+" .accordion_content").load("/distribution_group_users_remove",
+              {group_name: class_string.replace(/_/g, " "),
+                member_alias: $(e.target).attr('rel')}, function(response, status, xhr){
                 $("#dialog-confirm").dialog('close');
                 setTimeout(function(){toggle_distro_users(class_string)}, 500);
               });
@@ -967,4 +978,8 @@ function validate_password(value){
           "at least three of the following requirements:\t\n one upper-case letter, one lower-case letter, one number, and one special character.";
   }
   return msg;
+}
+
+function display_msg(msg_type, msg){
+  $("div.flash").html("<p class='"+msg_type+"'>"+msg+"</p>");
 }
