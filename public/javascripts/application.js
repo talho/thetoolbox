@@ -156,12 +156,12 @@ $(document).ready(function() {
    * and submit form.
    */
   $("#create_vpn_user_container form").submit(function(e){
-    $("#vpn_users_container div.flash").hide();
-    $("#create_vpn_user_container").dialog("close");
-    $(".vpn_loader").html("Creating VPN user. Please wait.");
-    $(".vpn_loader").show();
-    $("#vpn_users_internal_container").empty();
     if (validate_create_vpn_user_form()){
+      $("#vpn_users_container div.flash").hide();
+      $("#create_vpn_user_container").dialog("close");
+      $(".vpn_loader").html("Creating VPN user. Please wait.");
+      $(".vpn_loader").show();
+      $("#vpn_users_internal_container").empty();
       $.ajax({
         type: "POST",
         url: "/users",
@@ -186,13 +186,6 @@ $(document).ready(function() {
           });
         }
       });
-    }else{
-      $("#vpn_users_internal_container").load("/vpn_users", {vpn_only: true}, function(response, status, xhr){
-        $(".vpn_loader").hide();
-        $("#vpn_users_container div.flash").show();
-        jaxify_vpn_user_pagination();
-        manage_vpn_users();
-      });  
     }
     return false;
   });
@@ -278,6 +271,9 @@ function jaxify_vpn_user_pagination()
 {
 
   $('#create_vpn_user').click(function(e){
+    $("#create_vpn_user_container form").each(function(){
+      this.reset();
+    });
     $('#create_vpn_user_container').dialog({modal: true, title: "Create VPN User", position: ['center', _MODAL_TOP_POSITION]});
     return false;
   });
