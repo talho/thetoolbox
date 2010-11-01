@@ -257,6 +257,13 @@ var thetoolbox = {
       thetoolbox.cacti_log_out();
     });
 
+    /**
+     * URIencode the delete user URL
+     */
+    $("td.delete > a").each(function(){
+      $(this).attr('href', encodeURI($(this).attr('href').replace(/\./g, "%2E")));
+    });
+  
     $("form.new_user").form();
     $("#create_distribution_list form").form();
     $("#reset_password_container form").form();
