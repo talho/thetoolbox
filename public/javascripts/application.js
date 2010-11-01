@@ -24,7 +24,7 @@ var thetoolbox = {
      * Add onclick event for Reset Password
      */
     $('#reset_password').click(function(e){
-      $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(".", "%2E")));
+      $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(/\./g, "%2E")));
       $('#reset_password_container').dialog({width: thetoolbox._RESET_PASSWORD_CONTAINER_WIDTH, modal: true, title: "Reset Password", position: ['center', thetoolbox._MODAL_TOP_POSITION]});
       $('#reset_pass_user_name_validate').val($(e.target).attr("user"));
       return false;
@@ -34,14 +34,14 @@ var thetoolbox = {
      * Add onclick events for Reset Password for individual users
      */
     $('span.reset_user_password a').click(function(e){
-      $("#reset_password_container").load("/reset_password_form/"+encodeURI($(e.target).attr("user").replace(".", "%2E")), function(response, status, xhr){
+      $("#reset_password_container").load("/reset_password_form/"+encodeURI($(e.target).attr("user").replace(/\./g, "%2E")), function(response, status, xhr){
         if(status == "error"){
           msg  = "Sorry but there was an error: "+ xhr.status + " " + xhr.statusText+"<br/>";
           msg += "On user: "+$(e.target).attr("user")+"<br/>";
           msg += "Please contact your administrator.";
           thetoolbox.display_msg("error", msg);
         }else{
-          $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(".", "%2E")));
+          $("#reset_password_container form").attr("action", encodeURI($("#reset_password_container form").attr("action").replace(/\./g, "%2E")));
           $("#reset_password_container form").form();
           $("#reset_password_container form").submit(function(submit_event){
             return thetoolbox.validate_pass_form($(e.target).attr("user"),$("#reset_pass_name_validate").val());
@@ -261,12 +261,38 @@ var thetoolbox = {
     $("#create_distribution_list form").form();
     $("#reset_password_container form").form();
     $("form#new_user_session").form();
+    this.clean_up_pagination('body');
     $("div.pagination span, div.pagination a").button();
   },
 
+  get_url_vars: function()
+  {
+    var vars   = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++){
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
+    }
+    return vars; 
+  },
+
+  clean_up_pagination: function(scope_string)
+  {
+    if($(scope_string + " .current").prev().attr("class") == "disabled prev_page" ||
+      $(scope_string + " .current").prev().attr("class") == "prev_page"){
+      $(scope_string + " .current").prev().remove();
+    }
+    if($(scope_string + " .current").next().attr("class") == "disabled next_page" ||
+      $(scope_string + " .current").next().attr("class") == "next_page"){
+      $(scope_string + " .current").next().remove();
+    }
+  },
+  
   jaxify_vpn_user_pagination: function()
   {
 
+    this.clean_up_pagination("#vpn_users_internal_container");
     $('#create_vpn_user').click(function(e){
       $("#create_vpn_user_container form").each(function(){
         this.reset();
@@ -296,6 +322,7 @@ var thetoolbox = {
 
   jaxify_distro_pagination: function()
   {
+    this.clean_up_pagination("#distribution_list");
     $("#distribution_list .pagination > span").button();
     $("#distribution_list .pagination > a").button();
     $("a", "#distribution_list .pagination").click(function() {
@@ -345,7 +372,7 @@ var thetoolbox = {
               dialog_obj = this;
               $.ajax({
                 type: "GET",
-                url: "/users/delete/"+encodeURI($(e.target).attr('rel').replace(".", "%2E")),
+                url: "/users/delete/"+encodeURI($(e.target).attr('rel').replace(/\./g, "%2E")),
                 success: function(req, status, text){
                   $("#vpn_users_container div.flash").html("<p class=\"completed\">User Deleted</p>");
                 },
@@ -618,7 +645,7 @@ var thetoolbox = {
     if(typeof(argv[1]) != "undefined"){
       group_uri = argv[1];
     }else{
-      group_uri = "/distribution_group_users"
+      group_uri = "/distribution_group_users";
     }
 
     $("."+class_string+" .accordion_content").load(group_uri, {
@@ -793,7 +820,7 @@ var thetoolbox = {
         if(textStatus == "success"){
 
         }else{
-          alert("The Cacti service is currently down.  Please contact your administrator.")
+          alert("The Cacti service is currently down.  Please contact your administrator.");
         }
       }
     });
@@ -986,7 +1013,8 @@ var thetoolbox = {
     return msg;
   },
 
-  display_msg: function(msg_type, msg){
+  display_msg: function(msg_type, msg)
+  {
     $("div.flash").html("<p class='"+msg_type+"'>"+msg+"</p>");
   }
 
