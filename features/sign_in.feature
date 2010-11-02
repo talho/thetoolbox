@@ -28,7 +28,7 @@ Feature: Sign in
     And I should be signed in
 
   Scenario: User signs in and checks "remember me"
-    Given I am signed up as "tester_test/Tester Test/tester_test@example.com/OU=TORK,OU-TALHO/TALHO"
+    Given I am signed up as "tester_test/Tester Test/tester_test@example.com/OU=TALHO/TALHO"
     When I go to the sign in page
     And I select "Test" from "Authenticate"
     And I sign in with "remember me" as "tester_test/Password1"

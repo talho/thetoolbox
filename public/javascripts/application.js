@@ -15,6 +15,7 @@ var thetoolbox = {
   _PASSWORD_FILTER_NUMERIC:        /^.*[0-9]/,
   _PASSWORD_FILTER_CHAR:           /^.*[\W]/,
   _PASSWORD_LENGTH:                8,
+  _LOGIN_LENGTH:                   20,
   _USER_VPN_CH_PWD_FLAG:           false,
   _USER_VPN_PWD_EXP_FLAG:          false,
   cacti_call:                      false,
@@ -145,7 +146,9 @@ var thetoolbox = {
     /**
      * Validate user input on submit within the create user form
      */
-    $("#create_new_user_submit").click(thetoolbox.validate_create_user_form);
+    $("#create_new_user_submit").click(function(e){
+      return thetoolbox.validate_create_user_form();
+    });
 
     /**
      * Validate user input on submit within the create vpn user form
@@ -910,6 +913,9 @@ var thetoolbox = {
     if($("#user_logon_name").val() == ''){
       error_list += "- Please enter a logon name.\t\n";
     }
+    if($("#user_logon_name").val().length > thetoolbox._LOGIN_LENGTH){
+      error_list += "- Please make sure your logon name is equal to or less than 20 characters.\t\n";
+    }
     if($("#user_password").val() == ''){
       error_list += "- Please enter a valid password.\t\n";
     }
@@ -950,6 +956,9 @@ var thetoolbox = {
     }
     if($("#user_vpn_logon_name").val() == ''){
       error_list += "- Please enter a logon name.\t\n";
+    }
+    if($("#user_vpn_logon_name").val().length > thetoolbox._LOGIN_LENGTH){
+      error_list += "- Please make sure your logon name is equal to or less than 20 characters.\t\n";
     }
     if($("#user_vpn_password").val() == ''){
       error_list += "- Please enter a valid password.\t\n";

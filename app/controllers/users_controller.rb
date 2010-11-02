@@ -272,6 +272,9 @@ class UsersController < ApplicationController
       if params[:user][:logon_name].blank?
         errors = errors + "- Please enter a log on name.<br/>"
       end
+      if params[:user][:logon_name].length > 20
+        errors = errors + "- Please make sure your log name is less than 20 characters long.<br/>"
+      end
       if params[:user][:password].blank?
         errors = errors + "- Please enter a password.<br/>"
       end
@@ -293,6 +296,9 @@ class UsersController < ApplicationController
       end
       if params[:user_vpn][:logon_name].blank?
         errors = errors + "- Please enter a log on name.<br/>"
+      end
+      if params[:user_vpn][:logon_name].length > 20
+        errors = errors + "- Please make sure your log name is less than 20 characters long.<br/>"
       end
       if params[:user_vpn][:password].blank?
         errors = errors + "- Please enter a password.<br/>"

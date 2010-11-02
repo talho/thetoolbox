@@ -80,6 +80,19 @@ Feature: Create new exchange user
       | name         | exchangetype |
       | junk_tester  | user |
 
+  Scenario: User attempts to create an exchange user with a logon name of more than 20 characters
+    Given "too.long.to.be.for.real" should not be a user
+    And I will confirm on next step
+    And I follow "Create User"
+    And I fill in "First Name" with "Junk" within "#create_new_user_container"
+    And I fill in "Last Name" with "Tester" within "#create_new_user_container"
+    And I fill in "Full Name" with "Junk Tester" within "#create_new_user_container"
+    And I fill in "Log On Name" with "too.long.to.be.for.real" within "#create_new_user_container"
+    And I fill in "User Password" with "Password1" within "#create_new_user_container"
+    And I fill in "Confirm Password" with "Password1" within "#create_new_user_container"
+    And I press "Submit" within "#create_new_user_container"
+    Then I should see "Please make sure your logon name is equal to or less than 20 characters" within the alert box
+
   Scenario: User recreates previously created exchange user after deleting him.
     Given "tester_b_test" should not be a user
     When I follow "Create User"
