@@ -25,6 +25,8 @@ Given /^I am signed up as "(.*)\/(.*)\/(.*)\/(.*)\/(.*)"$/ do |login, cn, email,
     :cn => cn,
     :ou => ou,
     :admin => false,
+    :use_oab => '',
+    :security_group => '',
     :admin_expire => Time.now + 15.minutes
 end
 

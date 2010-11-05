@@ -45,22 +45,22 @@ Given /^"([^\"]*)" is a user with alias "([^\"]*)"$/ do |userName, userAlias|
     EchangeUser.find(userName)
   rescue
     user = User.all.first
-    ExchangeUser.create(:cn          => userName,
-                 :name               => userName,
-                 :displayName        => userName,
-                 :distinguishedName  => userName,
-                 :givenName          => userName,
-                 :samAccountName     => userAlias,
-                 :userPrincipalName  => userAlias + "@upn.com",
-                 :password           => "Password1",
-                 :sn                 => userName,
-                 :domain             => "upn.com",
-                 :alias              => userAlias,
-                 :ou                 => user.ou,
-                 :changePwd          => 0,
-                 :isVPN              => 0,
-                 :acctDisabled       => 0,
-                 :pwdExpires         => 0
+    ExchangeUser.create(
+     :cn                 => userName,
+     :name               => userName,
+     :displayName        => userName,
+     :distinguishedName  => user.dn.gsub(/CN=[^,]*,/, ""),
+     :givenName          => userName,
+     :samAccountName     => userAlias,
+     :userPrincipalName  => userAlias + "@" + user.email.split("@")[1],
+     :password           => "Password1",
+     :sn                 => userName,
+     :domain             => user.email.split("@")[1],
+     :alias              => userAlias,
+     :ou                 => user.ou,
+     :useOAB             => user.use_oab,
+     :securityGroup      => user.security_group,
+     :changePwd          => 0
     )
   end
 end

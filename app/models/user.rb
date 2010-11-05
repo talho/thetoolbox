@@ -16,22 +16,6 @@ class User < ActiveRecord::Base
     user
   end
 
-  def refresh_ou_members
-    if is_admin?
-      users = LdapUser.find_by_ou(ou)
-      users.each do |user|
-        user.save! if user.new_record?
-      end
-    end
-  end
-
-  def toggle
-    if LdapUser.update(self)
-      self.enabled = !self.enabled
-      self.save
-    end
-  end
-
   def is_admin?
     if self.admin && !self.admin_expire.nil? && self.admin_expire > Time.now
       return self.admin
@@ -42,24 +26,27 @@ class User < ActiveRecord::Base
 
   end
 
-  def reset_password(password_plaintext)
-    LdapUser.reset_password(self.login, password_plaintext)
-  end
-
   def valid_credentials?(password_plaintext)
     LdapUser.valid_credentials?(dn, password_plaintext)
   end
 
-  def has_vpn_account?
-    begin
-      temp_email = String.new(self.email)
-      e = ExchangeUser.find(temp_email.insert(temp_email.index('@'), "-vpn"))
-    rescue
-      return false
+  def create_ou_string
+    dn_array = self.dn.split(",")
+    ou_string = dn_array[dn_array.length-2].split("=")[1]+"."+dn_array[dn_array.length-1].split("=")[1]
+    dn_index = dn_array.length-3
+    for dn_item in dn_array
+      unless dn_array[dn_index].nil?
+        if dn_array[dn_index].split("=")[0] == "OU"
+          ou_string += "/" + dn_array[dn_index].split("=")[1]
+        else
+          break
+        end
+        dn_index-=1
+      end
     end
-    true
+    return ou_string
   end
-  
+
   protected
 
   def ldap_connect

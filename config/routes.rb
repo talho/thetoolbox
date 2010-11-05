@@ -48,7 +48,7 @@ ActionController::Routing::Routes.draw do |map|
   map.forgot_password "/forgot_password", :controller => "dashboard", :action => "forgot_password"
   map.reset_password "/reset_password/:id", :controller => "users", :action => "reset_password"
   map.create_distribution_group "/create_distribution_group/:id", :controller => "distribution_group", :action => "create_distribution_group"
-  map.toggle_user "/users/:id/toggle", :controller => "users", :action => "toggle"
+  #map.toggle_user "/users/:id/toggle", :controller => "users", :action => "toggle"
 
   map.cacti_graphs "/cacti_graphs", :controller => "dashboard", :action => "cacti_graphs"
   map.cacti_graphs_login "/cacti_graphs_login", :controller => "dashboard", :action => "cacti_graphs_login"

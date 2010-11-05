@@ -32,16 +32,15 @@ When /^I have a user with alias "([^\"]*)"$/ do |userName|
       :distinguishedName => User.find_by_login("admin_tester").dn.gsub(/CN=[^,]*,/, ""),
       :givenName => "Junk",
       :samAccountName => "#{userName}",
-      :userPrincipalName => "#{userName}@thetoolbox.com",
+      :userPrincipalName => "#{userName}@#{User.find_by_login("admin_tester").email.split("@")[1]}",
       :password => "Password1",
       :sn => "Junk",
-      :domain => "thetoolbox.com",
+      :domain => "#{User.find_by_login("admin_tester").email.split("@")[1]}",
       :alias => "#{userName}", 
       :ou => User.find_by_login("admin_tester").ou,
-      :changePwd => 0,
-      :isVPN => 0,
-      :acctDisabled => 0,
-      :pwdExpires => 0
+      :useOAB => User.find_by_login("admin_tester").use_oab,
+      :securityGroup => User.find_by_login("admin_tester").security_group,
+      :changePwd => 0
     })
   end
 end
@@ -59,7 +58,7 @@ When /^I have a vpn user with alias "([^\"]*)"$/ do |userName|
       :distinguishedName => User.find_by_login("admin_tester").dn.gsub(/CN=[^,]*,/, ""),
       :givenName => "Junk",
       :samAccountName => "#{userName}",
-      :userPrincipalName => "#{userName}@thetoolbox.com",
+      :userPrincipalName => "#{userName}@#{User.find_by_login("admin_tester").email.split("@")[1]}",
       :password => "Password1",
       :sn => "Junk",
       :domain => "thetoolbox.com",
@@ -67,8 +66,8 @@ When /^I have a vpn user with alias "([^\"]*)"$/ do |userName|
       :ou => User.find_by_login("admin_tester").ou,
       :changePwd => 0,
       :vpnUsr => true,
-      :acctDisabled => 0,
-      :pwdExpires => 0
+      :useOAB => User.find_by_login("admin_tester").use_oab,
+      :securityGroup => User.find_by_login("admin_tester").security_group
     })
   end
 end

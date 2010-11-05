@@ -10,7 +10,7 @@ class UsersController < ApplicationController
         options[:page]     = params[:page] || 1
         options[:per_page] = params[:per_page] || 10
         options[:vpn_only] = params[:vpn_only] || false
-        options[:ou]       = create_ou_string(current_user.dn)
+        options[:ou]       = user.create_ou_string
         @ldap_user_results = ExchangeUser.find(:all, :params => options)
         unless params[:vpn_only].blank?
           respond_to do |format|
@@ -40,7 +40,7 @@ class UsersController < ApplicationController
   def create
     unless !valid_params?
       dn           = current_user.dn.gsub(/CN=[^,]*,/, "")
-      email_domain = "@" + dn.split(",")[dn.split(",").size - 2].split("=")[1] + "." + dn.split(",")[dn.split(",").size - 1].split("=")[1]
+      email_domain = current_user.email.split("@")[1]
       begin
         attr_ldap = {
           :cn                 => params[:user][:first_name] + " " + params[:user][:last_name],
@@ -49,14 +49,15 @@ class UsersController < ApplicationController
           :distinguishedName  => dn,
           :givenName          => params[:user][:first_name],
           :samAccountName     => params[:user][:logon_name],
-          :userPrincipalName  => params[:user][:logon_name] + email_domain,
+          :userPrincipalName  => params[:user][:logon_name] + "@" + email_domain,
           :password           => params[:user][:password],
           :sn                 => params[:user][:last_name],
-          :domain             => email_domain.split('@')[1],
+          :domain             => email_domain,
           :alias              => params[:user][:logon_name],
           :ou                 => current_user.ou,
-          :changePwd          => params[:user][:ch_pwd],
-          :isVPN              => params[:user][:vpn_usr]
+          :useOAB             => current_user.use_oab,
+          :securityGroup      => current_user.security_group,
+          :changePwd          => params[:user][:ch_pwd]
         }
       rescue
         attr_ldap = {
@@ -66,12 +67,14 @@ class UsersController < ApplicationController
           :distinguishedName  => dn,
           :givenName          => params[:user_vpn][:first_name],
           :samAccountName     => params[:user_vpn][:logon_name],
-          :userPrincipalName  => params[:user_vpn][:logon_name] + email_domain,
+          :userPrincipalName  => params[:user_vpn][:logon_name] + "@" + email_domain,
           :password           => params[:user_vpn][:password],
           :sn                 => params[:user_vpn][:last_name],
           :domain             => email_domain.split('@')[1],
           :alias              => params[:user_vpn][:logon_name],
           :ou                 => current_user.ou,
+          :useOAB             => current_user.use_oab,
+          :securityGroup      => current_user.security_group,
           :changePwd          => params[:user_vpn][:ch_pwd].blank? ? "0" : params[:user_vpn][:ch_pwd],
           :acctDisabled       => params[:user_vpn][:acct_dsbl] == "0" ? "1" : "0",
           :pwdExpires         => params[:user_vpn][:pwd_exp],
@@ -133,21 +136,6 @@ class UsersController < ApplicationController
       else
         flash[:error] = "You do not have access to this record or there was an error processing your request."
       end
-    end
-    redirect_to users_path
-  end
-  
-  def toggle
-    user = User.find(params[:id])
-    if user
-      user.toggle
-      if !user.enabled
-        flash[:notice] = "User Enabled"
-      else
-        flash[:notice] = "User Disabled"
-      end
-    else
-      flash[:error] = "You do not have access to this record or there was an error processing your request."
     end
     redirect_to users_path
   end
@@ -253,13 +241,6 @@ class UsersController < ApplicationController
     return true
   end
 
-  def microsoft_encode_password(pwd)
-    newPass = ""
-    pwd     = "\"" + pwd + "\""
-    pwd.length.times{|i| newPass += "#{pwd[i..i]}\000"}
-    newPass
-  end
-
   def valid_params?
     begin
       errors = ''
@@ -297,8 +278,8 @@ class UsersController < ApplicationController
       if params[:user_vpn][:logon_name].blank?
         errors = errors + "- Please enter a log on name.<br/>"
       end
-      if params[:user_vpn][:logon_name].length > 20
-        errors = errors + "- Please make sure your log name is less than 20 characters long.<br/>"
+      if params[:user_vpn][:logon_name].length > 16
+        errors = errors + "- Please make sure your log name is less than 16 characters long.<br/>"
       end
       if params[:user_vpn][:password].blank?
         errors = errors + "- Please enter a password.<br/>"
@@ -314,21 +295,4 @@ class UsersController < ApplicationController
     end
   end
 
-  def create_ou_string(dn)
-    dn_array = dn.split(",")
-    ou_string = dn_array[dn_array.length-2].split("=")[1]+"."+dn_array[dn_array.length-1].split("=")[1]
-    dn_index = dn_array.length-3
-    for dn_item in dn_array
-      unless dn_array[dn_index].nil?
-        if dn_array[dn_index].split("=")[0] == "OU"
-          ou_string += "/" + dn_array[dn_index].split("=")[1]
-        else
-          break
-        end
-        dn_index-=1
-      end
-    end
-    return ou_string
-  end
-  
 end

@@ -16,6 +16,7 @@ var thetoolbox = {
   _PASSWORD_FILTER_CHAR:           /^.*[\W]/,
   _PASSWORD_LENGTH:                8,
   _LOGIN_LENGTH:                   20,
+  _VPN_LOGIN_LENGTH:               16,
   _USER_VPN_CH_PWD_FLAG:           false,
   _USER_VPN_PWD_EXP_FLAG:          false,
   cacti_call:                      false,
@@ -243,15 +244,15 @@ var thetoolbox = {
     /**
      * Toggle White List entries in form
      */
-    $('#dummy_scope').change(function(e){
-      $("#dummy_scope option").each(function(){
-        var id = '#wl_';
-        id += $(this).text().toLowerCase();
-        id += '_container';
-        $(id).toggle();
-      });
-
-    });
+//    $('#dummy_scope').change(function(e){
+//      $("#dummy_scope option").each(function(){
+//        var id = '#wl_';
+//        id += $(this).text().toLowerCase();
+//        id += '_container';
+//        $(id).toggle();
+//      });
+//
+//    });
 
     /**
      * Onclick event for log out link
@@ -957,8 +958,8 @@ var thetoolbox = {
     if($("#user_vpn_logon_name").val() == ''){
       error_list += "- Please enter a logon name.\t\n";
     }
-    if($("#user_vpn_logon_name").val().length > thetoolbox._LOGIN_LENGTH){
-      error_list += "- Please make sure your logon name is equal to or less than 20 characters.\t\n";
+    if($("#user_vpn_logon_name").val().length > thetoolbox._VPN_LOGIN_LENGTH){
+      error_list += "- Please make sure your logon name is equal to or less than 16 characters.\t\n";
     }
     if($("#user_vpn_password").val() == ''){
       error_list += "- Please enter a valid password.\t\n";
