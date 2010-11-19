@@ -29,6 +29,7 @@ class DistributionGroupController < ApplicationController
         g = DistributionGroup.new
         g.group_name = params[:distribution_group][:distribution_list_name]
         g.ou = current_user.ou
+        g.auth_enabled = params[:distribution_group][:sender_auth_enabled]
         g.save
         flash[:completed] = "Distribution Group created successfully."
       rescue Exception => exc

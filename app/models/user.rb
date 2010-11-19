@@ -7,8 +7,7 @@ class User < ActiveRecord::Base
 
   def self.find_by_login_method(login_name)
     dc   = LDAP_Config[:base][LDAP_Config[:auth_to]]
-    user = User.find_by_login_and_dc(login_name, dc)
-    user = LdapUser.find_by_login_and_dc(login_name, dc) unless user
+    user = LdapUser.find_by_login_and_dc(login_name, dc)
     unless !user.blank?
       return false
     end

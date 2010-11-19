@@ -5,7 +5,7 @@ var thetoolbox = {
   _MODAL_CONFIRM_HEIGHT:           140,
   _DISTRO_LOADER_ADJUSTMENT:       31,
   _VPN_LOADER_ADJUSTMENT:          26,
-  _DISTRO_CONTAINER_ADJUSTMENT:    3,
+  _DISTRO_CONTAINER_ADJUSTMENT:    90,
   _LOADER_DIVIDE_BY:               2,
   _EMAIL_FILTER:                   /^([\w+\W])+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
   _DISTRO_NAME_FILTER:             /^[a-zA-Z0-9.-]/,
@@ -134,7 +134,7 @@ var thetoolbox = {
      * Onclick events for the "Create Distribution Group" link
      */
     $('#create_new_distro').click(function(e){
-      $('#create_distribution_list').dialog({modal: true, title: "Create Distribution Group", position: ['center', thetoolbox._MODAL_TOP_POSITION]});
+      $('#create_distribution_list').dialog({modal: true, title: "Create Distribution List", position: ['center', thetoolbox._MODAL_TOP_POSITION]});
     });
 
     /**
@@ -270,6 +270,8 @@ var thetoolbox = {
   
     $("form.new_user").form();
     $("#create_distribution_list form").form();
+    // Set checkbox to checked by default
+    $("#_distribution_group_sender_auth_enabled span").addClass('ui-icon ui-icon-check');
     $("#reset_password_container form").form();
     $("form#new_user_session").form();
     this.clean_up_pagination('body');

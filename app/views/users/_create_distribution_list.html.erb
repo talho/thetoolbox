@@ -1,5 +1,9 @@
 <% form_for :distribution_group, :url => create_distribution_group_path(@user || current_user) do |f| %>
   <%= f.label :distribution_list_name%>:
-  <%= f.text_field :distribution_list_name %><br/>
+  <%= f.text_field :distribution_list_name %>
+  <div>
+    <%= f.check_box :sender_auth_enabled, {:checked => true}, "0", "1" %>&nbsp;
+    <%= f.label :make_distribution_list_public%>
+  </div>
   <%= f.submit "Submit", :id => "create_distribution_submit" %>
 <% end %>

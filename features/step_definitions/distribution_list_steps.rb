@@ -15,7 +15,7 @@ Given /^I have a distribution list named "([^\"]*)"$/ do |listName|
   
   if group.nil?
     user = User.all.first
-    group = DistributionGroup.new(:group_name => listName, :ou => user.ou)
+    group = DistributionGroup.new(:group_name => listName, :ou => user.ou, :auth_enabled => 0)
     group.save
   end
 end

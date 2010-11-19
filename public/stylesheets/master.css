@@ -32,7 +32,7 @@ div.ucn_del a,
 .create_new_user_container, .create_vpn_user_container{display:none;height: 380px;width: 600px;}
 .create_new_user_container table tr td, .create_vpn_user_container table tr td{padding:5px;}
 #portal_toolbar {background:url("../images/app_header.png");height:32px;line-height:32px;position:relative;}
-#portal_toolbar .title{color:#fff;font-weight:bold;margin-left:10px;}
+#portal_toolbar .title{color:#fff;font-weight:bold;margin-left:10px;padding-left: 30px;background:url("images/toolbox_icon.png") no-repeat scroll 0 -3px;}
 #portal_toolbar .title a{color:#fff;text-decoration:none;}
 #portal_toolbar .log_out{float:right;;margin-right:10px;}
 #portal_toolbar .log_out a{color:#fff;}
@@ -71,6 +71,8 @@ form.new_user_session #host_authenticate{margin-bottom:15px;}
 #settings_panel .cacti_graphs a{background:url(images/cacti_graphs.png) 0px 0px no-repeat;}
 
 .create_distribution_list{display:none;min-height:0px !important;}
+.create_distribution_list form div{margin: 10px 0px}
+.create_distribution_list form div label{position:relative; top: -4px; right: 5px}
 .reset_password_container table td{padding:5px 10px 10px 0px;}
 
 .white_list_panel {display:none;}
